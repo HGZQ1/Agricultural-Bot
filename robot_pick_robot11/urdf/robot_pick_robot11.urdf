@@ -1,0 +1,1235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="robot_pick_robot11">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.000197610035877371 0.0760103738713844 -0.0175132582821369"
+        rpy="0 0 0" />
+      <mass
+        value="42.574302301868" />
+      <inertia
+        ixx="2.14420836568467"
+        ixy="-0.000285795793859023"
+        ixz="-0.0210055383039536"
+        iyy="3.46278641737793"
+        iyz="0.0968981776575418"
+        izz="1.82517986338898" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="f1_steer_link">
+    <inertial>
+      <origin
+        xyz="-0.279123947150593 -0.154201072994857 0.493740760495361"
+        rpy="0 0 0" />
+      <mass
+        value="104.717379102326" />
+      <inertia
+        ixx="32.6927710662306"
+        ixy="-0.336167893480939"
+        ixz="3.9857961017707"
+        iyy="34.1891615793239"
+        iyz="1.74076499711631"
+        izz="17.8238166188085" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f1_steer_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f1_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="f1_steer_joint"
+    type="revolute">
+    <origin
+      xyz="0.12303 -0.233 0.2285"
+      rpy="-1.5708 -1.5652 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="f1_steer_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="10"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="f1_wheel_link">
+    <inertial>
+      <origin
+        xyz="-6.66133814775094E-16 0.0535387969241309 -8.88178419700125E-16"
+        rpy="0 0 0" />
+      <mass
+        value="5.5314194475936" />
+      <inertia
+        ixx="0.0283624620972141"
+        ixy="-2.49176764291481E-16"
+        ixz="-3.46944695195361E-18"
+        iyy="0.0480754421884309"
+        iyz="-2.70467784453665E-16"
+        izz="0.0283624620972141" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f1_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f1_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="f1_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0.8213 0" />
+    <parent
+      link="f1_steer_link" />
+    <child
+      link="f1_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="20"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="f2_steer_joint">
+    <inertial>
+      <origin
+        xyz="0.272180179465958 -0.0887429147080635 0.493740760495361"
+        rpy="0 0 0" />
+      <mass
+        value="104.717379102326" />
+      <inertia
+        ixx="32.7005428100472"
+        ixy="-0.352956111043268"
+        ixz="-3.96591205312127"
+        iyy="34.1813898355073"
+        iyz="-1.78560211888965"
+        izz="17.8238166188085" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f2_steer_joint.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f2_steer_joint.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="f2_steer_joint"
+    type="revolute">
+    <origin
+      xyz="-0.123023158403879 -0.233000000000041 0.221927759440566"
+      rpy="-1.5707963267951 1.56515770851363 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="f2_steer_joint" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="10"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="f2_wheel_link">
+    <inertial>
+      <origin
+        xyz="2.22044604925031E-16 0.0535387969241308 6.66133814775094E-16"
+        rpy="0 0 0" />
+      <mass
+        value="5.5314194475936" />
+      <inertia
+        ixx="0.0283624620972141"
+        ixy="1.67034897198548E-16"
+        ixz="3.46944695195361E-18"
+        iyy="0.0480754421884309"
+        iyz="2.0925779555328E-16"
+        izz="0.0283624620972141" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f2_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/f2_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="f2_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0.8213 0" />
+    <parent
+      link="f2_steer_joint" />
+    <child
+      link="f2_wheel_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="20"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="r1_steer_link">
+    <inertial>
+      <origin
+        xyz="0.17084366048026 -0.154201072994831 0.493740760495332"
+        rpy="0 0 0" />
+      <mass
+        value="104.717379102326" />
+      <inertia
+        ixx="32.6927710662306"
+        ixy="-0.336167893480703"
+        ixz="3.98579610177067"
+        iyy="34.1891615793241"
+        iyz="1.7407649971153"
+        izz="17.8238166188083" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r1_steer_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r1_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r1_steer_joint"
+    type="revolute">
+    <origin
+      xyz="0.120488362163907 -0.233000000000001 -0.221458129368205"
+      rpy="-1.57079632679483 -1.56515770860955 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="r1_steer_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="10"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="r1_wheel_link">
+    <inertial>
+      <origin
+        xyz="2.22044604925031E-16 0.0535387969241309 2.22044604925031E-16"
+        rpy="0 0 0" />
+      <mass
+        value="5.5314194475936" />
+      <inertia
+        ixx="0.0283624620972141"
+        ixy="2.57023677514845E-17"
+        ixz="6.07153216591882E-18"
+        iyy="0.0480754421884309"
+        iyz="6.4997920240506E-17"
+        izz="0.0283624620972141" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r1_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r1_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r1_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0.8213 0" />
+    <parent
+      link="r1_steer_link" />
+    <child
+      link="r1_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="20"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="r2_steer_link">
+    <inertial>
+      <origin
+        xyz="-0.265787428164883 -0.212886569496778 0.455635642716856"
+        rpy="0 0 0" />
+      <mass
+        value="104.717379102326" />
+      <inertia
+        ixx="32.7005428100472"
+        ixy="-0.352956111044005"
+        ixz="-3.96591205312115"
+        iyy="34.1813898355066"
+        iyz="-1.78560211889258"
+        izz="17.8238166188091" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r2_steer_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r2_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r2_steer_joint"
+    type="revolute">
+    <origin
+      xyz="-0.244131461772017 -0.1948948822215 -0.316731291109656"
+      rpy="-1.57079632679473 1.56515770851357 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="r2_steer_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="10"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="r2_wheel_link">
+    <inertial>
+      <origin
+        xyz="-2.22044604925031E-16 0.0535387969241308 -2.22044604925031E-16"
+        rpy="0 0 0" />
+      <mass
+        value="5.5314194475936" />
+      <inertia
+        ixx="0.0283624620972141"
+        ixy="-9.79373374933312E-17"
+        ixz="-8.67361737988404E-18"
+        iyy="0.0480754421884309"
+        iyz="-1.28715126664763E-16"
+        izz="0.0283624620972141" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r2_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/r2_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r2_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="-0.088 -0.12414 -0.038105"
+      rpy="0 0.8213 0" />
+    <parent
+      link="r2_steer_link" />
+    <child
+      link="r2_wheel_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="20"
+      velocity="0" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="mid360_Link">
+    <inertial>
+      <origin
+        xyz="0.00340747940546549 0.442350202628433 -0.396759378178018"
+        rpy="0 0 0" />
+      <mass
+        value="0.141886777754482" />
+      <inertia
+        ixx="4.507764653165E-05"
+        ixy="5.8921312498008E-08"
+        ixz="8.24694405577648E-09"
+        iyy="6.68381603942182E-05"
+        iyz="-7.01486100567329E-06"
+        izz="4.37585906933259E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/mid360_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/mid360_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="mid360_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="mid360_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="tomato_box_link">
+    <inertial>
+      <origin
+        xyz="3.15963239799766E-06 0.307498460415917 0.171352664376548"
+        rpy="0 0 0" />
+      <mass
+        value="5.58008663179682" />
+      <inertia
+        ixx="0.15883791860749"
+        ixy="-3.34204564985563E-07"
+        ixz="-1.18118878272742E-06"
+        iyy="0.380887220475026"
+        iyz="-2.1838975637969E-07"
+        izz="0.299427275249588" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/tomato_box_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/tomato_box_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="tomato_box_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="tomato_box_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="arm_link1">
+    <inertial>
+      <origin
+        xyz="0.00325782028246324 -3.79312759646311E-07 0.0688238930189023"
+        rpy="0 0 0" />
+      <mass
+        value="4.35314235396732" />
+      <inertia
+        ixx="0.00761145019579333"
+        ixy="3.78996008068285E-08"
+        ixz="-0.00119047304074358"
+        iyy="0.00786264926859649"
+        iyz="3.27167337546458E-07"
+        izz="0.00886545428885568" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint1"
+    type="revolute">
+    <origin
+      xyz="0 0.455089999999944 -0.179980351558368"
+      rpy="1.5707963267949 0 3.14159265358979" />
+    <parent
+      link="base_link" />
+    <child
+      link="arm_link1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="90"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="arm_link2">
+    <inertial>
+      <origin
+        xyz="-0.0720194634339975 0.213510006607871 6.88608747800856E-09"
+        rpy="0 0 0" />
+      <mass
+        value="14.915686269307" />
+      <inertia
+        ixx="0.0764665166563375"
+        ixy="9.12167652065705E-09"
+        ixz="4.95992948720038E-09"
+        iyy="0.0232286206330041"
+        iyz="-7.27273167193012E-08"
+        izz="0.0744692392989276" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint2"
+    type="revolute">
+    <origin
+      xyz="0.08 0 0.0765"
+      rpy="1.5708 0 3.1416" />
+    <parent
+      link="arm_link1" />
+    <child
+      link="arm_link2" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.3562"
+      upper="2.3562"
+      effort="90"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="arm_link3">
+    <inertial>
+      <origin
+        xyz="0.0478063347357446 2.4353093763807E-07 0.152311271193547"
+        rpy="0 0 0" />
+      <mass
+        value="7.70449749053344" />
+      <inertia
+        ixx="0.0257989398997369"
+        ixy="-2.14440451838229E-08"
+        ixz="0.000333799520967906"
+        iyy="0.0251008790265547"
+        iyz="-4.90340389529817E-08"
+        izz="0.00880416564198257" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint3"
+    type="revolute">
+    <origin
+      xyz="0 0.427 0"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="arm_link2" />
+    <child
+      link="arm_link3" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.7925"
+      upper="2.7925"
+      effort="50"
+      velocity="2.6" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="arm_link4">
+    <inertial>
+      <origin
+        xyz="-0.0464456633096695 -4.01993581311544E-07 -0.00207814484948265"
+        rpy="0 0 0" />
+      <mass
+        value="1.81046440468172" />
+      <inertia
+        ixx="0.00176488009253743"
+        ixy="-1.61696294256619E-08"
+        ixz="-0.000299182046055117"
+        iyy="0.00180734786567493"
+        iyz="1.01030875524271E-08"
+        izz="0.00176641448562357" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint4"
+    type="revolute">
+    <origin
+      xyz="-0.0225 0 0.357"
+      rpy="3.1416 0 0" />
+    <parent
+      link="arm_link3" />
+    <child
+      link="arm_link4" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="30"
+      velocity="2.6" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="arm_link5">
+    <inertial>
+      <origin
+        xyz="-0.046893983132229 3.91806491695235E-08 -0.0114913726393613"
+        rpy="0 0 0" />
+      <mass
+        value="2.38755444186569" />
+      <inertia
+        ixx="0.00214130179461355"
+        ixy="-2.61146443536667E-08"
+        ixz="-0.000321624746638885"
+        iyy="0.00218353799507811"
+        iyz="1.80941609359923E-08"
+        izz="0.00227185480656039" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.866666666666667 0.909803921568627 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/arm_link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint5"
+    type="revolute">
+    <origin
+      xyz="-0.048 0 -0.068"
+      rpy="0 -1.5708 0" />
+    <parent
+      link="arm_link4" />
+    <child
+      link="arm_link5" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="10"
+      velocity="3.7" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="gripper_Link">
+    <inertial>
+      <origin
+        xyz="-0.0826541928873985 -0.000367370062998695 -0.00111656465248244"
+        rpy="0 0 0" />
+      <mass
+        value="0.115111713524023" />
+      <inertia
+        ixx="0.000228455550836827"
+        ixy="2.1454898924898E-07"
+        ixz="-6.05918442314392E-12"
+        iyy="0.000214229448485032"
+        iyz="-6.95158912361647E-07"
+        izz="3.94763669113224E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/gripper_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/gripper_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="gripper_joint"
+    type="revolute">
+    <origin
+      xyz="-0.048 0 -0.083"
+      rpy="1.5708 -1.5708 0" />
+    <parent
+      link="arm_link5" />
+    <child
+      link="gripper_Link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="20"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="camera_Link">
+    <inertial>
+      <origin
+        xyz="-0.000803740525782942 -0.022345292003549 0.00189627564202399"
+        rpy="0 0 0" />
+      <mass
+        value="0.00453084620416929" />
+      <inertia
+        ixx="9.17763743610195E-07"
+        ixy="1.75127975222215E-09"
+        ixz="-3.45012713064584E-08"
+        iyy="5.82918959718128E-07"
+        iyz="3.25042217804348E-09"
+        izz="9.02899253138205E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/camera_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/camera_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_joint"
+    type="fixed">
+    <origin
+      xyz="-0.0400000000000365 0.0485000000000264 -0.0225"
+      rpy="-1.5707963267949 0 0" />
+    <parent
+      link="gripper_Link" />
+    <child
+      link="camera_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera_option_Link">
+    <inertial>
+      <origin
+        xyz="-8.27600293560327E-05 -0.000518418102922302 0.0113997621610378"
+        rpy="0 0 0" />
+      <mass
+        value="0.0387408552979231" />
+      <inertia
+        ixx="7.10415005622584E-06"
+        ixy="-1.66104223275739E-10"
+        ixz="1.50899324908922E-08"
+        iyy="7.11469471332295E-06"
+        iyz="-1.30959073974302E-07"
+        izz="1.08407629088803E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/camera_option_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/camera_option_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_option_joint"
+    type="fixed">
+    <origin
+      xyz="-0.017221 -0.0195 0.037803"
+      rpy="-1.5898 0 -1.5708" />
+    <parent
+      link="camera_Link" />
+    <child
+      link="camera_option_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="gripper_left_finger_Link">
+    <inertial>
+      <origin
+        xyz="0.0261108219846026 -4.53837545322244E-09 0.014130717860668"
+        rpy="0 0 0" />
+      <mass
+        value="0.0535754087915458" />
+      <inertia
+        ixx="1.17617706423657E-05"
+        ixy="6.98661217438493E-12"
+        ixz="3.78288135832572E-06"
+        iyy="2.23155077071211E-05"
+        iyz="4.11082963172103E-12"
+        izz="2.90042566381589E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/gripper_left_finger_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/gripper_left_finger_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="gripper_left_finger_joint"
+    type="prismatic">
+    <origin
+      xyz="-0.169 0 -0.063034"
+      rpy="0 0 0" />
+    <parent
+      link="gripper_Link" />
+    <child
+      link="gripper_left_finger_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0.8"
+      effort="20"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+  <link
+    name="gripper_right_finger_Link">
+    <inertial>
+      <origin
+        xyz="-0.019389178015423 4.53830661939492E-09 0.0088692821393157"
+        rpy="0 0 0" />
+      <mass
+        value="0.0535754087915454" />
+      <inertia
+        ixx="1.17617706423783E-05"
+        ixy="-6.98662826213892E-12"
+        ixz="-3.78288135835418E-06"
+        iyy="2.23155077071208E-05"
+        iyz="4.11082247688061E-12"
+        izz="2.90042566381463E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/gripper_right_finger_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_pick_robot11/meshes/gripper_right_finger_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="gripper_right_finger_Link"
+    type="prismatic">
+    <origin
+      xyz="-0.1235 0 0.040034"
+      rpy="0 0 0" />
+    <parent
+      link="gripper_Link" />
+    <child
+      link="gripper_right_finger_Link" />
+    <axis
+      xyz="0 0 0" />
+    <limit
+      lower="0"
+      upper="0.8"
+      effort="20"
+      velocity="2" />
+    <dynamics
+      damping="0.1"
+      friction="0.05" />
+  </joint>
+</robot>
