@@ -1,0 +1,3 @@
+# Python dependencies will be pinned after package initialization.
+# ROS Python packages should normally be resolved through package.xml / rosdep.
+

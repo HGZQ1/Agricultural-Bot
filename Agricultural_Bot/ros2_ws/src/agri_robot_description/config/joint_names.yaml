@@ -1,0 +1,37 @@
+# Canonical joint and frame names for robot_pick_robot11's ROS 2 migration.
+# Keep this file as the single source for controller/MoveIt adapters until the
+# model is split into xacro modules.
+steering_joints:
+  - f1_steer_joint
+  - f2_steer_joint
+  - r1_steer_joint
+  - r2_steer_joint
+
+drive_joints:
+  - f1_wheel_joint
+  - f2_wheel_joint
+  - r1_wheel_joint
+  - r2_wheel_joint
+
+arm_joints:
+  - arm_joint1
+  - arm_joint2
+  - arm_joint3
+  - arm_joint4
+  - arm_joint5
+  # Provisional name for the source model's final revolute joint. Confirm
+  # against the CR5 manual and the real controller before hardware use.
+  - cr5_joint6
+
+gripper_joints:
+  - gripper_left_finger_joint
+  - gripper_right_finger_joint
+
+frames:
+  base: base_link
+  footprint: base_footprint
+  lidar: mid360_link
+  flange: tool0
+  camera: camera_link
+  camera_optical: camera_optical_frame
+  basket: tomato_box_link

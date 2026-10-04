@@ -1,0 +1,36 @@
+# Colcon outputs
+**/build/
+**/install/
+**/log/
+
+# Python
+**/.venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# ROS and runtime outputs
+*.bag
+*.db3
+*.mcap
+*.active
+artifacts/
+
+# Training outputs and large local data
+data/datasets/raw/*
+data/datasets/synthetic/*
+data/weights/*
+!data/datasets/raw/.gitkeep
+!data/datasets/synthetic/.gitkeep
+!data/weights/.gitkeep
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+*~
+
+# SolidWorks lock files
+~$*
+
