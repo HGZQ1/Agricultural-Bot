@@ -1,0 +1,27 @@
+four_wheel_steering_node:
+  ros__parameters:
+    cmd_vel_type: twist_stamped
+    cmd_vel_topic: /cmd_vel
+    joint_states_topic: /joint_states
+    steering_command_topic: /steering_controller/commands
+    wheel_command_topic: /wheel_controller/commands
+    odom_topic: /wheel/odom
+    publish_tf: true
+    odom_frame: odom
+    base_frame: base_footprint
+    update_rate: 50.0
+    command_timeout: 0.5
+    wheel_radius: 0.127
+    max_wheel_speed: 2.0
+    steering_limits: [-3.14159265, 3.14159265]
+    # x is forward and y is left in base_footprint.  Verify these four values
+    # against the final calibrated URDF wheel-joint origins.
+    wheel_names: [f1, f2, r1, r2]
+    wheel_positions: [0.228220185, 0.173029217, 0.221645830, -0.173022364, -0.221740059, 0.170487567, -0.228314645, -0.170488836]
+    steering_joint_names: [f1_steer_joint, f2_steer_joint, r1_steer_joint, r2_steer_joint]
+    wheel_joint_names: [f1_wheel_joint, f2_wheel_joint, r1_wheel_joint, r2_wheel_joint]
+    # physical_value = joint_state_value * sign; joint_command = physical_command * sign
+    # All steering axes map to -Z in base_footprint; all positive wheel axes
+    # produce +X rolling velocity at steering zero. Verify again after URDF edits.
+    steering_joint_signs: [-1.0, -1.0, -1.0, -1.0]
+    wheel_joint_signs: [1.0, 1.0, 1.0, 1.0]

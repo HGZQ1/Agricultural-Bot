@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_gripper">
+    <link name="gripper_base_link">
+        <inertial>
+          <origin xyz="-0.0826541928873985 -0.000367370062998695 -0.00111656465248244" rpy="0 0 0"/>
+          <mass value="0.115111713524023"/>
+          <inertia ixx="0.000228455550836827" ixy="2.1454898924898E-07" ixz="-6.05918442314392E-12" iyy="0.000214229448485032" iyz="-6.95158912361647E-07" izz="3.94763669113224E-05"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/gripper_base_link.STL"/>
+          </geometry>
+          <material name="gripper_orange">
+            <color rgba="${gripper_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/gripper_base_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="cr5_joint6" type="revolute">
+        <origin xyz="-0.048 0 -0.0615" rpy="1.5708 -1.5708 0"/>
+        <parent link="arm_link5"/>
+        <child link="gripper_base_link"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="tool0"/>
+    <joint name="tool0_joint" type="fixed">
+        <parent link="gripper_base_link"/>
+        <child link="tool0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </joint>
+    <link name="gripper_left_finger_link">
+        <inertial>
+          <origin xyz="0.0261108219846026 -4.53837545322244E-09 0.014130717860668" rpy="0 0 0"/>
+          <mass value="0.0535754087915458"/>
+          <inertia ixx="1.17617706423657E-05" ixy="6.98661217438493E-12" ixz="3.78288135832572E-06" iyy="2.23155077071211E-05" iyz="4.11082963172103E-12" izz="2.90042566381589E-05"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/gripper_left_finger_link.STL"/>
+          </geometry>
+          <material name="finger_metal">
+            <color rgba="${finger_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/gripper_left_finger_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="gripper_left_finger_joint" type="prismatic">
+        <origin xyz="-0.169 0 -0.063034" rpy="0 0 0"/>
+        <parent link="gripper_base_link"/>
+        <child link="gripper_left_finger_link"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="0" upper="0.8" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="gripper_right_finger_link">
+        <inertial>
+          <origin xyz="-0.019389178015423 4.53830661939492E-09 0.0088692821393157" rpy="0 0 0"/>
+          <mass value="0.0535754087915454"/>
+          <inertia ixx="1.17617706423783E-05" ixy="-6.98662826213892E-12" ixz="-3.78288135835418E-06" iyy="2.23155077071208E-05" iyz="4.11082247688061E-12" izz="2.90042566381463E-05"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/gripper_right_finger_link.STL"/>
+          </geometry>
+          <material name="finger_metal">
+            <color rgba="${finger_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/gripper_right_finger_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="gripper_right_finger_joint" type="prismatic">
+        <origin xyz="-0.1235 0 0.040034" rpy="0 0 0"/>
+        <parent link="gripper_base_link"/>
+        <child link="gripper_right_finger_link"/>
+        <axis xyz="0 0 -1"/>
+        <xacro:unless value="$(arg use_ros2_control)">
+          <mimic joint="gripper_left_finger_joint" multiplier="1" offset="0"/>
+        </xacro:unless>
+        <limit lower="0" upper="0.8" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+
+  </xacro:macro>
+</robot>

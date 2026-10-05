@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_basket">
+    <link name="tomato_box_link">
+        <inertial>
+          <origin xyz="3.15963239799766E-06 0.307498460415917 0.171352664376548" rpy="0 0 0"/>
+          <mass value="5.58008663179682"/>
+          <inertia ixx="0.15883791860749" ixy="-3.34204564985563E-07" ixz="-1.18118878272742E-06" iyy="0.380887220475026" iyz="-2.1838975637969E-07" izz="0.299427275249588"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/tomato_box_link.STL"/>
+          </geometry>
+          <material name="basket_green">
+            <color rgba="${basket_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/tomato_box_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="tomato_box_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="tomato_box_link"/>
+      </joint>
+
+  </xacro:macro>
+</robot>

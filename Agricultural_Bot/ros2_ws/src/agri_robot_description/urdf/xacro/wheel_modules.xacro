@@ -1,0 +1,250 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_wheel_modules">
+    <link name="f1_steer_link">
+        <!-- Provisional 15 kg mass properties from the centered steer mesh bounds. -->
+        <inertial>
+          <origin xyz="0 0.009266275 0.072000005" rpy="0 0 0"/>
+          <mass value="15.0"/>
+          <inertia ixx="0.2244577768" ixy="0" ixz="0" iyy="0.2240913810" iyz="0" izz="0.1893391739"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f1_steer_link.STL"/>
+          </geometry>
+          <material name="steer_blue">
+            <color rgba="${steer_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f1_steer_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="f1_steer_joint" type="revolute">
+        <origin xyz="0.173029217029866 -0.233000183660255 0.228220185120844" rpy="-1.5708 -1.5652 0"/>
+        <parent link="base_link"/>
+        <child link="f1_steer_link"/>
+        <axis xyz="0 0 -1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="f1_wheel_link">
+        <inertial>
+          <origin xyz="-6.66133814775094E-16 0.0035387969241309 -8.88178419700125E-16" rpy="0 0 0"/>
+          <mass value="5.5314194475936"/>
+          <inertia ixx="0.0283624620972141" ixy="-2.49176764291481E-16" ixz="-3.46944695195361E-18" iyy="0.0480754421884309" iyz="-2.70467784453665E-16" izz="0.0283624620972141"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f1_wheel_link.STL"/>
+          </geometry>
+          <material name="rubber_black">
+            <color rgba="${rubber_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f1_wheel_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="f1_wheel_joint" type="continuous">
+        <origin xyz="0 0 0" rpy="0 0.8213 0"/>
+        <parent link="f1_steer_link"/>
+        <child link="f1_wheel_link"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="f2_steer_link">
+        <!-- Provisional 15 kg mass properties from the centered steer mesh bounds. -->
+        <inertial>
+          <origin xyz="0 0.009266275 0.072000005" rpy="0 0 0"/>
+          <mass value="15.0"/>
+          <inertia ixx="0.2244577768" ixy="0" ixz="0" iyy="0.2240913810" iyz="0" izz="0.1893391739"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f2_steer_link.STL"/>
+          </geometry>
+          <material name="steer_blue">
+            <color rgba="${steer_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f2_steer_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="f2_steer_joint" type="revolute">
+        <origin xyz="-0.173022363555582 -0.233000000000051 0.221645830020453" rpy="-1.5707963267951 1.56515770851363 0"/>
+        <parent link="base_link"/>
+          <child link="f2_steer_link"/>
+        <axis xyz="0 0 -1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="f2_wheel_link">
+        <inertial>
+          <origin xyz="2.22044604925031E-16 0.0035387969241308 6.66133814775094E-16" rpy="0 0 0"/>
+          <mass value="5.5314194475936"/>
+          <inertia ixx="0.0283624620972141" ixy="1.67034897198548E-16" ixz="3.46944695195361E-18" iyy="0.0480754421884309" iyz="2.0925779555328E-16" izz="0.0283624620972141"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f2_wheel_link.STL"/>
+          </geometry>
+          <material name="rubber_black">
+            <color rgba="${rubber_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f2_wheel_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="f2_wheel_joint" type="continuous">
+        <origin xyz="0 0 0" rpy="0 0.8213 0"/>
+        <parent link="f2_steer_link"/>
+        <child link="f2_wheel_link"/>
+        <axis xyz="0 -1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="r1_steer_link">
+        <!-- Provisional 15 kg mass properties from the centered steer mesh bounds. -->
+        <inertial>
+          <origin xyz="0 0.009266275 0.072000005" rpy="0 0 0"/>
+          <mass value="15.0"/>
+          <inertia ixx="0.2244577768" ixy="0" ixz="0" iyy="0.2240913810" iyz="0" izz="0.1893391739"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/r1_steer_link.STL"/>
+          </geometry>
+          <material name="steer_blue">
+            <color rgba="${steer_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/r1_steer_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="r1_steer_joint" type="revolute">
+        <origin xyz="0.170487567315637 -0.232999999999998 -0.221740058783522" rpy="-1.57079632679483 -1.56515770860955 0"/>
+        <parent link="base_link"/>
+        <child link="r1_steer_link"/>
+        <axis xyz="0 0 -1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="r1_wheel_link">
+        <inertial>
+          <origin xyz="2.22044604925031E-16 0.0035387969241309 2.22044604925031E-16" rpy="0 0 0"/>
+          <mass value="5.5314194475936"/>
+          <inertia ixx="0.0283624620972141" ixy="2.57023677514845E-17" ixz="6.07153216591882E-18" iyy="0.0480754421884309" iyz="6.4997920240506E-17" izz="0.0283624620972141"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/r1_wheel_link.STL"/>
+          </geometry>
+          <material name="rubber_black">
+            <color rgba="${rubber_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/r1_wheel_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="r1_wheel_joint" type="continuous">
+        <origin xyz="0 0 0" rpy="0 0.8213 0"/>
+        <parent link="r1_steer_link"/>
+        <child link="r1_wheel_link"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="r2_steer_link">
+        <!-- Provisional 15 kg mass properties from the centered steer mesh bounds. -->
+        <inertial>
+          <origin xyz="0 0.009266275 0.072000005" rpy="0 0 0"/>
+          <mass value="15.0"/>
+          <inertia ixx="0.2244577768" ixy="0" ixz="0" iyy="0.2240913810" iyz="0" izz="0.1893391739"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f2_steer_link.STL"/>
+          </geometry>
+          <material name="steer_blue">
+            <color rgba="${steer_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/f2_steer_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="r2_steer_joint" type="revolute">
+        <origin xyz="-0.170488836152483 -0.232999882221513 -0.228314645098511" rpy="-1.57079632679473 1.56515770851357 0"/>
+        <parent link="base_link"/>
+        <child link="r2_steer_link"/>
+        <axis xyz="0 0 -1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="r2_wheel_link">
+        <inertial>
+          <origin xyz="-2.22044604925031E-16 0.0035387969241308 -2.22044604925031E-16" rpy="0 0 0"/>
+          <mass value="5.5314194475936"/>
+          <inertia ixx="0.0283624620972141" ixy="-9.79373374933312E-17" ixz="-8.67361737988404E-18" iyy="0.0480754421884309" iyz="-1.28715126664763E-16" izz="0.0283624620972141"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/r2_wheel_link.STL"/>
+          </geometry>
+          <material name="rubber_black">
+            <color rgba="${rubber_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/r2_wheel_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="r2_wheel_joint" type="continuous">
+        <origin xyz="0 0 0" rpy="0 0.8213 0"/>
+        <parent link="r2_steer_link"/>
+        <child link="r2_wheel_link"/>
+        <axis xyz="0 -1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+
+  </xacro:macro>
+</robot>

@@ -1,0 +1,71 @@
+# Controller manager configuration for the canonical robot joint names.
+#
+# The robot URDF/Xacro must expose matching ros2_control command/state
+# interfaces through gz_ros2_control before this file is launched.
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    steering_controller:
+      type: forward_command_controller/ForwardCommandController
+
+    wheel_controller:
+      type: forward_command_controller/ForwardCommandController
+
+    arm_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    gripper_controller:
+      type: forward_command_controller/ForwardCommandController
+
+steering_controller:
+  ros__parameters:
+    joints:
+      - f1_steer_joint
+      - f2_steer_joint
+      - r1_steer_joint
+      - r2_steer_joint
+    interface_name: position
+
+wheel_controller:
+  ros__parameters:
+    joints:
+      - f1_wheel_joint
+      - f2_wheel_joint
+      - r1_wheel_joint
+      - r2_wheel_joint
+    interface_name: velocity
+
+arm_controller:
+  ros__parameters:
+    joints:
+      - arm_joint1
+      - arm_joint2
+      - arm_joint3
+      - arm_joint4
+      - arm_joint5
+      - cr5_joint6
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    open_loop_control: false
+    constraints:
+      stopped_velocity_tolerance: 0.05
+      goal_time: 1.0
+
+gripper_controller:
+  ros__parameters:
+    joints:
+      - gripper_left_finger_joint
+      - gripper_right_finger_joint
+    interface_name: position

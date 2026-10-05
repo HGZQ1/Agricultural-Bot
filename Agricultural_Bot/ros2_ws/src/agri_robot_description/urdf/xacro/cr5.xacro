@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_cr5">
+    <link name="arm_link1">
+        <inertial>
+          <origin xyz="0.00325782028246324 -3.79312759646311E-07 0.0688238930189023" rpy="0 0 0"/>
+          <mass value="4.35314235396732"/>
+          <inertia ixx="0.00761145019579333" ixy="3.78996008068285E-08" ixz="-0.00119047304074358" iyy="0.00786264926859649" iyz="3.27167337546458E-07" izz="0.00886545428885568"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link1.STL"/>
+          </geometry>
+          <material name="arm_blue">
+            <color rgba="${arm_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link1.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="arm_joint1" type="revolute">
+        <origin xyz="0 0.455089999999944 -0.179980351558368" rpy="1.5707963267949 0 3.14159265358979"/>
+        <parent link="base_link"/>
+        <child link="arm_link1"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="90" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="arm_link2">
+        <inertial>
+          <origin xyz="-0.0720194634339975 0.213510006607871 6.88608747800856E-09" rpy="0 0 0"/>
+          <mass value="14.915686269307"/>
+          <inertia ixx="0.0764665166563375" ixy="9.12167652065705E-09" ixz="4.95992948720038E-09" iyy="0.0232286206330041" iyz="-7.27273167193012E-08" izz="0.0744692392989276"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link2.STL"/>
+          </geometry>
+          <material name="arm_blue">
+            <color rgba="${arm_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link2.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="arm_joint2" type="revolute">
+        <origin xyz="0.08 0 0.0765" rpy="1.5708 0 3.1416"/>
+        <parent link="arm_link1"/>
+        <child link="arm_link2"/>
+        <axis xyz="-1 0 0"/>
+        <limit lower="-2.3562" upper="2.3562" effort="90" velocity="2"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="arm_link3">
+        <inertial>
+          <origin xyz="0.0478063347357446 2.4353093763807E-07 0.152311271193547" rpy="0 0 0"/>
+          <mass value="7.70449749053344"/>
+          <inertia ixx="0.0257989398997369" ixy="-2.14440451838229E-08" ixz="0.000333799520967906" iyy="0.0251008790265547" iyz="-4.90340389529817E-08" izz="0.00880416564198257"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link3.STL"/>
+          </geometry>
+          <material name="arm_blue">
+            <color rgba="${arm_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link3.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="arm_joint3" type="revolute">
+        <origin xyz="0 0.427 0" rpy="-1.5708 0 0"/>
+        <parent link="arm_link2"/>
+        <child link="arm_link3"/>
+        <axis xyz="-1 0 0"/>
+        <limit lower="-2.7925" upper="2.7925" effort="50" velocity="2.6"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="arm_link4">
+        <inertial>
+          <origin xyz="-0.0464456633096695 -4.01993581311544E-07 -0.00207814484948265" rpy="0 0 0"/>
+          <mass value="1.81046440468172"/>
+          <inertia ixx="0.00176488009253743" ixy="-1.61696294256619E-08" ixz="-0.000299182046055117" iyy="0.00180734786567493" iyz="1.01030875524271E-08" izz="0.00176641448562357"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link4.STL"/>
+          </geometry>
+          <material name="arm_blue">
+            <color rgba="${arm_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link4.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="arm_joint4" type="revolute">
+        <origin xyz="-0.0225 0 0.357" rpy="3.1416 0 0"/>
+        <parent link="arm_link3"/>
+        <child link="arm_link4"/>
+        <axis xyz="-1 0 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="30" velocity="2.6"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+    <link name="arm_link5">
+        <inertial>
+          <origin xyz="-0.046893983132229 3.91806491695235E-08 -0.0114913726393613" rpy="0 0 0"/>
+          <mass value="2.38755444186569"/>
+          <inertia ixx="0.00214130179461355" ixy="-2.61146443536667E-08" ixz="-0.000321624746638885" iyy="0.00218353799507811" iyz="1.80941609359923E-08" izz="0.00227185480656039"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link5.STL"/>
+          </geometry>
+          <material name="arm_blue">
+            <color rgba="${arm_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/arm_link5.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="arm_joint5" type="revolute">
+        <origin xyz="-0.048 0 -0.068" rpy="0 -1.5708 0"/>
+        <parent link="arm_link4"/>
+        <child link="arm_link5"/>
+        <axis xyz="-1 0 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="10" velocity="3.7"/>
+        <dynamics damping="0.1" friction="0.05"/>
+      </joint>
+
+  </xacro:macro>
+</robot>

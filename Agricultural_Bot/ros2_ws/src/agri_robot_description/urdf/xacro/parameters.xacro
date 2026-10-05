@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- Shared model parameters.  Geometry values remain in the audited CAD
+     payload until the Xacro component split is completed. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="agri_robot_parameters">
+  <xacro:property name="mesh_package" value="$(arg mesh_package)" />
+  <xacro:property name="wheel_radius" value="0.127" />
+  <xacro:property name="steer_link_mass" value="15.0" />
+  <xacro:property name="steer_limit" value="3.1416" />
+  <xacro:property name="wheel_velocity_limit" value="2.0" />
+</robot>

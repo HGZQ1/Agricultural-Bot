@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_sensors">
+    <link name="mid360_link">
+        <inertial>
+          <origin xyz="0.00340747940546549 0.442350202628433 -0.396759378178018" rpy="0 0 0"/>
+          <mass value="0.141886777754482"/>
+          <inertia ixx="4.507764653165E-05" ixy="5.8921312498008E-08" ixz="8.24694405577648E-09" iyy="6.68381603942182E-05" iyz="-7.01486100567329E-06" izz="4.37585906933259E-05"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/mid360_link.STL"/>
+          </geometry>
+          <material name="sensor_gray">
+            <color rgba="${sensor_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/mid360_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="mid360_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="mid360_link"/>
+      </joint>
+    <link name="camera_link">
+        <inertial>
+          <origin xyz="-0.000803740525782942 -0.022345292003549 0.00189627564202399" rpy="0 0 0"/>
+          <mass value="0.00453084620416929"/>
+          <inertia ixx="9.17763743610195E-07" ixy="1.75127975222215E-09" ixz="-3.45012713064584E-08" iyy="5.82918959718128E-07" iyz="3.25042217804348E-09" izz="9.02899253138205E-07"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/camera_link.STL"/>
+          </geometry>
+          <material name="camera_black">
+            <color rgba="0.12 0.12 0.14 1"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/camera_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="camera_joint" type="fixed">
+        <origin xyz="-0.0400000000000365 0.0485000000000264 -0.0225" rpy="-1.5707963267949 0 0"/>
+        <parent link="gripper_base_link"/>
+        <child link="camera_link"/>
+      </joint>
+    <link name="camera_optical_frame">
+        <inertial>
+          <origin xyz="-8.27600293560327E-05 -0.000518418102922302 0.0113997621610378" rpy="0 0 0"/>
+          <mass value="0.0387408552979231"/>
+          <inertia ixx="7.10415005622584E-06" ixy="-1.66104223275739E-10" ixz="1.50899324908922E-08" iyy="7.11469471332295E-06" iyz="-1.30959073974302E-07" izz="1.08407629088803E-05"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/camera_optical_frame.STL"/>
+          </geometry>
+          <material name="camera_lens">
+            <color rgba="0.35 0.35 0.38 1"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/camera_optical_frame.STL"/>
+          </geometry>
+        </collision>
+      </link>
+    <joint name="camera_option_joint" type="fixed">
+        <origin xyz="-0.017221 -0.0195 0.037803" rpy="-1.5898 0 -1.5708"/>
+        <parent link="camera_link"/>
+        <child link="camera_optical_frame"/>
+      </joint>
+
+  </xacro:macro>
+</robot>

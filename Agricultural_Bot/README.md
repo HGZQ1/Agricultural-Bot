@@ -40,12 +40,11 @@ URDF 颜色、父子组件位姿和当前夹爪安装修正方法见
 - 所有我方自研 ROS 2 可执行节点使用 Python 3.12、`rclpy` 和
   `ament_python`。
 - Nav2、MoveIt 2、SLAM Toolbox、Gazebo 和 ros2_control 使用 Jazzy 官方二进制。
-- `agri_robot_description` 已能通过 `check_urdf` 和 Gazebo SDF 转换，并可在 Gazebo
-  Harmonic 中 spawn；它仍不是最终校准模型。
+- `agri_robot_description` 已拆分为组件化 Xacro，并通过 `check_urdf` 和 Gazebo SDF 转换。
 - canonical URDF 已加入 SolidWorks CAD 坐标到 ROS/Gazebo 坐标的根轴变换，解决初始模型
   侧躺问题；惯性原点仍需后续按 link 局部坐标校准。
-- 四舵轮控制器、CR5/夹爪 `ros2_control`、D405/MID-360 传感器插件、MoveIt 配置和
-  温室世界属于后续阶段。
+- 四舵轮运动学、`gz_ros2_control`、CR5/夹爪控制器已经完成阶段一；D405/MID-360 传感器、
+  温室世界、MoveIt、Nav2、YOLOv8 和采摘任务逻辑属于后续阶段。
 
 ## 当前最小运行入口
 
@@ -63,3 +62,9 @@ ros2 launch agri_sim_bringup simulation.launch.py gui:=false
 ```
 
 需要在重力积分前检查模型时，可使用 `paused:=true`。
+
+仅加载模型、不启动控制器：
+
+```bash
+ros2 launch agri_sim_bringup simulation.launch.py use_control:=false
+```

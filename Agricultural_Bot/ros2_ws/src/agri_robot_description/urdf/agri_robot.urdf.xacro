@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- Canonical component-composed description for the Agricultural Bot. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="agri_robot">
+  <xacro:arg name="mesh_package" default="agri_robot_description" />
+  <xacro:arg name="use_gazebo" default="false" />
+  <!-- Simulation sets this true when both gripper fingers are commanded
+       explicitly. Standalone/RViz descriptions retain the mimic relation. -->
+  <xacro:arg name="use_ros2_control" default="false" />
+
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/parameters.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/materials.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/base.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/wheel_modules.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/cr5.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/gripper.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/sensors.xacro" />
+  <xacro:include filename="$(find agri_robot_description)/urdf/xacro/basket.xacro" />
+
+  <xacro:agri_base />
+  <xacro:agri_wheel_modules />
+  <xacro:agri_cr5 />
+  <xacro:agri_gripper />
+  <xacro:agri_sensors />
+  <xacro:agri_basket />
+
+  <!-- This package remains independent from sim_ws. Gazebo-specific
+       ros2_control interfaces are added by agri_sim_description. -->
+  <xacro:if value="$(arg use_gazebo)">
+    <xacro:include filename="$(find agri_robot_description)/urdf/xacro/gazebo_overlay.xacro" />
+  </xacro:if>
+</robot>

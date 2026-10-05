@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -11,7 +12,18 @@ from launch_ros.actions import Node
 def _make_nodes(context, *args, **kwargs):
     model_path = Path(LaunchConfiguration("model").perform(context))
     use_sim_time = LaunchConfiguration("use_sim_time")
-    robot_description = {"robot_description": model_path.read_text()}
+    if model_path.suffix == ".xacro":
+        # Expand at launch time so the same source is used by RViz and Gazebo.
+        result = subprocess.run(
+            ["xacro", str(model_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        description = result.stdout
+    else:
+        description = model_path.read_text()
+    robot_description = {"robot_description": description}
     package_share = Path(get_package_share_directory("agri_robot_description"))
     rviz_config = package_share / "rviz" / "robot_description.rviz"
     return [
@@ -45,7 +57,7 @@ def generate_launch_description():
     package_share = Path(
         get_package_share_directory("agri_robot_description")
     )
-    default_model = package_share / "urdf" / "robot_pick_robot11.urdf"
+    default_model = package_share / "urdf" / "agri_robot.urdf.xacro"
 
     model_arg = DeclareLaunchArgument(
         "model",

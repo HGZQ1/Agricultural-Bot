@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_base">
+    <link name="base_footprint"/>
+    <joint name="base_footprint_joint" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <!-- SolidWorks exported this assembly with +Y as vertical, +X across
+             the chassis and +Z along its length. ROS uses +Z vertical, +Y left
+             and +X forward. This maps (x_cad,y_cad,z_cad) to
+             (x_ros,y_ros,z_ros) = (z_cad,x_cad,y_cad), without changing any
+             link-local dimensions. -->
+        <origin xyz="0 0 0" rpy="1.5707963267949 0 1.5707963267949"/>
+      </joint>
+    <link name="base_link">
+        <inertial>
+          <origin xyz="0.000197610035877371 0.0760103738713844 -0.0175132582821369" rpy="0 0 0"/>
+          <mass value="42.574302301868"/>
+          <inertia ixx="2.14420836568467" ixy="-0.000285795793859023" ixz="-0.0210055383039536" iyy="3.46278641737793" iyz="0.0968981776575418" izz="1.82517986338898"/>
+        </inertial>
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/base_link.STL"/>
+          </geometry>
+          <material name="chassis">
+            <color rgba="${chassis_rgba}"/>
+          </material>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://${mesh_package}/meshes/visual/base_link.STL"/>
+          </geometry>
+        </collision>
+      </link>
+
+  </xacro:macro>
+</robot>
