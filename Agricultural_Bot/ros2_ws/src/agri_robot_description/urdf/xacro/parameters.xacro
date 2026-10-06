@@ -7,4 +7,73 @@
   <xacro:property name="steer_link_mass" value="15.0" />
   <xacro:property name="steer_limit" value="3.1416" />
   <xacro:property name="wheel_velocity_limit" value="2.0" />
+
+  <!--
+    The MID-360 mesh was exported in the assembly (CAD) coordinate system,
+    while its URDF link was previously left at the base_link origin.  Keep
+    this reference in the parent link's CAD-aligned coordinates.  The mesh
+    origins are negated in sensors.xacro so the rendered geometry does not
+    move when the link frame is re-based here.
+
+    The body frame retains the SolidWorks mass-property reference. The
+    separate mid360_sensor_* extrinsic below places the simulation emission
+    origin at the optical dome without changing the inertial/body reference.
+  -->
+  <xacro:property name="mid360_mount_x" value="0.00340747940546549" />
+  <xacro:property name="mid360_mount_y" value="0.442350202628433" />
+  <xacro:property name="mid360_mount_z" value="-0.396759378178018" />
+  <xacro:property name="mid360_mesh_x" value="-0.00340747940546549" />
+  <xacro:property name="mid360_mesh_y" value="-0.442350202628433" />
+  <xacro:property name="mid360_mesh_z" value="0.396759378178018" />
+
+  <!--
+    CAD-derived simulation emission origin: sphere center fitted to the upper
+    optical dome of mid360_link.STL after removing its existing 15-degree tilt.
+    The fitted radius is 22.0105 mm (radial RMS residual 0.0564 mm). This is a
+    geometric optical-window reference, not a factory-calibrated laser origin.
+    Values below are relative to the re-based body origin in CAD coordinates.
+
+    In base_footprint the scanning frame has X forward, Y left, Z along the
+    dome axis, with pitch -15 degrees: X=(cos15,0,sin15), Y=(0,1,0),
+    Z=(-sin15,0,cos15). R_body_sensor = R_footprint_body^T * Ry(-15deg).
+    This removes the inherited CAD axes and includes the tilt already present
+    in the mesh; the visual/collision geometry must not be rotated again.
+    Replace only this extrinsic estimate when a measured/factory datum exists.
+  -->
+  <xacro:property name="mid360_sensor_x" value="3.02793952e-05" />
+  <xacro:property name="mid360_sensor_y" value="0.0166943681" />
+  <xacro:property name="mid360_sensor_z" value="-0.00467974305" />
+  <xacro:property name="mid360_sensor_roll" value="3.141592653589793" />
+  <xacro:property name="mid360_sensor_pitch" value="-1.3089969389957472" />
+  <xacro:property name="mid360_sensor_yaw" value="1.5707963267948966" />
+
+  <!--
+    camera_link.STL is the wrist bracket; camera_optical_frame.STL is the
+    D405 housing, retained on camera_lens_link without changing its assembly
+    pose, visual/collision origin, or inertia. Its front normal is
+    (0, 0.0379514348, -0.999279585): the 2.17498-degree CAD tilt is already
+    in the mesh. Removing that tilt gives a 42.09 x 42 x 23 mm housing and
+    a front-glass plane at z=0.070 mm, opposite the rear M3 mounting holes.
+
+    The first simulation uses an aligned RGB-D virtual pinhole at the front
+    glass center, 3.7 mm inward (D405 depth-start offset from the datasheet).
+    In the untilted housing it is (0,0,3.770 mm). The CAD omits the two front
+    imagers, so this is an explicit central simulation reference, not the
+    calibrated left-imager origin. The physical left-imager 9 mm offset and
+    measured wrist extrinsics can replace this estimate for hardware use.
+    Reference: RealSense D400 Series Datasheet, October 2025, pages 89-93:
+    https://realsenseai.com/wp-content/uploads/2025/09/Intel-RealSense-D400-Series-Datasheet-October-2025.pdf
+
+    These values are camera_lens_link -> d405_sensor_frame. Gazebo uses
+    X forward through the front glass, Y left, Z up. The separate optical
+    joint then supplies standard ROS X right, Y down, Z forward axes.
+    Roll pi keeps the front normal unchanged while making image-up follow
+    base_footprint +Z at the arm's zero pose. Roll zero inverted the image.
+  -->
+  <xacro:property name="d405_sensor_x" value="0" />
+  <xacro:property name="d405_sensor_y" value="-0.00014307690930545467" />
+  <xacro:property name="d405_sensor_z" value="0.0037672840346891284" />
+  <xacro:property name="d405_sensor_roll" value="3.141592653589793" />
+  <xacro:property name="d405_sensor_pitch" value="1.5328357757419624" />
+  <xacro:property name="d405_sensor_yaw" value="1.5707963267948966" />
 </robot>

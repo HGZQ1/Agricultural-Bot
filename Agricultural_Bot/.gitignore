@@ -3,6 +3,9 @@
 **/install/
 **/log/
 
+# Downloaded and built third-party simulation dependencies
+.cache/rgl/
+
 # Python
 **/.venv/
 **/__pycache__/
@@ -33,4 +36,3 @@ data/weights/*
 
 # SolidWorks lock files
 ~$*
-

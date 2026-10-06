@@ -5,8 +5,63 @@
   <xacro:arg name="use_control" default="false" />
   <xacro:arg name="use_ros2_control" default="$(arg use_control)" />
   <xacro:arg name="controller_config" default="" />
+  <xacro:arg name="use_lidar" default="true" />
+  <xacro:arg name="lidar_mode" default="gpu_lidar" />
+  <xacro:arg name="mid360_frame" default="mid360_sensor_frame" />
+  <xacro:arg name="mid360_topic" default="/mid360" />
+  <xacro:arg name="mid360_rate" default="10.0" />
+  <xacro:arg name="mid360_min_range" default="0.1" />
+  <xacro:arg name="mid360_max_range" default="40.0" />
+  <xacro:arg name="mid360_h_samples" default="1875" />
+  <xacro:arg name="mid360_v_samples" default="32" />
+  <xacro:arg name="mid360_h_min" default="-3.141592653589793" />
+  <xacro:arg name="mid360_h_max" default="3.141592653589793" />
+  <xacro:arg name="mid360_v_min" default="-0.12217304763960307" />
+  <xacro:arg name="mid360_v_max" default="0.9075712110370514" />
+  <xacro:arg name="mid360_resolution" default="0.01" />
+  <xacro:arg name="mid360_noise" default="0.005" />
+  <xacro:arg name="mid360_visualize" default="true" />
+  <xacro:arg name="mid360_preset" default="Livox Mid360" />
+  <xacro:arg name="use_camera" default="true" />
+  <xacro:arg name="d405_frame" default="d405_sensor_frame" />
+  <xacro:arg name="d405_optical_frame" default="camera_optical_frame" />
+  <xacro:arg name="d405_topic" default="/d405" />
+  <xacro:arg name="d405_width" default="848" />
+  <xacro:arg name="d405_height" default="480" />
+  <xacro:arg name="d405_rate" default="30.0" />
+  <xacro:arg name="d405_hfov" default="1.5184364492350666" />
+  <xacro:arg name="d405_fx" default="446.802773119128" />
+  <xacro:arg name="d405_fy" default="432.971461265142" />
+  <xacro:arg name="d405_cx" default="424" />
+  <xacro:arg name="d405_cy" default="240" />
+  <xacro:arg name="d405_color_near" default="0.01" />
+  <xacro:arg name="d405_color_far" default="10.0" />
+  <xacro:arg name="d405_depth_near" default="0.07" />
+  <xacro:arg name="d405_depth_far" default="0.5" />
 
   <xacro:include filename="$(find agri_robot_description)/urdf/agri_robot.urdf.xacro" />
+  <xacro:include filename="$(find agri_sim_sensors)/urdf/mid360.gazebo.xacro" />
+  <xacro:include filename="$(find agri_sim_sensors)/urdf/d405.gazebo.xacro" />
+  <xacro:if value="$(arg use_lidar)">
+    <xacro:agri_mid360_simulation
+      mode="$(arg lidar_mode)" frame_id="$(arg mid360_frame)" topic="$(arg mid360_topic)"
+      rate="$(arg mid360_rate)" min_range="$(arg mid360_min_range)" max_range="$(arg mid360_max_range)"
+      h_samples="$(arg mid360_h_samples)" v_samples="$(arg mid360_v_samples)"
+      h_min="$(arg mid360_h_min)" h_max="$(arg mid360_h_max)"
+      v_min="$(arg mid360_v_min)" v_max="$(arg mid360_v_max)"
+      resolution="$(arg mid360_resolution)" noise="$(arg mid360_noise)"
+      visualize="$(arg mid360_visualize)" preset="$(arg mid360_preset)" />
+  </xacro:if>
+
+  <xacro:if value="$(arg use_camera)">
+    <xacro:agri_d405_simulation
+      frame_id="$(arg d405_frame)" optical_frame="$(arg d405_optical_frame)"
+      topic="$(arg d405_topic)" width="$(arg d405_width)" height="$(arg d405_height)"
+      rate="$(arg d405_rate)" hfov="$(arg d405_hfov)"
+      fx="$(arg d405_fx)" fy="$(arg d405_fy)" cx="$(arg d405_cx)" cy="$(arg d405_cy)"
+      color_near="$(arg d405_color_near)" color_far="$(arg d405_color_far)"
+      depth_near="$(arg d405_depth_near)" depth_far="$(arg d405_depth_far)" />
+  </xacro:if>
 
   <xacro:if value="$(arg use_control)">
     <ros2_control name="GazeboSimSystem" type="system">

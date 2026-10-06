@@ -18,3 +18,8 @@ python3 scripts/generate_tomato_field.py
 
 Use `--help` to inspect parameters. Generated worlds contain no robot; the
 robot is spawned by `agri_sim_bringup` so its pose remains configurable.
+
+完整中文步骤（依赖、构建、只打开场地、导入机器人、参数及排错）：
+[番茄田复现指南](../../../docs/tomato_field_reproduction.md)。
+第三方来源和本地修改记录见 [NOTICE](NOTICE)。
+通过 `ros2 run` 执行生成器时必须用 `--output` 指定输出位置，避免写入安装空间。

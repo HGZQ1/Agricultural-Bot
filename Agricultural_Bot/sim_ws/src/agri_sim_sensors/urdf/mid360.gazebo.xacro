@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_mid360_simulation" params="mode frame_id topic rate min_range max_range h_samples v_samples h_min h_max v_min v_max resolution noise visualize preset">
+    <!-- Preserve the massive body link so RGL's per-link self exclusion
+         removes the housing, while retaining chassis/arm/basket occlusion.
+         The massless optical frame is still reduced normally; SDF preserves
+         its pose on the sensor. Do not preserve a massless link. -->
+    <gazebo reference="mid360_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+    <gazebo reference="${frame_id}">
+      <xacro:if value="${mode == 'gpu_lidar'}">
+        <sensor name="mid360" type="gpu_lidar">
+          <pose>0 0 0 0 0 0</pose>
+          <gz_frame_id>${frame_id}</gz_frame_id>
+          <topic>${topic}</topic>
+          <update_rate>${rate}</update_rate>
+          <always_on>true</always_on>
+          <visualize>${visualize}</visualize>
+          <lidar>
+            <scan>
+              <horizontal>
+                <samples>${h_samples}</samples><resolution>1</resolution>
+                <min_angle>${h_min}</min_angle><max_angle>${h_max}</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>${v_samples}</samples><resolution>1</resolution>
+                <min_angle>${v_min}</min_angle><max_angle>${v_max}</max_angle>
+              </vertical>
+            </scan>
+            <range><min>${min_range}</min><max>${max_range}</max><resolution>${resolution}</resolution></range>
+            <noise><type>gaussian</type><mean>0</mean><stddev>${noise}</stddev></noise>
+          </lidar>
+        </sensor>
+      </xacro:if>
+      <xacro:if value="${mode == 'rgl'}">
+        <sensor name="mid360" type="custom">
+          <pose>0 0 0 0 0 0</pose>
+          <plugin filename="RGLServerPluginInstance" name="rgl::RGLServerPluginInstance">
+            <range><min>${min_range}</min><max>${max_range}</max></range>
+            <update_rate>${rate}</update_rate>
+            <update_on_paused_sim>false</update_on_paused_sim>
+            <topic>${topic}/points</topic>
+            <frame>${frame_id}</frame>
+            <!-- Named preset divides the official pattern into 40 scans.
+                 pattern_preset_path would repeat all 800,000 rays per frame. -->
+            <pattern_preset>${preset}</pattern_preset>
+          </plugin>
+        </sensor>
+      </xacro:if>
+    </gazebo>
+  </xacro:macro>
+</robot>

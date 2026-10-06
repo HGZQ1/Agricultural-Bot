@@ -1,7 +1,7 @@
 # 现有资产审计
 
-> 审计日期：2026-10-03  
-> 本文件只记录输入资产状态，不表示当前导出模型已经可用于 ROS 2 或 Gazebo。
+> 初始审计日期：2026-10-03；实现状态更新：2026-10-06。
+> 第 1–8 节保留输入资产与早期迁移审计，问题条目用于来源追溯；当前工作空间实现见第 9–11 节。
 
 ## 1. 已阅读资料
 
@@ -174,8 +174,9 @@ Xacro，并将现有网格作为对照输入。
    会锁死右后轮。
 5. 右指行程 upper=`0.8 m`（第 1165-1169、1226-1230 行）不符合网格尺寸；需要实际行程、
    mimic 关系和单一 actuator 方案。
-6. `mid360_joint` 原点为零（第 575-587 行），篮筐 joint 也为零；D405/MID-360 没有标准
-   optical frame、CameraInfo 或 Gazebo sensor 定义。
+6. 原始导出的 `mid360_joint` 与篮筐 joint 原点均为零；D405/MID-360 也没有标准
+   optical frame、CameraInfo 或 Gazebo sensor 定义。canonical Xacro 已将 MID-360 body frame
+   重定位到 CAD 质量属性参考点并新增 `mid360_sensor_frame`，真实光心外参仍待标定。
 
 ### 8.4 P2 工程问题
 
@@ -197,9 +198,12 @@ Xacro，并将现有网格作为对照输入。
 
 ## 9. 当前 ROS 2/Gazebo 转换状态
 
-已创建 canonical 副本：
+已创建 canonical 副本和组件化入口：
 
 `../ros2_ws/src/agri_robot_description/urdf/robot_pick_robot11.urdf`
+
+当前 RViz/Gazebo 默认展开 `../ros2_ws/src/agri_robot_description/urdf/agri_robot.urdf.xacro`。
+单 URDF 保留为结构回归对照。
 
 本副本已做的最小修正：
 
@@ -234,7 +238,8 @@ Xacro，并将现有网格作为对照输入。
 - Gazebo Harmonic 启动成功，`ros_gz_sim create` 返回 `Entity creation successful`。
 - 轴变换修正后，四个轮心在 SDF 中均位于同一 `z≈-0.233 m` 平面；干净启动并连续观察
   约 11 s，模型整体姿态保持接近零滚转/俯仰/偏航，没有初始侧躺。
-- canonical 模型包含 23 个 link、22 个 joint，link/joint 名称无重复；质量总和约
+- 当前 canonical 模型包含 26 个 link、25 个 joint；MID-360 阶段为 24/23，新增扫描
+  frame 前的阶段一版本为 23/22；link/joint 名称无重复。质量总和约
   `161.8588 kg`（原始导出值约 `520.7283 kg`，差异主要来自四个转向 link 的质量修正）。
 - `config/joint_names.yaml` 和 RViz 配置已随描述包安装，可作为后续控制器/MoveIt 的命名入口。
 
@@ -242,11 +247,63 @@ Xacro，并将现有网格作为对照输入。
 
 - 四舵轮安装位置仍由 robot11 当前几何反算，尚未用新版 CAD 基准或实机尺寸标定；
 - CR5 关节轴、零位、J6 是否对应原 `gripper_joint`、TCP 和限位尚未按实机校准；
-- MID-360 和篮筐等 link 的惯性 origin 仍疑似是 SolidWorks 全局坐标；四个 steer link 当前使用
-  包围盒近似惯量。正式动力学控制前必须用 CAD 局部质量属性替换近似值；
+- MID-360 已以现有 CAD 质量属性参考点重建局部 link 原点，并保持原装配外观位置不变；
+  `mid360_sensor_frame` 已使用 CAD 光学穹顶球心和 ROS 俯仰 −15° 的仿真基准，实机外参
+  仍待标定。篮筐惯性
+  origin 仍疑似是 SolidWorks 全局坐标；四个 steer link 当前使用包围盒近似惯量；
 - collision mesh 仍暂时复用 visual STL；
 - `ros2_control`、四舵轮控制器、CR5 控制器和夹爪控制器已加入并完成 Gazebo 动态加载验证；
   当前仍需做低速实车符号/限位标定；
-- D405/MID-360 仍只有几何 frame，尚未加入 Gazebo 传感器、CameraInfo 和真实 optical TF；
-- mimic 约束在当前 DART 物理引擎中会发出“不支持 mimic constraint”的警告，仿真控制阶段应改用
-  单 actuator/parallel gripper controller 或显式同步控制。
+- D405 RGB-D 及 CameraInfo 已实现，中央虚拟光心仍需实机标定，60 仿真秒接口和靶标场景验收通过；
+  MID-360 已有 GPU/RGL 双后端和公开 PointCloud2，完成情况见第 10–11 节；
+- DART 不支持夹爪 mimic 的限制通过仿真控制模式显式控制双指处理；独立描述/RViz 模式
+  保留 mimic 关系。
+
+## 10. MID-360 仿真资产与验收（2026-10-06）
+
+| 资产 | 位置 / 状态 |
+| --- | --- |
+| 光学扫描 frame | canonical `parameters.xacro`、`sensors.xacro`；现有 STL 光学穹顶拟合球心，保持原网格外观 |
+| 传感器与桥接 | `../sim_ws/src/agri_sim_sensors`；默认 GPU LiDAR，可选固定版本 RGL |
+| 官方 RGL 图样 | `.cache/rgl/source/RGLGazeboPlugin/lidar_patterns/LivoxMid360.mat3x4f`；40×20,000 条轮换射线 |
+| 第三方插件 | `.cache/rgl/install/RGLServerPlugin`；本地编译成功，动态库和 CUDA/OptiX 探针通过 |
+| 规范化适配器 | `agri_sim_sensors` Python 节点；RGL 原始云经 `/mid360/rgl_raw` 裁剪后输出公开 `/mid360/points` |
+| 显示和验收 | 包内 MID-360 RViz；`agri_sim_tests/check_mid360`；`scripts/check_mid360_scene.py` |
+| 验收世界 | `agri_sim_description/worlds/mid360_validation.sdf`；四墙和地面 |
+
+扫描 frame 相对 `base_footprint` 的 CAD 仿真基准为
+`xyz=(-0.401439121228, 0.003437758801, 0.459044570728)` m，RPY `(0,-15°,0)`。
+该值来自现有 CAD 球拟合，不是厂家光心或实机外参标定。
+
+GPU 已通过最终连续 60 仿真秒接口检查（583 帧、9.7 Hz、FOV 违规 0）和场景检查：112,479 个环境点
+全部距墙/地面小于 30 mm，P95 表面误差 8.80 mm。RGL 原始链路短时接口和场景检查
+已通过；正式 FOV 过滤后的公开链路连续 60 仿真秒也通过（601 帧、10 Hz、FOV
+违规 0），场景 36,770 个环境点全部距墙/地面小于 30 mm，P95 0.007161 mm。
+RGL 当前为理想无噪声仿真，误差不代表实机精度。原始预设约 1.32% 射线超出标称
+−7° 至 +52°，保留上游原版图样并在仿真侧过滤，不据原始链路宣称最终接口全部合规。
+
+来源、版本、安装命令、误差指标和证据文件见
+[mid360_simulation.md](mid360_simulation.md)。温室番茄资产和采摘算法仍待开发。
+
+## 11. D405 RGB-D 资产与验收（2026-10-06）
+
+| 资产 | 位置 / 状态 |
+| --- | --- |
+| CAD 支架与壳体 | canonical `camera_link` / `camera_lens_link`；沿用原 STL、安装位姿与惯量 |
+| 无质量投影 frame | `d405_sensor_frame -> camera_optical_frame`；中央虚拟光心与标准 optical 轴 |
+| 传感器配置 | `agri_sim_sensors/config/d405.yaml`、`urdf/d405.gazebo.xacro`；Harmonic 原生 RGB-D |
+| 投影与桥接 | `camera_configuration.py`；848×480/30 Hz、87°×58°、三路 SensorDataQoS |
+| 显示与验收 | `rviz/sensors.rviz`、`agri_sim_tests/check_d405`、相机验证世界与场景脚本 |
+
+现有 STL 未给出左右镜头中心。仿真以 CAD 前玻璃中心向内 3.7 mm 定义中央虚拟
+pinhole，不宣称实机左眼标定；后续可按厂家约 9 mm 左眼偏移和实测腕部外参替换。
+原名为 `camera_optical_frame` 的有质量壳体独立保存到 `camera_lens_link`，原网格
+位置不变，新的同名 optical frame 为无质量 X 右、Y 下、Z 前坐标。
+
+RGB/深度共用投影与 stamp，内参 `fx=446.802773119128`、`fy=432.971461265142`、
+主点 `(424,240)`。公开深度为光学 Z 米，0.07–0.50 m，算法工作距离 0.10–0.50 m；
+彩色裁剪允许 10 m，不扩展深度范围。原生 `/d405/points` 因坐标/header 语义冲突不桥接。
+
+相机配置新增 48 项测试，验收器新增 43 项测试通过（验收包共 71 项）；Xacro、
+standalone、SDF 与 MID-360 几何回归通过。60 仿真秒接口和三组靶标场景通过，完整温室、
+导航及采摘闭环仍待开发。来源和验收方法见 [d405_simulation.md](d405_simulation.md)。

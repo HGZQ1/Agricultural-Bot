@@ -1,0 +1,13 @@
+MID-360 dual-backend architecture and baseline GPU scan parameters informed by:
+https://github.com/Neomelt/rm_sim_26
+Reference commit: fe5979a82684c261ee8a28785cbb410903d136b1
+Its package.xml declares Apache-2.0; no robot meshes or source files were copied.
+
+Optional external RGLGazeboPlugin dependency:
+https://github.com/RobotecAI/RGLGazeboPlugin
+Commit: d4bf3cf36fe4a363a56df1bec2ce3809720db563
+License: Apache-2.0 (the installer retains the upstream LICENSE).
+RobotecGPULidar core: v0.21.0; upstream LivoxMid360.mat3x4f preset.
+
+Sensor composition, configuration validation, launch integration and ROS
+interface adaptation in this package were written for Agricultural_Bot.

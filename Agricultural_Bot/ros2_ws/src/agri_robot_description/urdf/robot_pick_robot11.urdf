@@ -551,7 +551,7 @@
     name="mid360_link">
     <inertial>
       <origin
-        xyz="0.00340747940546549 0.442350202628433 -0.396759378178018"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
         value="0.141886777754482" />
@@ -565,7 +565,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.00340747940546549 -0.442350202628433 0.396759378178018"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -579,7 +579,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.00340747940546549 -0.442350202628433 0.396759378178018"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -591,12 +591,24 @@
     name="mid360_joint"
     type="fixed">
     <origin
-      xyz="0 0 0"
+      xyz="0.00340747940546549 0.442350202628433 -0.396759378178018"
       rpy="0 0 0" />
     <parent
       link="base_link" />
     <child
       link="mid360_link" />
+  </joint>
+  <link name="mid360_sensor_frame" />
+  <joint
+    name="mid360_sensor_frame_joint"
+    type="fixed">
+    <origin
+      xyz="3.02793952e-05 0.0166943681 -0.00467974305"
+      rpy="3.141592653589793 -1.3089969389957472 1.5707963267948966" />
+    <parent
+      link="mid360_link" />
+    <child
+      link="mid360_sensor_frame" />
   </joint>
   <link
     name="tomato_box_link">
@@ -1073,7 +1085,7 @@
       link="camera_link" />
   </joint>
   <link
-    name="camera_optical_frame">
+    name="camera_lens_link">
     <inertial>
       <origin
         xyz="-8.27600293560327E-05 -0.000518418102922302 0.0113997621610378"
@@ -1121,7 +1133,19 @@
     <parent
       link="camera_link" />
     <child
-      link="camera_optical_frame" />
+      link="camera_lens_link" />
+  </joint>
+  <link name="d405_sensor_frame" />
+  <joint name="d405_sensor_frame_joint" type="fixed">
+    <origin xyz="0 -0.00014307690930545467 0.0037672840346891284" rpy="3.141592653589793 1.5328357757419624 1.5707963267948966" />
+    <parent link="camera_lens_link" />
+    <child link="d405_sensor_frame" />
+  </joint>
+  <link name="camera_optical_frame" />
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966" />
+    <parent link="d405_sensor_frame" />
+    <child link="camera_optical_frame" />
   </joint>
   <link
     name="gripper_left_finger_link">

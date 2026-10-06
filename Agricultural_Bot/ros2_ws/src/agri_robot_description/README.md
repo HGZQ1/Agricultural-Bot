@@ -69,6 +69,8 @@ axes, limits, inertials, mesh references, materials, dynamics and mimic data.
 Known follow-up work:
 
 - Rebuild local link origins and inertias from the SolidWorks coordinate systems.
+- MID-360 link origin is now re-based to the current CAD mass-property reference;
+  `mid360_sensor_frame` remains the calibration point for the measured optical center.
 - Confirm the CR5 sixth-joint interpretation, flange, TCP, and joint limits.
 - Replace full-resolution collision meshes with simplified meshes.
 - Add the final ROS 2 control and Gazebo sensor overlay in `sim_ws`.

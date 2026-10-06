@@ -13,6 +13,6 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(FILES LICENSE README.md DESTINATION share/${PROJECT_NAME})
+install(FILES LICENSE NOTICE README.md DESTINATION share/${PROJECT_NAME})
 
 ament_package()

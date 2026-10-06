@@ -30,7 +30,8 @@ gripper_joints:
 frames:
   base: base_link
   footprint: base_footprint
-  lidar: mid360_link
+  lidar_body: mid360_link
+  lidar: mid360_sensor_frame
   flange: tool0
   camera: camera_link
   camera_optical: camera_optical_frame
