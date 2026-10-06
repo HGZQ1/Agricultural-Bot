@@ -3,12 +3,15 @@
   <xacro:macro name="agri_sensors">
     <link name="mid360_link">
         <inertial>
-          <origin xyz="0.00340747940546549 0.442350202628433 -0.396759378178018" rpy="0 0 0"/>
+          <!-- The re-based link origin is the current CAD mass-property
+               reference, so the inertial offset is intentionally zero. -->
+          <origin xyz="0 0 0" rpy="0 0 0"/>
           <mass value="0.141886777754482"/>
           <inertia ixx="4.507764653165E-05" ixy="5.8921312498008E-08" ixz="8.24694405577648E-09" iyy="6.68381603942182E-05" iyz="-7.01486100567329E-06" izz="4.37585906933259E-05"/>
         </inertial>
         <visual>
-          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <!-- Keep the assembly geometry fixed while moving the link frame. -->
+          <origin xyz="${mid360_mesh_x} ${mid360_mesh_y} ${mid360_mesh_z}" rpy="0 0 0"/>
           <geometry>
             <mesh filename="package://${mesh_package}/meshes/visual/mid360_link.STL"/>
           </geometry>
@@ -17,17 +20,31 @@
           </material>
         </visual>
         <collision>
-          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <origin xyz="${mid360_mesh_x} ${mid360_mesh_y} ${mid360_mesh_z}" rpy="0 0 0"/>
           <geometry>
             <mesh filename="package://${mesh_package}/meshes/visual/mid360_link.STL"/>
           </geometry>
         </collision>
       </link>
     <joint name="mid360_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <!-- Values are expressed in base_link's CAD-aligned coordinates;
+             do not pre-apply the base_footprint CAD-to-ROS rotation. -->
+        <origin xyz="${mid360_mount_x} ${mid360_mount_y} ${mid360_mount_z}" rpy="0 0 0"/>
         <parent link="base_link"/>
         <child link="mid360_link"/>
       </joint>
+
+    <!-- Explicit sensor frame.  It is coincident with the body frame until
+         the measured optical-center offset and mount tilt are available. -->
+    <link name="mid360_sensor_frame"/>
+    <joint name="mid360_sensor_frame_joint" type="fixed">
+        <origin
+          xyz="${mid360_sensor_x} ${mid360_sensor_y} ${mid360_sensor_z}"
+          rpy="${mid360_sensor_roll} ${mid360_sensor_pitch} ${mid360_sensor_yaw}" />
+        <parent link="mid360_link"/>
+        <child link="mid360_sensor_frame"/>
+    </joint>
+
     <link name="camera_link">
         <inertial>
           <origin xyz="-0.000803740525782942 -0.022345292003549 0.00189627564202399" rpy="0 0 0"/>

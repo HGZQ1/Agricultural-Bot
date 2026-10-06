@@ -551,7 +551,7 @@
     name="mid360_link">
     <inertial>
       <origin
-        xyz="0.00340747940546549 0.442350202628433 -0.396759378178018"
+        xyz="0 0 0"
         rpy="0 0 0" />
       <mass
         value="0.141886777754482" />
@@ -565,7 +565,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.00340747940546549 -0.442350202628433 0.396759378178018"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -579,7 +579,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.00340747940546549 -0.442350202628433 0.396759378178018"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -591,12 +591,24 @@
     name="mid360_joint"
     type="fixed">
     <origin
-      xyz="0 0 0"
+      xyz="0.00340747940546549 0.442350202628433 -0.396759378178018"
       rpy="0 0 0" />
     <parent
       link="base_link" />
     <child
       link="mid360_link" />
+  </joint>
+  <link name="mid360_sensor_frame" />
+  <joint
+    name="mid360_sensor_frame_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="mid360_link" />
+    <child
+      link="mid360_sensor_frame" />
   </joint>
   <link
     name="tomato_box_link">

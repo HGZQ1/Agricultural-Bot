@@ -7,4 +7,30 @@
   <xacro:property name="steer_link_mass" value="15.0" />
   <xacro:property name="steer_limit" value="3.1416" />
   <xacro:property name="wheel_velocity_limit" value="2.0" />
+
+  <!--
+    The MID-360 mesh was exported in the assembly (CAD) coordinate system,
+    while its URDF link was previously left at the base_link origin.  Keep
+    this reference in the parent link's CAD-aligned coordinates.  The mesh
+    origins are negated in sensors.xacro so the rendered geometry does not
+    move when the link frame is re-based here.
+
+    This is the current best reference from the SolidWorks mass properties.
+    Replace it with the measured optical-center offset when the final mount
+    datum is available.
+  -->
+  <xacro:property name="mid360_mount_x" value="0.00340747940546549" />
+  <xacro:property name="mid360_mount_y" value="0.442350202628433" />
+  <xacro:property name="mid360_mount_z" value="-0.396759378178018" />
+  <xacro:property name="mid360_mesh_x" value="-0.00340747940546549" />
+  <xacro:property name="mid360_mesh_y" value="-0.442350202628433" />
+  <xacro:property name="mid360_mesh_z" value="0.396759378178018" />
+
+  <!-- Offset of the optical frame from the re-based MID-360 body frame. -->
+  <xacro:property name="mid360_sensor_x" value="0" />
+  <xacro:property name="mid360_sensor_y" value="0" />
+  <xacro:property name="mid360_sensor_z" value="0" />
+  <xacro:property name="mid360_sensor_roll" value="0" />
+  <xacro:property name="mid360_sensor_pitch" value="0" />
+  <xacro:property name="mid360_sensor_yaw" value="0" />
 </robot>

@@ -174,8 +174,9 @@ Xacro，并将现有网格作为对照输入。
    会锁死右后轮。
 5. 右指行程 upper=`0.8 m`（第 1165-1169、1226-1230 行）不符合网格尺寸；需要实际行程、
    mimic 关系和单一 actuator 方案。
-6. `mid360_joint` 原点为零（第 575-587 行），篮筐 joint 也为零；D405/MID-360 没有标准
-   optical frame、CameraInfo 或 Gazebo sensor 定义。
+6. 原始导出的 `mid360_joint` 与篮筐 joint 原点均为零；D405/MID-360 也没有标准
+   optical frame、CameraInfo 或 Gazebo sensor 定义。canonical Xacro 已将 MID-360 body frame
+   重定位到 CAD 质量属性参考点并新增 `mid360_sensor_frame`，真实光心外参仍待标定。
 
 ### 8.4 P2 工程问题
 
@@ -242,11 +243,13 @@ Xacro，并将现有网格作为对照输入。
 
 - 四舵轮安装位置仍由 robot11 当前几何反算，尚未用新版 CAD 基准或实机尺寸标定；
 - CR5 关节轴、零位、J6 是否对应原 `gripper_joint`、TCP 和限位尚未按实机校准；
-- MID-360 和篮筐等 link 的惯性 origin 仍疑似是 SolidWorks 全局坐标；四个 steer link 当前使用
-  包围盒近似惯量。正式动力学控制前必须用 CAD 局部质量属性替换近似值；
+- MID-360 已以现有 CAD 质量属性参考点重建局部 link 原点，并保持原装配外观位置不变；
+  `mid360_sensor_frame` 的真实光心偏移和 15° 安装倾角仍待新版 CAD/实机标定。篮筐惯性
+  origin 仍疑似是 SolidWorks 全局坐标；四个 steer link 当前使用包围盒近似惯量；
 - collision mesh 仍暂时复用 visual STL；
 - `ros2_control`、四舵轮控制器、CR5 控制器和夹爪控制器已加入并完成 Gazebo 动态加载验证；
   当前仍需做低速实车符号/限位标定；
-- D405/MID-360 仍只有几何 frame，尚未加入 Gazebo 传感器、CameraInfo 和真实 optical TF；
+- D405/MID-360 尚未加入 Gazebo 传感器和 CameraInfo；MID-360 已有独立传感器 frame，
+  但其真实光心外参仍是待标定参数；
 - mimic 约束在当前 DART 物理引擎中会发出“不支持 mimic constraint”的警告，仿真控制阶段应改用
   单 actuator/parallel gripper controller 或显式同步控制。
