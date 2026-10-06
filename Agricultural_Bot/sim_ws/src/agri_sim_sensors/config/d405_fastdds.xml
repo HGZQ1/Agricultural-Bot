@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Large sensor buffers for selected bridge processes. Keep UDP discovery. -->
+<dds xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+  <profiles>
+    <transport_descriptors>
+      <transport_descriptor>
+        <transport_id>d405_shm</transport_id>
+        <type>SHM</type>
+        <segment_size>67108864</segment_size>
+        <maxMessageSize>4194304</maxMessageSize>
+        <port_queue_capacity>1024</port_queue_capacity>
+      </transport_descriptor>
+      <transport_descriptor>
+        <transport_id>d405_udp</transport_id>
+        <type>UDPv4</type>
+        <sendBufferSize>4194304</sendBufferSize>
+        <receiveBufferSize>4194304</receiveBufferSize>
+      </transport_descriptor>
+    </transport_descriptors>
+    <participant profile_name="agri_sensor_publisher" is_default_profile="true">
+      <rtps>
+        <userTransports>
+          <transport_id>d405_shm</transport_id>
+          <transport_id>d405_udp</transport_id>
+        </userTransports>
+        <useBuiltinTransports>false</useBuiltinTransports>
+      </rtps>
+    </participant>
+  </profiles>
+</dds>

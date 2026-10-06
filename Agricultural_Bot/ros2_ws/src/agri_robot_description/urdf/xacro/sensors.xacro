@@ -34,8 +34,9 @@
         <child link="mid360_link"/>
       </joint>
 
-    <!-- Explicit sensor frame.  It is coincident with the body frame until
-         the measured optical-center offset and mount tilt are available. -->
+    <!-- Gazebo rays and point-cloud headers use this scanning frame, whose
+         origin is the CAD optical-dome center and whose axes include the
+         existing mount tilt. Keep the assembly mesh on mid360_link unchanged. -->
     <link name="mid360_sensor_frame"/>
     <joint name="mid360_sensor_frame_joint" type="fixed">
         <origin
@@ -72,7 +73,8 @@
         <parent link="gripper_base_link"/>
         <child link="camera_link"/>
       </joint>
-    <link name="camera_optical_frame">
+    <!-- The CAD camera body is a physical link, not a ROS optical frame. -->
+    <link name="camera_lens_link">
         <inertial>
           <origin xyz="-8.27600293560327E-05 -0.000518418102922302 0.0113997621610378" rpy="0 0 0"/>
           <mass value="0.0387408552979231"/>
@@ -97,6 +99,23 @@
     <joint name="camera_option_joint" type="fixed">
         <origin xyz="-0.017221 -0.0195 0.037803" rpy="-1.5898 0 -1.5708"/>
         <parent link="camera_link"/>
+        <child link="camera_lens_link"/>
+      </joint>
+
+    <link name="d405_sensor_frame"/>
+    <joint name="d405_sensor_frame_joint" type="fixed">
+        <origin
+          xyz="${d405_sensor_x} ${d405_sensor_y} ${d405_sensor_z}"
+          rpy="${d405_sensor_roll} ${d405_sensor_pitch} ${d405_sensor_yaw}" />
+        <parent link="camera_lens_link"/>
+        <child link="d405_sensor_frame"/>
+      </joint>
+    <!-- Aligned color, depth, and CameraInfo all use this massless standard
+         ROS optical frame: X right, Y down, Z forward. -->
+    <link name="camera_optical_frame"/>
+    <joint name="camera_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+        <parent link="d405_sensor_frame"/>
         <child link="camera_optical_frame"/>
       </joint>
 

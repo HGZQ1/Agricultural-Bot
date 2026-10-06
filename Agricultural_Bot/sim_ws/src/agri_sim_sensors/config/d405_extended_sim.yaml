@@ -1,0 +1,20 @@
+# Extended, ideal RGB-D simulation for YOLO and 3D localization development.
+# This 2 m clipping range is not a claim about physical D405 depth performance.
+# The nominal D405 field of view, resolution, frames and topics are retained.
+d405:
+  sensor_frame: d405_sensor_frame
+  optical_frame: camera_optical_frame
+  gz_topic: /d405
+  color_topic: /d405/color/image_raw
+  depth_topic: /d405/aligned_depth_to_color/image_raw
+  info_topic: /d405/color/camera_info
+  width: 848
+  height: 480
+  update_rate: 30.0
+  hfov_deg: 87.0
+  vfov_deg: 58.0
+  color_near: 0.01
+  color_far: 10.0
+  depth_near: 0.07
+  depth_far: 2.0
+  pixel_center_offset: 0.5

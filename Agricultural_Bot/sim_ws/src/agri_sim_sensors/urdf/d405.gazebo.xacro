@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_d405_simulation" params="frame_id optical_frame topic width height rate hfov fx fy cx cy color_near color_far depth_near depth_far">
+    <!-- Gazebo renders along the sensor's +X. The canonical optical TF has
+         +Z forward, +X right and +Y down; optical_frame_id labels all output.
+         Fixed-joint reduction retains the sensor pose, so leave the massless
+         d405_sensor_frame joint available for normal reduction. -->
+    <gazebo reference="${frame_id}">
+      <sensor name="d405_rgbd" type="rgbd_camera">
+        <pose>0 0 0 0 0 0</pose>
+        <gz_frame_id>${frame_id}</gz_frame_id>
+        <topic>${topic}</topic>
+        <update_rate>${rate}</update_rate>
+        <always_on>true</always_on>
+        <camera>
+          <optical_frame_id>${optical_frame}</optical_frame_id>
+          <horizontal_fov>${hfov}</horizontal_fov>
+          <image>
+            <width>${width}</width><height>${height}</height><format>R8G8B8</format>
+          </image>
+          <clip><near>${color_near}</near><far>${color_far}</far></clip>
+          <depth_camera>
+            <output>depths</output>
+            <clip><near>${depth_near}</near><far>${depth_far}</far></clip>
+          </depth_camera>
+          <!-- gz-sensors applies these values to the actual rendering
+               projection and derives the matching CameraInfo K/P. -->
+          <lens>
+            <intrinsics>
+              <fx>${fx}</fx><fy>${fy}</fy><cx>${cx}</cx><cy>${cy}</cy><s>0</s>
+            </intrinsics>
+            <!-- Ogre2DepthCamera's BaseCamera projection getter derives a
+                 square-pixel matrix from HFOV instead of returning the saved
+                 custom matrix. Explicit P avoids that CameraInfo fallback. -->
+            <projection>
+              <p_fx>${fx}</p_fx><p_fy>${fy}</p_fy>
+              <p_cx>${cx}</p_cx><p_cy>${cy}</p_cy><tx>0</tx><ty>0</ty>
+            </projection>
+          </lens>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>

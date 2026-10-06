@@ -1,0 +1,8 @@
+- ros_topic_name: /mid360/points
+  gz_topic_name: /mid360/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: gz.msgs.PointCloudPacked
+  direction: GZ_TO_ROS
+  qos_profile: SENSOR_DATA
+  frame_id: mid360_sensor_frame
+  lazy: false

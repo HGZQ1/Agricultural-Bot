@@ -11,10 +11,20 @@ def generate_launch_description():
     simulation = sim_share / "launch" / "simulation.launch.py"
     return LaunchDescription(
         [
+            DeclareLaunchArgument("world", default_value="empty_greenhouse.sdf"),
             DeclareLaunchArgument("gui", default_value="true"),
+            DeclareLaunchArgument("rviz", default_value="false"),
+            DeclareLaunchArgument("headless_rendering", default_value="true"),
             DeclareLaunchArgument("paused", default_value="false"),
             DeclareLaunchArgument("spawn_z", default_value="0.40"),
             DeclareLaunchArgument("use_control", default_value="true"),
+            DeclareLaunchArgument("use_lidar", default_value="true"),
+            DeclareLaunchArgument("use_camera", default_value="true"),
+            DeclareLaunchArgument("camera_config", default_value=""),
+            DeclareLaunchArgument("lidar_mode", default_value="gpu_lidar"),
+            DeclareLaunchArgument("lidar_config", default_value=""),
+            DeclareLaunchArgument("rgl_install_prefix", default_value=""),
+            DeclareLaunchArgument("rgl_patterns_dir", default_value=""),
             DeclareLaunchArgument(
                 "use_kinematics",
                 default_value=LaunchConfiguration("use_control"),
@@ -22,10 +32,20 @@ def generate_launch_description():
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(str(simulation)),
                 launch_arguments={
+                    "world": LaunchConfiguration("world"),
                     "gui": LaunchConfiguration("gui"),
+                    "rviz": LaunchConfiguration("rviz"),
+                    "headless_rendering": LaunchConfiguration("headless_rendering"),
                     "paused": LaunchConfiguration("paused"),
                     "spawn_z": LaunchConfiguration("spawn_z"),
                     "use_control": LaunchConfiguration("use_control"),
+                    "use_lidar": LaunchConfiguration("use_lidar"),
+                    "use_camera": LaunchConfiguration("use_camera"),
+                    "camera_config": LaunchConfiguration("camera_config"),
+                    "lidar_mode": LaunchConfiguration("lidar_mode"),
+                    "lidar_config": LaunchConfiguration("lidar_config"),
+                    "rgl_install_prefix": LaunchConfiguration("rgl_install_prefix"),
+                    "rgl_patterns_dir": LaunchConfiguration("rgl_patterns_dir"),
                     "use_kinematics": LaunchConfiguration("use_kinematics"),
                 }.items(),
             )

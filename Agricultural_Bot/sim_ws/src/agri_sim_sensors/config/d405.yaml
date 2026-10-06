@@ -1,0 +1,20 @@
+# Ideal, aligned RGB-D model based on the D405 nominal field of view.
+# The 7–50 cm interval is its specified ideal working range.
+d405:
+  sensor_frame: d405_sensor_frame
+  optical_frame: camera_optical_frame
+  gz_topic: /d405
+  color_topic: /d405/color/image_raw
+  depth_topic: /d405/aligned_depth_to_color/image_raw
+  info_topic: /d405/color/camera_info
+  width: 848
+  height: 480
+  update_rate: 30.0
+  hfov_deg: 87.0
+  vfov_deg: 58.0
+  color_near: 0.01
+  color_far: 10.0
+  depth_near: 0.07
+  depth_far: 0.5
+  # Ogre2 raster samples are half a pixel from the image-edge coordinates.
+  pixel_center_offset: 0.5
