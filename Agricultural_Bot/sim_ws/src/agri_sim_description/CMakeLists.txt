@@ -4,7 +4,7 @@ project(agri_sim_description)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY config launch urdf worlds
+  DIRECTORY launch urdf worlds
   DESTINATION share/${PROJECT_NAME}
 )
 

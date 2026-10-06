@@ -12,20 +12,26 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
+from launch.substitutions import EnvironmentVariable
 import xacro
 
 
-def _make_gazebo(context, world, *args, **kwargs):
+def _make_gazebo(context, *args, **kwargs):
     gui = LaunchConfiguration("gui").perform(context).lower()
     paused = LaunchConfiguration("paused").perform(context).lower()
+    world = LaunchConfiguration("world").perform(context)
     run_flag = "" if paused in {"1", "true", "yes", "on"} else " -r"
-    server_only = " -s" if gui in {"0", "false", "no", "off"} else ""
+    headless = gui in {"0", "false", "no", "off"}
+    server_only = " -s" if headless else ""
+    headless_rendering = " --headless-rendering" if headless else ""
     gz_share = Path(get_package_share_directory("ros_gz_sim"))
     gz_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(str(gz_share / "launch" / "gz_sim.launch.py")),
         # ros_gz_sim uses a shell command internally; quote paths because this
         # workspace may live under a directory containing spaces.
-        launch_arguments={"gz_args": f'{run_flag}{server_only} "{world}"'}.items(),
+        launch_arguments={
+            "gz_args": f'{run_flag}{server_only}{headless_rendering} "{world}"'
+        }.items(),
     )
     return [gz_launch]
 
@@ -62,12 +68,20 @@ def _make_robot(context, model_xacro, controller_config, *args, **kwargs):
         name="spawn_agri_robot",
         output="screen",
         arguments=[
+            "-world",
+            LaunchConfiguration("world_name"),
             "-topic",
             "robot_description",
             "-name",
             "agri_robot",
+            "-x",
+            LaunchConfiguration("spawn_x"),
+            "-y",
+            LaunchConfiguration("spawn_y"),
             "-z",
             LaunchConfiguration("spawn_z"),
+            "-Y",
+            LaunchConfiguration("spawn_yaw"),
         ],
     )
     return [robot_state_publisher, spawn]
@@ -77,7 +91,7 @@ def generate_launch_description():
     sim_share = Path(get_package_share_directory("agri_sim_description"))
     description_share = Path(get_package_share_directory("agri_robot_description"))
     control_share = Path(get_package_share_directory("agri_sim_control"))
-    world = sim_share / "worlds" / "empty_greenhouse.sdf"
+    default_world = sim_share / "worlds" / "empty_greenhouse.sdf"
     model_xacro = sim_share / "urdf" / "agri_robot.gazebo.urdf.xacro"
     controller_config = control_share / "config" / "controllers.yaml"
     resource_root = description_share.parent
@@ -85,7 +99,21 @@ def generate_launch_description():
 
     resource_path = SetEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
-        value=str(resource_root),
+        value=[
+            LaunchConfiguration("resource_path"),
+            ":",
+            str(resource_root),
+            ":",
+            EnvironmentVariable("GZ_SIM_RESOURCE_PATH", default_value=""),
+        ],
+    )
+
+    # Gazebo Transport discovers worlds through a partition.  Keeping this
+    # launch in its own partition prevents an older Gazebo server (for example
+    # the upstream camera demo) from answering this launch's spawn request.
+    transport_partition = SetEnvironmentVariable(
+        name="GZ_PARTITION",
+        value=LaunchConfiguration("gz_partition"),
     )
 
     control_launch = IncludeLaunchDescription(
@@ -127,9 +155,47 @@ def generate_launch_description():
                 description="Start Gazebo with a GUI; set false for headless tests.",
             ),
             DeclareLaunchArgument(
+                "world",
+                default_value=str(default_world),
+                description="Absolute path to the SDF world file.",
+            ),
+            DeclareLaunchArgument(
+                "world_name",
+                default_value="empty_greenhouse",
+                description="Name of the <world> element used by the spawn service.",
+            ),
+            DeclareLaunchArgument(
+                "resource_path",
+                default_value="",
+                description="Additional Gazebo model-resource directory.",
+            ),
+            DeclareLaunchArgument(
+                "gz_partition",
+                default_value="agri_sim",
+                description=(
+                    "Gazebo Transport partition used to isolate this simulation "
+                    "from other Gazebo sessions."
+                ),
+            ),
+            DeclareLaunchArgument(
+                "spawn_x",
+                default_value="0.0",
+                description="Initial robot X position in the world (m).",
+            ),
+            DeclareLaunchArgument(
+                "spawn_y",
+                default_value="0.0",
+                description="Initial robot Y position in the world (m).",
+            ),
+            DeclareLaunchArgument(
                 "spawn_z",
                 default_value="0.40",
                 description="Initial model height above the Gazebo ground plane (m).",
+            ),
+            DeclareLaunchArgument(
+                "spawn_yaw",
+                default_value="0.0",
+                description="Initial robot yaw about world Z (rad).",
             ),
             DeclareLaunchArgument(
                 "paused",
@@ -152,7 +218,8 @@ def generate_launch_description():
                 ),
             ),
             resource_path,
-            OpaqueFunction(function=lambda context: _make_gazebo(context, world)),
+            transport_partition,
+            OpaqueFunction(function=_make_gazebo),
             clock_bridge,
             OpaqueFunction(
                 function=lambda context: _make_robot(
