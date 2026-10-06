@@ -19,7 +19,7 @@ material leaf1
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15lef1.png
@@ -35,7 +35,7 @@ material leaf2
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15lef2.png
@@ -51,7 +51,7 @@ material fruit1
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15frt1.png
@@ -67,7 +67,7 @@ material fruit2
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15frt2.png
@@ -83,7 +83,7 @@ material fruit3
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15frt3.png
@@ -99,7 +99,7 @@ material fruit4
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15frt4.png
@@ -115,7 +115,7 @@ material blossom1
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15blo1.png
@@ -131,7 +131,7 @@ material blossom2
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15blo2.png
@@ -147,7 +147,7 @@ material blossom3
     pass
     {
       alpha_rejection greater 128
-      
+
       texture_unit
       {
         texture AG15blo3.png
@@ -155,6 +155,3 @@ material blossom3
     }
   }
 }
-
-
-

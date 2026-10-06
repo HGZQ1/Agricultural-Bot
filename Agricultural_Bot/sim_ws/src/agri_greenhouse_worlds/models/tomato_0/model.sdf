@@ -47,7 +47,7 @@
             <uri>model://tomato_0/materials/scripts/</uri>
             <uri>model://tomato_0/materials/textures/</uri>
             <name>leaf1</name>
-          </script>          
+          </script>
           <pbr>
             <metal>
               <albedo_map>model://tomato_0/materials/textures/AG15lef1.png</albedo_map>
