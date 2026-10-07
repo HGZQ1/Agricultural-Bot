@@ -1,0 +1,18 @@
+Tomato plant assets adapted from LCAS/aoc_tomato_farm:
+https://github.com/LCAS/aoc_tomato_farm
+
+Asset revision: d8243e48c92377fbd9754400e0ddb1fcffded9d7
+Source directory:
+tomato_farm_generator/generated_examples_/farm_22mx14m/models/22mx14m/tomato_0/
+
+Apache-2.0 LICENSE retained from upstream revision
+0f4bc757348923dff618ca3b3eac7ce9aa1b4d35 (License added).
+The asset revision and license revision are deliberately recorded separately.
+
+Agricultural-Bot adaptation (2026-10-06/07):
+- Bundle one plant with its meshes, textures, material and metadata.
+- Use a local model://tomato_0 resource path rather than the upstream layout directory.
+- Generate a deterministic 150-instance world with a solid ground collider.
+- Package resources with ament_cmake and provide ROS 2 launch integration.
+
+Plant fruit is part of the static visual mesh, not a detachable harvest object.

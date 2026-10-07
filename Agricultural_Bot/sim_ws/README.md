@@ -23,7 +23,9 @@ source ../ros2_ws/install/setup.bash
 已包含机器人 spawn、资源路径、四舵轮/CR5/双指夹爪控制接口与控制器。
 `agri_sim_sensors` 已提供 MID-360 的 GPU LiDAR/RGL 双后端、D405 原生对齐 RGB-D、
 桥接、RGL 数据规范化节点和 RViz；`agri_sim_tests` 提供两类传感器可执行验收。
-`agri_greenhouse_worlds` 和 `agri_sim_assets` 保留目录骨架，完整温室和番茄资产仍待加入。
+`agri_greenhouse_worlds` 已提供 22×14 m、10 行×15 株的参数化番茄田。
+首次依赖准备、构建、只打开场地、导入机器人和排错见
+[番茄田复现指南](../docs/tomato_field_reproduction.md)。完整温室结构和可采摘果实仍待开发。
 
 当前模型入口已经包含 SolidWorks Y-up 到 ROS Z-up 的根坐标变换，默认 `spawn_z=0.40`
 使轮底接近地面；可以用 `spawn_z:=0.45` 等参数做高度微调。若模型仍出现姿态问题，先
@@ -34,7 +36,7 @@ source ../ros2_ws/install/setup.bash
 在工作空间根目录执行：
 
 ```bash
-cd "/home/hgzq/Agricultural Bot/Agricultural_Bot/sim_ws"
+cd Agricultural_Bot/sim_ws  # 从 Git 仓库根目录执行
 source /opt/ros/jazzy/setup.bash
 source ../ros2_ws/install/setup.bash
 colcon build --symlink-install
@@ -61,7 +63,16 @@ ros2 launch agri_sim_bringup simulation.launch.py use_control:=true
 ros2 launch agri_sim_bringup simulation.launch.py paused:=true
 ```
 
-默认入口启用控制器、四舵轮运动学、MID-360 GPU LiDAR 和 D405 RGB-D。
+加载参数化番茄田并在行首安全区域生成机器人：
+
+```bash
+ros2 launch agri_sim_bringup tomato_field.launch.py
+```
+
+该入口默认暂停，关闭控制器、雷达和相机，并将机器人放在
+`x=0, y=-6, z=0.40, yaw=1.5708`。确认姿态与接地正常后，再分别启用物理和控制器。
+
+通用 `simulation.launch.py` 入口仍默认启用控制器、四舵轮运动学、MID-360 GPU LiDAR 和 D405 RGB-D。
 `use_control:=false` 同时默认关闭运动学节点；`use_lidar:=false` 关闭雷达及点云桥接。
 `use_camera:=false` 关闭相机和三路 RGB-D 桥接；`camera_config` 指定相机 YAML。
 
