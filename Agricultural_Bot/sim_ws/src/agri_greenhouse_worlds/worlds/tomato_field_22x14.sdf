@@ -1,0 +1,794 @@
+<?xml version="1.0"?>
+<sdf version="1.10">
+  <world name="field">
+    <gravity>0 0 -9.81</gravity>
+    <physics name="default_physics" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    <model name="ground_plane">
+      <static>true</static>
+      <pose>0 0 -0.025 0 0 0</pose>
+      <link name="ground_link">
+        <collision name="collision">
+          <geometry><box>
+            <size>22 14 0.05</size>
+          </box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box>
+            <size>22 14 0.05</size>
+          </box></geometry>
+          <material>
+            <ambient>0.45 0.29 0.07 1</ambient>
+            <diffuse>0.45 0.29 0.07 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_0</name>
+      <pose>-9.000000 -5.000000 0 0 0 0.033462</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_1</name>
+      <pose>-9.000000 -4.300000 0 0 0 -0.113997</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_2</name>
+      <pose>-9.000000 -3.600000 0 0 0 -0.053993</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_3</name>
+      <pose>-9.000000 -2.900000 0 0 0 -0.066429</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_4</name>
+      <pose>-9.000000 -2.200000 0 0 0 0.056753</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_5</name>
+      <pose>-9.000000 -1.500000 0 0 0 0.042408</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_6</name>
+      <pose>-9.000000 -0.800000 0 0 0 0.094123</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_7</name>
+      <pose>-9.000000 -0.100000 0 0 0 -0.099135</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_8</name>
+      <pose>-9.000000 0.600000 0 0 0 -0.018739</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_9</name>
+      <pose>-9.000000 1.300000 0 0 0 -0.112849</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_10</name>
+      <pose>-9.000000 2.000000 0 0 0 -0.067527</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_11</name>
+      <pose>-9.000000 2.700000 0 0 0 0.001285</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_12</name>
+      <pose>-9.000000 3.400000 0 0 0 -0.113631</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_13</name>
+      <pose>-9.000000 4.100000 0 0 0 -0.072279</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_14</name>
+      <pose>-9.000000 4.800000 0 0 0 0.035972</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_15</name>
+      <pose>-7.000000 -5.000000 0 0 0 0.010786</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_16</name>
+      <pose>-7.000000 -4.300000 0 0 0 -0.067094</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_17</name>
+      <pose>-7.000000 -3.600000 0 0 0 0.021424</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_18</name>
+      <pose>-7.000000 -2.900000 0 0 0 0.074263</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_19</name>
+      <pose>-7.000000 -2.200000 0 0 0 -0.118440</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_20</name>
+      <pose>-7.000000 -1.500000 0 0 0 0.073397</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_21</name>
+      <pose>-7.000000 -0.800000 0 0 0 0.047553</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_22</name>
+      <pose>-7.000000 -0.100000 0 0 0 -0.038340</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_23</name>
+      <pose>-7.000000 0.600000 0 0 0 -0.082685</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_24</name>
+      <pose>-7.000000 1.300000 0 0 0 0.109731</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_25</name>
+      <pose>-7.000000 2.000000 0 0 0 -0.039217</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_26</name>
+      <pose>-7.000000 2.700000 0 0 0 -0.097741</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_27</name>
+      <pose>-7.000000 3.400000 0 0 0 -0.096788</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_28</name>
+      <pose>-7.000000 4.100000 0 0 0 0.083399</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_29</name>
+      <pose>-7.000000 4.800000 0 0 0 0.024894</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_30</name>
+      <pose>-5.000000 -5.000000 0 0 0 0.073711</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_31</name>
+      <pose>-5.000000 -4.300000 0 0 0 0.055136</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_32</name>
+      <pose>-5.000000 -3.600000 0 0 0 0.008695</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_33</name>
+      <pose>-5.000000 -2.900000 0 0 0 0.113548</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_34</name>
+      <pose>-5.000000 -2.200000 0 0 0 -0.029152</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_35</name>
+      <pose>-5.000000 -1.500000 0 0 0 0.012490</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_36</name>
+      <pose>-5.000000 -0.800000 0 0 0 0.079057</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_37</name>
+      <pose>-5.000000 -0.100000 0 0 0 0.028445</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_38</name>
+      <pose>-5.000000 0.600000 0 0 0 0.086810</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_39</name>
+      <pose>-5.000000 1.300000 0 0 0 0.018565</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_40</name>
+      <pose>-5.000000 2.000000 0 0 0 0.049097</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_41</name>
+      <pose>-5.000000 2.700000 0 0 0 -0.109002</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_42</name>
+      <pose>-5.000000 3.400000 0 0 0 -0.065304</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_43</name>
+      <pose>-5.000000 4.100000 0 0 0 -0.050547</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_44</name>
+      <pose>-5.000000 4.800000 0 0 0 -0.100850</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_45</name>
+      <pose>-3.000000 -5.000000 0 0 0 -0.064130</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_46</name>
+      <pose>-3.000000 -4.300000 0 0 0 -0.095760</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_47</name>
+      <pose>-3.000000 -3.600000 0 0 0 -0.053286</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_48</name>
+      <pose>-3.000000 -2.900000 0 0 0 0.032564</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_49</name>
+      <pose>-3.000000 -2.200000 0 0 0 -0.032440</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_50</name>
+      <pose>-3.000000 -1.500000 0 0 0 -0.031157</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_51</name>
+      <pose>-3.000000 -0.800000 0 0 0 -0.069718</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_52</name>
+      <pose>-3.000000 -0.100000 0 0 0 -0.055925</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_53</name>
+      <pose>-3.000000 0.600000 0 0 0 0.104797</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_54</name>
+      <pose>-3.000000 1.300000 0 0 0 0.035528</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_55</name>
+      <pose>-3.000000 2.000000 0 0 0 0.026191</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_56</name>
+      <pose>-3.000000 2.700000 0 0 0 -0.078927</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_57</name>
+      <pose>-3.000000 3.400000 0 0 0 0.054990</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_58</name>
+      <pose>-3.000000 4.100000 0 0 0 -0.080783</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_59</name>
+      <pose>-3.000000 4.800000 0 0 0 -0.028931</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_60</name>
+      <pose>-1.000000 -5.000000 0 0 0 0.117486</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_61</name>
+      <pose>-1.000000 -4.300000 0 0 0 0.033600</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_62</name>
+      <pose>-1.000000 -3.600000 0 0 0 0.013668</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_63</name>
+      <pose>-1.000000 -2.900000 0 0 0 0.044307</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_64</name>
+      <pose>-1.000000 -2.200000 0 0 0 0.082284</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_65</name>
+      <pose>-1.000000 -1.500000 0 0 0 0.066240</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_66</name>
+      <pose>-1.000000 -0.800000 0 0 0 -0.065028</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_67</name>
+      <pose>-1.000000 -0.100000 0 0 0 -0.112296</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_68</name>
+      <pose>-1.000000 0.600000 0 0 0 -0.044291</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_69</name>
+      <pose>-1.000000 1.300000 0 0 0 -0.055742</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_70</name>
+      <pose>-1.000000 2.000000 0 0 0 -0.069364</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_71</name>
+      <pose>-1.000000 2.700000 0 0 0 0.106298</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_72</name>
+      <pose>-1.000000 3.400000 0 0 0 0.090328</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_73</name>
+      <pose>-1.000000 4.100000 0 0 0 -0.044477</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_74</name>
+      <pose>-1.000000 4.800000 0 0 0 0.037305</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_75</name>
+      <pose>1.000000 -5.000000 0 0 0 -0.025048</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_76</name>
+      <pose>1.000000 -4.300000 0 0 0 0.099491</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_77</name>
+      <pose>1.000000 -3.600000 0 0 0 -0.009876</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_78</name>
+      <pose>1.000000 -2.900000 0 0 0 -0.056429</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_79</name>
+      <pose>1.000000 -2.200000 0 0 0 -0.060809</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_80</name>
+      <pose>1.000000 -1.500000 0 0 0 0.014728</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_81</name>
+      <pose>1.000000 -0.800000 0 0 0 -0.056942</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_82</name>
+      <pose>1.000000 -0.100000 0 0 0 0.020301</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_83</name>
+      <pose>1.000000 0.600000 0 0 0 0.095477</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_84</name>
+      <pose>1.000000 1.300000 0 0 0 -0.024144</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_85</name>
+      <pose>1.000000 2.000000 0 0 0 -0.067363</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_86</name>
+      <pose>1.000000 2.700000 0 0 0 0.119409</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_87</name>
+      <pose>1.000000 3.400000 0 0 0 0.002286</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_88</name>
+      <pose>1.000000 4.100000 0 0 0 -0.098182</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_89</name>
+      <pose>1.000000 4.800000 0 0 0 -0.108692</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_90</name>
+      <pose>3.000000 -5.000000 0 0 0 -0.093684</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_91</name>
+      <pose>3.000000 -4.300000 0 0 0 0.030587</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_92</name>
+      <pose>3.000000 -3.600000 0 0 0 0.070099</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_93</name>
+      <pose>3.000000 -2.900000 0 0 0 -0.018682</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_94</name>
+      <pose>3.000000 -2.200000 0 0 0 -0.104753</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_95</name>
+      <pose>3.000000 -1.500000 0 0 0 -0.028411</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_96</name>
+      <pose>3.000000 -0.800000 0 0 0 0.119069</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_97</name>
+      <pose>3.000000 -0.100000 0 0 0 0.006987</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_98</name>
+      <pose>3.000000 0.600000 0 0 0 0.113059</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_99</name>
+      <pose>3.000000 1.300000 0 0 0 0.086587</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_100</name>
+      <pose>3.000000 2.000000 0 0 0 -0.117245</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_101</name>
+      <pose>3.000000 2.700000 0 0 0 0.052973</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_102</name>
+      <pose>3.000000 3.400000 0 0 0 0.043610</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_103</name>
+      <pose>3.000000 4.100000 0 0 0 0.008873</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_104</name>
+      <pose>3.000000 4.800000 0 0 0 -0.055962</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_105</name>
+      <pose>5.000000 -5.000000 0 0 0 0.033831</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_106</name>
+      <pose>5.000000 -4.300000 0 0 0 -0.093227</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_107</name>
+      <pose>5.000000 -3.600000 0 0 0 -0.015656</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_108</name>
+      <pose>5.000000 -2.900000 0 0 0 -0.011106</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_109</name>
+      <pose>5.000000 -2.200000 0 0 0 0.108916</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_110</name>
+      <pose>5.000000 -1.500000 0 0 0 0.090205</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_111</name>
+      <pose>5.000000 -0.800000 0 0 0 -0.056787</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_112</name>
+      <pose>5.000000 -0.100000 0 0 0 0.000141</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_113</name>
+      <pose>5.000000 0.600000 0 0 0 -0.077124</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_114</name>
+      <pose>5.000000 1.300000 0 0 0 0.099031</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_115</name>
+      <pose>5.000000 2.000000 0 0 0 0.088924</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_116</name>
+      <pose>5.000000 2.700000 0 0 0 -0.048373</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_117</name>
+      <pose>5.000000 3.400000 0 0 0 0.033348</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_118</name>
+      <pose>5.000000 4.100000 0 0 0 0.026153</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_119</name>
+      <pose>5.000000 4.800000 0 0 0 -0.083319</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_120</name>
+      <pose>7.000000 -5.000000 0 0 0 0.063003</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_121</name>
+      <pose>7.000000 -4.300000 0 0 0 0.009451</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_122</name>
+      <pose>7.000000 -3.600000 0 0 0 0.066870</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_123</name>
+      <pose>7.000000 -2.900000 0 0 0 0.007285</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_124</name>
+      <pose>7.000000 -2.200000 0 0 0 -0.119863</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_125</name>
+      <pose>7.000000 -1.500000 0 0 0 -0.042203</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_126</name>
+      <pose>7.000000 -0.800000 0 0 0 -0.115326</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_127</name>
+      <pose>7.000000 -0.100000 0 0 0 0.102984</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_128</name>
+      <pose>7.000000 0.600000 0 0 0 0.090893</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_129</name>
+      <pose>7.000000 1.300000 0 0 0 0.079600</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_130</name>
+      <pose>7.000000 2.000000 0 0 0 -0.046197</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_131</name>
+      <pose>7.000000 2.700000 0 0 0 -0.106098</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_132</name>
+      <pose>7.000000 3.400000 0 0 0 0.090722</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_133</name>
+      <pose>7.000000 4.100000 0 0 0 0.107268</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_134</name>
+      <pose>7.000000 4.800000 0 0 0 -0.099443</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_135</name>
+      <pose>9.000000 -5.000000 0 0 0 -0.003362</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_136</name>
+      <pose>9.000000 -4.300000 0 0 0 -0.103389</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_137</name>
+      <pose>9.000000 -3.600000 0 0 0 0.062545</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_138</name>
+      <pose>9.000000 -2.900000 0 0 0 0.063800</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_139</name>
+      <pose>9.000000 -2.200000 0 0 0 -0.089186</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_140</name>
+      <pose>9.000000 -1.500000 0 0 0 -0.005932</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_141</name>
+      <pose>9.000000 -0.800000 0 0 0 0.011953</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_142</name>
+      <pose>9.000000 -0.100000 0 0 0 -0.056386</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_143</name>
+      <pose>9.000000 0.600000 0 0 0 0.089384</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_144</name>
+      <pose>9.000000 1.300000 0 0 0 -0.018447</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_145</name>
+      <pose>9.000000 2.000000 0 0 0 -0.069168</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_146</name>
+      <pose>9.000000 2.700000 0 0 0 0.009431</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_147</name>
+      <pose>9.000000 3.400000 0 0 0 0.055183</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_148</name>
+      <pose>9.000000 4.100000 0 0 0 -0.071724</pose>
+    </include>
+    <include>
+      <uri>model://tomato_0</uri>
+      <name>tomato_149</name>
+      <pose>9.000000 4.800000 0 0 0 -0.045188</pose>
+    </include>
+  </world>
+</sdf>

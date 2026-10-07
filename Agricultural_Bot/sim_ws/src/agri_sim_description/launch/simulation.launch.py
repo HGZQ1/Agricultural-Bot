@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import shlex
+import xml.etree.ElementTree as ET
 from tempfile import TemporaryDirectory
 
 from agri_sim_sensors.configuration import (
@@ -84,6 +85,14 @@ def _make_robot(context, model_xacro, controller_config, sensor_mappings):
         name="spawn_agri_robot",
         output="screen",
         arguments=[
+            "-world",
+            LaunchConfiguration("world_name"),
+            "-x",
+            LaunchConfiguration("spawn_x"),
+            "-y",
+            LaunchConfiguration("spawn_y"),
+            "-Y",
+            LaunchConfiguration("spawn_yaw"),
             "-topic",
             "robot_description",
             "-name",
@@ -107,6 +116,11 @@ def _prepare_simulation(context):
     workspace = find_workspace(sensor_share)
     world_arg = Path(LaunchConfiguration("world").perform(context))
     world_source = world_arg if world_arg.is_absolute() else sim_share / "worlds" / world_arg
+    actual_world_name = ET.parse(world_source).getroot().find("world").get("name")
+    requested_world_name = LaunchConfiguration("world_name").perform(context)
+    if requested_world_name and requested_world_name != actual_world_name:
+        raise ValueError(f"world_name={requested_world_name!r} does not match SDF world {actual_world_name!r}")
+    context.launch_configurations["world_name"] = actual_world_name
     config_arg = LaunchConfiguration("lidar_config").perform(context)
     config = load_config(Path(config_arg) if config_arg else sensor_share / "config" / "mid360.yaml")
     camera_arg = LaunchConfiguration("camera_config").perform(context)
@@ -136,7 +150,8 @@ def _prepare_simulation(context):
     use_control = LaunchConfiguration("use_control")
     resource_path = SetEnvironmentVariable(
         name="GZ_SIM_RESOURCE_PATH",
-        value=os.pathsep.join(filter(None, [str(description_share.parent),
+        value=os.pathsep.join(filter(None, [LaunchConfiguration("resource_path").perform(context),
+              str(description_share.parent),
               str(world_source.parent), context.environment.get("GZ_SIM_RESOURCE_PATH", "")])),
     )
     control_launch = IncludeLaunchDescription(
@@ -170,7 +185,9 @@ def _prepare_simulation(context):
         arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"],
     )
 
-    actions = [resource_path, LogInfo(msg=message)]
+    actions = [resource_path,
+               SetEnvironmentVariable("GZ_PARTITION", LaunchConfiguration("gz_partition")),
+               LogInfo(msg=message)]
     if mode == "rgl":
         actions.extend([
             SetEnvironmentVariable("GZ_SIM_SYSTEM_PLUGIN_PATH", os.pathsep.join(filter(None, [
@@ -256,6 +273,12 @@ def _prepare_simulation(context):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument("world", default_value="empty_greenhouse.sdf"),
+        DeclareLaunchArgument("world_name", default_value="", description="Optional SDF world name; inferred when empty."),
+        DeclareLaunchArgument("resource_path", default_value=""),
+        DeclareLaunchArgument("gz_partition", default_value="agri_sim"),
+        DeclareLaunchArgument("spawn_x", default_value="0.0"),
+        DeclareLaunchArgument("spawn_y", default_value="0.0"),
+        DeclareLaunchArgument("spawn_yaw", default_value="0.0"),
         DeclareLaunchArgument("gui", default_value="true"),
         DeclareLaunchArgument("rviz", default_value="false"),
         DeclareLaunchArgument("headless_rendering", default_value="true"),

@@ -10,7 +10,10 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", [f"resource/{package_name}"]),
         (f"share/{package_name}", ["package.xml"]),
-        (f"share/{package_name}/launch", ["launch/simulation.launch.py"]),
+        (
+            f"share/{package_name}/launch",
+            ["launch/simulation.launch.py", "launch/tomato_field.launch.py"],
+        ),
     ],
     install_requires=["setuptools"],
     zip_safe=True,
