@@ -16,3 +16,22 @@ Agricultural-Bot adaptation (2026-10-06/07):
 - Package resources with ament_cmake and provide ROS 2 launch integration.
 
 Plant fruit is part of the static visual mesh, not a detachable harvest object.
+
+Random-fruit adaptation (2026-10-07):
+- Derive tomato_plant from the original stem/leaf submeshes, retaining the same
+  licensed mesh, textures, and upstream attribution without duplicating assets.
+- Ground the derived asset's simplified stem collider (height 1.2416 m).
+- Add separately generated static sphere targets and optional offline annotations.
+- Keep tomato_0 and the non-randomized baseline unchanged.
+Random targets do not yet implement attachment, detachment, or harvest physics.
+
+Single-fruit mesh adaptation (2026-10-07):
+- Extract one connected body (component index 2) of Fruit1 from the bundled
+  tomato_0 COLLADA instead of placing an entire multi-fruit cluster.
+- Preserve original UV coordinates and vertex normals, center the body, and
+  uniformly normalize it into a bounding sphere of radius 0.5.
+- Keep the original ripe AG15frt1.png and unripe AG15frt4.png textures in tomato_0.
+- Record source component, normalization and SHA-256 hashes in
+  models/tomato_fruit/SOURCE.json; retain Apache-2.0 license and attribution.
+- Provide scripts/extract_tomato_fruit.py to reproduce the derived asset using
+  the Python standard library. Original assets are not rewritten.

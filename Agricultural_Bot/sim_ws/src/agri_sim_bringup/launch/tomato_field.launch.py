@@ -15,6 +15,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            DeclareLaunchArgument("world", default_value=str(world)),
             DeclareLaunchArgument("gui", default_value="true"),
             DeclareLaunchArgument("paused", default_value="true"),
             DeclareLaunchArgument("rviz", default_value="false"),
@@ -53,8 +54,8 @@ def generate_launch_description():
                     "camera_config": LaunchConfiguration("camera_config"),
                     "rgl_install_prefix": LaunchConfiguration("rgl_install_prefix"),
                     "rgl_patterns_dir": LaunchConfiguration("rgl_patterns_dir"),
-                    "world": str(world),
-                    "world_name": "field",
+                    "world": LaunchConfiguration("world"),
+                    "world_name": "",
                     "resource_path": str(worlds_share / "models"),
                     "gz_partition": LaunchConfiguration("gz_partition"),
                     "spawn_x": LaunchConfiguration("spawn_x"),

@@ -63,3 +63,8 @@ stamp 仍判失败，且不污染有效频率统计。暂停、采集不足、�
 验收器不代替场景几何、扫描真实性、IMU、地图或实机外参标定测试。独立场景脚本和
 指标见 [MID-360 文档](../../../docs/mid360_simulation.md) 与
 [D405 文档](../../../docs/d405_simulation.md)。
+
+番茄田底盘评测在工作空间的 `scripts/check_chassis_motion.py`，启动与指标说明见
+[底盘运动测试](../../../docs/chassis_field_motion.md)。该脚本显式使用 `--execute`
+才发布速度；需独立 ROS 域/Gazebo 分区且退出其他速度发布者。Gazebo 位姿仅用于评测，
+不会注入算法；报告区分命令结束和停稳后的终点，并输出真值 CSV。

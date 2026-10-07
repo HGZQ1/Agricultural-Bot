@@ -21,5 +21,19 @@ robot is spawned by `agri_sim_bringup` so its pose remains configurable.
 
 完整中文步骤（依赖、构建、只打开场地、导入机器人、参数及排错）：
 [番茄田复现指南](../../../docs/tomato_field_reproduction.md)。
+底盘控制启动、低速行间路线与量化评测见
+[番茄田底盘运动测试](../../../docs/chassis_field_motion.md)。
 第三方来源和本地修改记录见 [NOTICE](NOTICE)。
 通过 `ros2 run` 执行生成器时必须用 `--output` 指定输出位置，避免写入安装空间。
+
+Use `--randomize-fruits` to generate independent static fruit targets with
+configurable count, height, diameter, horizontal placement, maturity probability
+and a reproducible seed. The derived `tomato_plant` asset contains only stems and
+leaves; the original mesh and baseline world remain available. Optional
+`--metadata` writes offline world-frame annotations.
+The default `--fruit-visual mesh` uses a single body extracted from the original
+`Fruit1` mesh, its original UV/normals and existing red/green albedo textures.
+`--fruit-visual sphere` restores the plain sphere appearance. Both modes retain
+the same conservative sphere collision and seeded target positions.
+实际尺寸待测，示例参数与模型限制见
+[果实随机化指南](../../../docs/tomato_fruit_randomization.md)。

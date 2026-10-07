@@ -7,6 +7,8 @@ ROS 2 Jazzy + Gazebo Harmonic 农业番茄采摘机器人项目工作空间。
 D405 使用 Harmonic 原生 RGB-D，连续接口与靶标场景验收通过。完整温室番茄场景、导航、
 视觉和采摘任务仍待开发。2026-10-07 集成了参数化番茄田（150 株）及入口生成机器人功能；
 依赖、构建、打开场地与复现步骤见 [番茄田复现指南](docs/tomato_field_reproduction.md)。
+开启底盘控制、行间测试路线及 Gazebo 真值量化评测见
+[番茄田底盘运动测试](docs/chassis_field_motion.md)。
 
 原始 SolidWorks、旧版 URDF 和图纸保留原位；canonical 模型是独立修正的副本。
 RGL 第三方依赖安装到忽略的 `.cache/rgl`，版本和下载校验值由安装脚本固定。
@@ -129,3 +131,8 @@ ros2 run agri_sim_tests check_d405 --duration 60 --timeout 120 --max-depth 2
 ros2 launch agri_sim_bringup simulation.launch.py \
   use_control:=false use_lidar:=false use_camera:=false
 ```
+
+番茄田支持逐株果实数量、高度、直径和成熟概率随机化，并可用固定种子复现。
+随机果实默认显示原单果网格和红/青贴图，支持 `--fruit-visual sphere` 切回简化球体。
+实际温室尺寸待测，生成与加载自定义世界见
+[果实随机化指南](docs/tomato_fruit_randomization.md)。独立果实当前为静态目标，采摘物理待接入。

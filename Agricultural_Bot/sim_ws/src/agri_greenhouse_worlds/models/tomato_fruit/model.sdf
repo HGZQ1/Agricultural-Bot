@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!-- Derived from LCAS/aoc_tomato_farm under Apache License 2.0; see SOURCE.json. -->
+<sdf version="1.6">
+  <model name="tomato_fruit">
+    <static>true</static>
+    <link name="fruit_link">
+      <collision name="fruit_collision">
+        <geometry><sphere><radius>0.04</radius></sphere></geometry>
+      </collision>
+      <visual name="fruit_visual">
+        <geometry><mesh>
+          <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+          <scale>0.08 0.08 0.08</scale>
+        </mesh></geometry>
+        <material>
+          <ambient>1 1 1 1</ambient>
+          <diffuse>1 1 1 1</diffuse>
+          <pbr><metal>
+            <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+            <metalness>0</metalness>
+            <roughness>0.4</roughness>
+          </metal></pbr>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
