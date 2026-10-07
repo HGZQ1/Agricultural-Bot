@@ -59,7 +59,7 @@
         <parent link="f1_steer_link"/>
         <child link="f1_wheel_link"/>
         <axis xyz="0 1 0"/>
-        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="8.0"/>
         <dynamics damping="0.1" friction="0.05"/>
       </joint>
     <link name="f2_steer_link">
@@ -120,7 +120,7 @@
         <parent link="f2_steer_link"/>
         <child link="f2_wheel_link"/>
         <axis xyz="0 -1 0"/>
-        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="8.0"/>
         <dynamics damping="0.1" friction="0.05"/>
       </joint>
     <link name="r1_steer_link">
@@ -181,7 +181,7 @@
         <parent link="r1_steer_link"/>
         <child link="r1_wheel_link"/>
         <axis xyz="0 1 0"/>
-        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="8.0"/>
         <dynamics damping="0.1" friction="0.05"/>
       </joint>
     <link name="r2_steer_link">
@@ -242,7 +242,7 @@
         <parent link="r2_steer_link"/>
         <child link="r2_wheel_link"/>
         <axis xyz="0 -1 0"/>
-        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="2"/>
+        <limit lower="-3.1416" upper="3.1416" effort="20" velocity="8.0"/>
         <dynamics damping="0.1" friction="0.05"/>
       </joint>
 

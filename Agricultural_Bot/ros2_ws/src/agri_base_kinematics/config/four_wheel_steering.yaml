@@ -12,7 +12,7 @@ four_wheel_steering_node:
     update_rate: 50.0
     command_timeout: 0.5
     wheel_radius: 0.127
-    max_wheel_speed: 10.0
+    max_wheel_speed: 8.0
     steering_limits: [-3.14159265, 3.14159265]
     # x is forward and y is left in base_footprint.  Verify these four values
     # against the final calibrated URDF wheel-joint origins.
