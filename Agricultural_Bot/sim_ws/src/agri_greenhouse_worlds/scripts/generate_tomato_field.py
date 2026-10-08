@@ -4,17 +4,55 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 from pathlib import Path
 import random
 import sys
+import xml.etree.ElementTree as ET
 from xml.sax.saxutils import quoteattr
 
 
 FRUIT_PLACEMENT_ATTEMPTS = 1000
 STEM_HALF_WIDTH = 0.05
 STEM_HEIGHT = 1.2416
+# Branch1/Leaf1/Leaf2 in tomato_0/meshes/tomato.dae, meter=1, Z_UP.
+# Height is the crown top above z=0; width is max(local X span, local Y span).
+PLANT_HEIGHT = 1.298104
+PLANT_WIDTH = 0.866695
+PLANT_SUBMESHES = {"Branch1", "Leaf1", "Leaf2"}
+
+
+def package_root() -> Path:
+    """Locate resources for source, symlink and regular colcon installations."""
+    script = Path(__file__).resolve()
+    source_root = script.parents[1]
+    if (source_root / "models").is_dir():
+        return source_root
+    return script.parents[2] / "share" / "agri_greenhouse_worlds"
+
+
+def plant_geometry(args: argparse.Namespace) -> dict:
+    """Resolve plant dimensions without scaling independent fruit targets."""
+    height = PLANT_HEIGHT if args.plant_height is None else args.plant_height
+    width = PLANT_WIDTH if args.plant_width is None else args.plant_width
+    horizontal = width / PLANT_WIDTH
+    vertical = height / PLANT_HEIGHT
+    stem_size = [2 * STEM_HALF_WIDTH * horizontal,
+                 2 * STEM_HALF_WIDTH * horizontal, STEM_HEIGHT * vertical]
+    stem_center_z = stem_size[2] / 2
+    if not args.randomize_fruits and args.plant_height is None and args.plant_width is None:
+        # Report the actual untouched legacy include, whose box is half buried.
+        stem_size = [0.1, 0.1, 1.0]
+        stem_center_z = 0.0
+    return {
+        "height": height,
+        "width": width,
+        "mesh_scale": [horizontal, horizontal, vertical],
+        "stem_size": stem_size,
+        "stem_center_z": stem_center_z,
+    }
 
 
 def validate_args(args: argparse.Namespace) -> None:
@@ -28,6 +66,14 @@ def validate_args(args: argparse.Namespace) -> None:
     for name in float_names:
         if not math.isfinite(getattr(args, name)):
             raise ValueError(f"{name.replace('_', '-')} must be finite")
+    for name in ("plant_height", "plant_width"):
+        value = getattr(args, name)
+        if value is not None and (not math.isfinite(value) or value <= 0):
+            raise ValueError(f"{name.replace('_', '-')} must be finite and positive")
+    geometry = plant_geometry(args)
+    if not all(math.isfinite(value) and value > 0
+               for value in geometry["mesh_scale"] + geometry["stem_size"]):
+        raise ValueError("plant dimensions overflow or underflow; use practical sizes")
     if args.rows < 1 or args.plants_per_row < 1:
         raise ValueError("rows and plants-per-row must both be positive")
     if args.row_spacing <= 0 or args.plant_spacing <= 0:
@@ -59,16 +105,16 @@ def validate_args(args: argparse.Namespace) -> None:
                 "fruit-min-clearance to keep spheres above ground"
             )
         if args.fruit_radius_min < (
-            STEM_HALF_WIDTH + fruit_radius + args.fruit_min_clearance
+            geometry["stem_size"][0] / 2 + fruit_radius + args.fruit_min_clearance
         ):
             raise ValueError(
-                "fruit-radius-min must be at least 0.05 + "
+                "fruit-radius-min must be at least scaled stem half-width "
+                f"({geometry['stem_size'][0] / 2:.6g} m) + "
                 "fruit-diameter-max / 2 + fruit-min-clearance"
             )
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    package_root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
         description="Generate a Gazebo Harmonic SDF tomato field."
     )
@@ -83,6 +129,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--yaw-jitter", type=float, default=0.12)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--world-name", default="field")
+    parser.add_argument(
+        "--plant-height", type=float,
+        help="Branch/leaf crown-top height above ground (meters). Only scales plant Z; "
+             f"omitting this preserves the original {PLANT_HEIGHT:g} m height.",
+    )
+    parser.add_argument(
+        "--plant-width", type=float,
+        help="Maximum local X/Y branch/leaf canopy span before yaw (meters). "
+             f"Scales plant X/Y independently of height; original {PLANT_WIDTH:g} m.",
+    )
     parser.add_argument(
         "--randomize-fruits", action="store_true",
         help="Use the fruit-free tomato_plant asset and add separate static fruit targets.",
@@ -121,7 +177,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--output",
         type=Path,
-        default=package_root / "worlds" / "tomato_field_22x14.sdf",
+        default=package_root() / "worlds" / "tomato_field_22x14.sdf",
     )
     args = parser.parse_args(argv)
     try:
@@ -153,6 +209,33 @@ def plant_poses(args: argparse.Namespace) -> list[dict]:
     return plants
 
 
+def plant_template(args: argparse.Namespace) -> ET.Element:
+    """Inline a resized copy, keeping all shared model assets untouched."""
+    asset = "tomato_plant" if args.randomize_fruits else "tomato_0"
+    model = ET.parse(package_root() / "models" / asset / "model.sdf").getroot().find("model")
+    geometry = plant_geometry(args)
+    for visual in model.findall("link/visual"):
+        mesh = visual.find("geometry/mesh")
+        if mesh is not None and mesh.findtext("submesh/name") in PLANT_SUBMESHES:
+            scale = ET.SubElement(mesh, "scale")
+            scale.text = " ".join(f"{value:.17g}" for value in geometry["mesh_scale"])
+            ET.SubElement(mesh.find("submesh"), "center").text = "false"
+        # The legacy model uses RGB rather than SDF's RGBA diffuse values.
+        diffuse = visual.find("material/diffuse")
+        if diffuse is not None and len(diffuse.text.split()) == 3:
+            diffuse.text += " 1"
+    collision = model.find("link/collision")
+    collision.set("name", "stem")
+    pose = collision.find("pose")
+    if pose is None:
+        pose = ET.SubElement(collision, "pose")
+    pose.text = f"0 0 {geometry['stem_center_z']:.17g} 0 0 0"
+    collision.find("geometry/box/size").text = " ".join(
+        f"{value:.17g}" for value in geometry["stem_size"]
+    )
+    return model
+
+
 def sample_fruits(args: argparse.Namespace) -> list[dict]:
     """Sample collision-free static targets, independently of plant yaw draws."""
     validate_args(args)
@@ -160,6 +243,9 @@ def sample_fruits(args: argparse.Namespace) -> list[dict]:
         return []
     rng = random.Random(args.seed)
     plants = plant_poses(args)
+    geometry = plant_geometry(args)
+    stem_half_width = geometry["stem_size"][0] / 2
+    stem_height = geometry["stem_size"][2]
     fruits: list[dict] = []
     cell_size = max(0.1, args.fruit_diameter_max + args.fruit_min_clearance)
     fruit_cells: dict[tuple[int, int, int], list[dict]] = {}
@@ -176,7 +262,7 @@ def sample_fruits(args: argparse.Namespace) -> list[dict]:
         stem_cells.setdefault(key, []).append(plant)
 
     def clears_stems(x: float, y: float, z: float, radius: float) -> bool:
-        reach = math.sqrt(2) * STEM_HALF_WIDTH + radius + args.fruit_min_clearance
+        reach = math.sqrt(2) * stem_half_width + radius + args.fruit_min_clearance
         for ix in range(cell_index(x - reach), cell_index(x + reach) + 1):
             for iy in range(cell_index(y - reach), cell_index(y + reach) + 1):
                 for plant in stem_cells.get((ix, iy), ()):
@@ -185,9 +271,9 @@ def sample_fruits(args: argparse.Namespace) -> list[dict]:
                     local_x = cosine * dx + sine * dy
                     local_y = -sine * dx + cosine * dy
                     distance = math.hypot(
-                        max(abs(local_x) - STEM_HALF_WIDTH, 0),
-                        max(abs(local_y) - STEM_HALF_WIDTH, 0),
-                        max(-z, z - STEM_HEIGHT, 0),
+                        max(abs(local_x) - stem_half_width, 0),
+                        max(abs(local_y) - stem_half_width, 0),
+                        max(-z, z - stem_height, 0),
                     )
                     if distance < radius + args.fruit_min_clearance:
                         return False
@@ -287,7 +373,18 @@ def build_world(args: argparse.Namespace, fruits: list[dict] | None = None) -> s
     ]
 
     plant_uri = "tomato_plant" if args.randomize_fruits else "tomato_0"
+    template = (plant_template(args)
+                if args.plant_height is not None or args.plant_width is not None else None)
     for plant in plant_poses(args):
+        if template is not None:
+            model = copy.deepcopy(template)
+            model.set("name", plant["id"])
+            ET.SubElement(model, "pose").text = (
+                f'{plant["x"]:.6f} {plant["y"]:.6f} 0 0 0 {plant["yaw"]:.6f}'
+            )
+            ET.indent(model, space="  ", level=2)
+            lines.extend(("    " + ET.tostring(model, encoding="unicode")).splitlines())
+            continue
         lines.extend([
             '    <include>',
             f'      <uri>model://{plant_uri}</uri>',
@@ -363,6 +460,7 @@ def main() -> None:
                 if key not in ("output", "metadata", "seed")
             },
             "plants": plant_poses(args),
+            "plant_geometry": plant_geometry(args),
             "fruits": fruits,
         }, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
     except ValueError as error:

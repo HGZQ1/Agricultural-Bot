@@ -45,6 +45,8 @@ MID-360 双后端、安装、光心基准、运行与验收记录见
 [mid360_simulation.md](docs/mid360_simulation.md)。
 D405 光学坐标、对齐投影、深度范围与验收见
 [d405_simulation.md](docs/d405_simulation.md)。
+FAST-LIO 源码选型、Nav2 接口与采摘停车的待实施方案见 [navigation_fastlio_plan.md](docs/navigation_fastlio_plan.md)。
+Panther-FR3 温室项目的导航、感知与夹取源码评估见 [robot_workspaces_review.md](docs/robot_workspaces_review.md)。
 
 ## 当前约束
 
@@ -134,5 +136,10 @@ ros2 launch agri_sim_bringup simulation.launch.py \
 
 番茄田支持逐株果实数量、高度、直径和成熟概率随机化，并可用固定种子复现。
 随机果实默认显示原单果网格和红/青贴图，支持 `--fruit-visual sphere` 切回简化球体。
-实际温室尺寸待测，生成与加载自定义世界见
-[果实随机化指南](docs/tomato_fruit_randomization.md)。独立果实当前为静态目标，采摘物理待接入。
+`--plant-height` 和 `--plant-width` 可独立设置枝叶株高和冠幅，同步调整简化茎杆碰撞体，
+不会自动改变果实直径、世界高度或水平分布半径；共享资产保持原样。
+未启用果实随机化时，原固定果实和花朵的大小、位置保持原样。功能更新后构建一次
+`agri_greenhouse_worlds`；此后修改参数只需重新生成世界并重启对应 Gazebo。
+实际温室尺寸待测，2 m 株高、1 m 冠幅及 0.80–1.60 m 果实中心高度仅为测试值。
+生成与加载自定义世界见
+[植株尺寸与果实参数化指南](docs/tomato_fruit_randomization.md)。独立果实当前为静态目标，采摘物理待接入。

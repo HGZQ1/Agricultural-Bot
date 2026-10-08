@@ -1,12 +1,13 @@
-# 番茄数量与结果高度随机化
+# 植株尺寸与番茄果实参数化
 
 实际温室尺寸尚未确定，本功能先提供可复现的参数生成流程。以下数值为测试示例，
-不是实测株高、冠幅或结果高度。未启用 `--randomize-fruits` 时，原有 150 株场景
-及 `tomato_0` 模型保持原样。
+不是实测株高、冠幅或结果高度。可以分别调整枝叶株高、冠幅，以及独立果实的数量、
+高度和直径。不传植株尺寸且不启用 `--randomize-fruits` 时，原有 150 株场景
+保持逐字节复现；所有模式均保留 `tomato_0` 等原资产文件。
 
 ## 生成并查看
 
-先构建新增的枝叶资产和支持自定义世界路径的启动入口：
+更新功能后先构建 `agri_greenhouse_worlds` 和支持自定义世界路径的启动入口：
 
 ```bash
 cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
@@ -19,9 +20,10 @@ cd ..
 
 python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --randomize-fruits --fruit-visual mesh \
+  --plant-height 2.0 --plant-width 1.0 \
   --rows 2 --plants-per-row 3 --origin-x -1 --origin-y -5 \
   --fruit-count-min 2 --fruit-count-max 5 \
-  --fruit-height-min 0.60 --fruit-height-max 1.10 \
+  --fruit-height-min 0.80 --fruit-height-max 1.60 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --seed 42 \
   --output artifacts/tomato_random_demo.sdf \
@@ -34,7 +36,8 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
   gz_partition:="$GZ_PARTITION" gui:=true paused:=true
 ```
 
-此示例生成 6 株，便于先检查画面。删除 `--rows`、`--plants-per-row`、
+此示例使用 2 m 株高、1 m 冠幅和 0.80–1.60 m 果实中心高度，均为测试值，
+实际温室尺寸仍待实测。示例生成 6 株，便于先检查画面。删除 `--rows`、`--plants-per-row`、
 `--origin-x`、`--origin-y` 四个覆盖项，即使用原有 10 行 × 15 株布局。
 修改参数后需重新生成文件，并退出对应 Gazebo 后重启；已加载的世界不会自动刷新。
 始终显式填写 `--output`，避免覆盖正式基线或向安装目录写入场景。
@@ -50,8 +53,8 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 
 ## 同时启动底盘、参数化番茄田和传感器
 
-先在旧仿真的启动终端按 Ctrl+C 退出，再在终端一执行。此例为 150 株、每株
-2–6 个果实、中心高度 0.60–1.10 m（测试值），启用底盘控制、MID-360、
+先在旧仿真的启动终端按 Ctrl+C 退出，再在终端一执行。此例为 150 株，
+株高 2 m、冠幅 1 m、每株 2–6 个果实、中心高度 0.80–1.60 m（测试值），启用底盘控制、MID-360、
 D405 的 2 m 扩展仿真量程和 RViz：
 
 ```bash
@@ -64,9 +67,10 @@ export GZ_PARTITION=agricultural_bot_random_fruits
 
 python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --randomize-fruits --fruit-visual mesh \
+  --plant-height 2.6 --plant-width 1.0 \
   --rows 10 --plants-per-row 15 \
   --fruit-count-min 2 --fruit-count-max 6 \
-  --fruit-height-min 0.60 --fruit-height-max 1.10 \
+  --fruit-height-min 0.80 --fruit-height-max 1.60 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --ripe-ratio 0.7 --seed 42 \
   --output artifacts/tomato_random_field.sdf \
@@ -107,6 +111,8 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 
 | 参数 | 默认值 | 含义 |
 | --- | --- | --- |
+| `--plant-height` | 不覆盖：1.298104 | 枝叶冠顶离地高度，单位 m；只调整枝叶 Z 缩放 |
+| `--plant-width` | 不覆盖：0.866695 | 偏航前枝叶局部 X/Y 包围盒跨度的较大值，单位 m；X/Y 同倍缩放，与株高独立 |
 | `--randomize-fruits` | 关闭 | 移除旧模型中的固定果实，生成独立随机果实 |
 | `--fruit-visual` | `mesh` | 原单果网格与贴图；`sphere` 可回退纯色球体 |
 | `--fruit-count-min / --fruit-count-max` | 2 / 6 | 每株整数数量范围，包含两个端点；允许 0 |
@@ -116,7 +122,7 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 | `--ripe-ratio` | 0.7 | 每个果实取红色的概率；其余为绿色，不保证总数恰好 70% |
 | `--fruit-min-clearance` | 0.01 | 果实与其他果实、地面和简化茎杆碰撞体的最小净间距，单位 m |
 | `--seed` | 42 | 随机种子；同参数、同种子生成相同世界与标注 |
-| `--metadata` | 不输出 | 可选 JSON，记录参数、每株位置及逐果 ID、世界坐标、包围球半径和成熟状态 |
+| `--metadata` | 不输出 | 可选 JSON，记录参数、植株几何、每株位置及逐果 ID、世界坐标、包围球半径和成熟状态 |
 
 上下限相同可固定该维度。水平距离 `fruit-radius` 不是果实球体半径。
 网格保持原果形，三轴尺寸约为包围球直径的 0.932、0.904、0.941 倍；
@@ -130,6 +136,52 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 或扩大高度范围、水平半径范围和株距。
 JSON 用于离线核对和评测，不自动发布给 YOLO 或机器人算法作为定位结果。
 
+## 独立调整株高和冠幅
+
+`--plant-height` 和 `--plant-width` 调整茎杆、叶片视觉网格及简化茎杆碰撞体，
+不会自动改变独立果实的直径、世界 Z 高度或水平分布半径。只增高植株时，
+可以仅传 `--plant-height`，冠幅保持原值；只增大冠幅时仅传 `--plant-width`，
+株高保持原值。两者均须为有限正数。
+
+缩放以地面 Z=0 和原模型坐标为基准：
+
+```text
+枝叶 X/Y 缩放倍数 = plant-width / 0.866695
+枝叶 Z 缩放倍数   = plant-height / 1.298104
+茎杆碰撞体尺寸    = [0.1 × X/Y 倍数, 0.1 × X/Y 倍数, 1.2416 × Z 倍数]
+茎杆中心 Z        = 茎杆碰撞体高度 / 2
+```
+
+上述茎杆公式适用于随机果实模式或显式设置植株尺寸。未启用随机化且未传植株尺寸时，
+保留基线旧碰撞体，尺寸仍为 `[0.1, 0.1, 1.0]`，中心 Z 为 `0`，不改变原场景。
+
+这里的株高是枝叶冠顶到地面的高度；原叶片最低点略低于地面，不以整个网格
+Z 包围盒跨度定义株高。冠幅是偏航前局部 X/Y 跨度的最大值，并非要求两个方向
+都恰好等于该数值；设置 1 m 冠幅时，仍保留原 X/Y 长宽比例。植株随机偏航后，
+世界轴方向上的包围盒宽度会随角度变化。
+
+果实独立缩放，所以增高枝叶不会拉长番茄。增大冠幅会同时加宽茎杆碰撞体，
+`--fruit-radius-min` 至少须满足：
+
+```text
+fruit-radius-min >= 0.05 × X/Y 缩放倍数 + fruit-diameter-max / 2 + fruit-min-clearance
+```
+
+生成器还会检查旋转茎杆和跨株果实的实际净空。拥挤布局中的候选拒绝可能改变
+随机位置；相同尺寸、其他参数和种子仍可复现。扩大冠幅不会自动扩大行距、株距或
+果实水平分布范围，应同时检查行间通道，必要时调整 `--row-spacing`、
+`--plant-spacing` 和果实半径范围。叶片仍为视觉网格，检查不包含冠层互相遮挡。
+
+未启用 `--randomize-fruits` 时也可调整枝叶尺寸，但原模型的固定果实和花朵保持
+原位置及原大小，果实参数不生效。需要改变果实数量、高度和直径时，应启用
+`--randomize-fruits`，由独立果实模型替代原固定果实。
+
+显式指定任意植株尺寸时，生成器把调整后的植物模型写入输出 SDF；
+它继续引用原网格和贴图，不修改或覆盖共享资产。不指定这两个参数时仍使用原
+模型引用方式。JSON 的 `plant_geometry` 记录实际生效的 `height`、`width`、
+`mesh_scale: [X, Y, Z]`、`stem_size: [X, Y, Z]` 和 `stem_center_z`，
+后两项是实际茎杆碰撞体的尺寸与中心 Z，便于核对配置和生成结果。
+
 ## 模型结构与限制
 
 原模型的番茄嵌入 DAE，不能仅靠修改世界中一个数字独立调整每个果实。
@@ -139,7 +191,8 @@ JSON 用于离线核对和评测，不自动发布给 YOLO 或机器人算法作
 每个 ID 只对应一个果实，避免复制整串果实或与旧网格番茄重复。
 网格中心归零并等比例归一化，世界模型的中心位置和碰撞球中心相同。
 视觉网格完整包在简化球形碰撞体内，原间距与地面检查继续有效。
-新枝叶资产的简化茎杆碰撞体从地面延伸至 1.2416 m，叶片仍只有视觉网格。
+新枝叶资产的简化茎杆碰撞体默认从地面延伸至 1.2416 m，指定植株尺寸时按上述
+倍数调整并保持底面贴地；叶片仍只有视觉网格。
 
 本阶段适合验证检测、深度反投影及目标选择。果实位置不保证落在真实果柄上，
 果柄连接、夹持后脱落、落入筐或计数状态更新尚未实现；不能据此宣称采摘物理完成。
@@ -151,9 +204,10 @@ JSON 用于离线核对和评测，不自动发布给 YOLO 或机器人算法作
 从工程目录执行 `python3 sim_ws/src/agri_greenhouse_worlds/scripts/extract_tomato_fruit.py`。
 
 原植株最高约 1.298 m，冠幅约 0.815 × 0.867 m，原果实中心约在 0.761–1.020 m。
-**果实高度参数不会同步长高枝叶**；超出当前植株的范围会产生悬空目标，需要另改植株结构。
-当前保持枝叶尺寸，等待实测株高、冠幅和结果区间后再建模。整体等比例放大会同时改变
-果实尺寸和行间净空；只拉伸 Z 会使原网格果实变形，因此应继续分开调整枝叶与独立果实。
+**果实高度参数不会同步长高枝叶**；高位果实需要配合 `--plant-height` 调整株高。
+这些参数只缩放原枝叶结构，不会生成更真实的枝条、果柄或连接关系；果实仍可能
+位于没有枝条的位置。待实测株高、冠幅和结果区间确定后，可直接替换测试参数，
+需要更真实的植株拓扑时再重建模型。
 机械臂零位相机高度约 1.878 m，低位目标还需要通过机械臂俯视或侧向观测及可达性检查，
 不能仅靠抬高果实替代机械臂规划。
 
@@ -166,8 +220,27 @@ JSON 用于离线核对和评测，不自动发布给 YOLO 或机器人算法作
 ```bash
 python3 -m pytest sim_ws/src/agri_sim_bringup/test/test_random_fruits.py \
   sim_ws/src/agri_sim_bringup/test/test_fruit_mesh.py \
+  sim_ws/src/agri_sim_bringup/test/test_plant_dimensions.py \
   sim_ws/src/agri_sim_bringup/test/test_tomato_field.py -q
 ```
+
+植株尺寸测试 `test_plant_dimensions.py` 用于检查高度/冠幅独立缩放、茎杆碰撞体、
+果实参数独立性、JSON 几何标注、非法尺寸及原资产保留。
+
+株高与冠幅参数验证（2026-10-08）：场地包构建通过，bringup 的 24 项相关测试通过，
+包括新增 8 项独立尺寸测试。指定 2 m 株高、1 m 冠幅时，枝叶缩放为
+`1.1538084332 1.1538084332 1.5407086027`，茎杆碰撞体为
+`0.1153808433 × 0.1153808433 × 1.9129438011 m`，底面贴地。
+独立 Gazebo 分区中加载 6 株、25 果，核对实际加载的 18 个枝叶视觉缩放值和
+运行世界导出的 6 个茎杆碰撞体；1024×768 RGB 渲染正常。
+完整 150 株离线生成 636 果（460 个红果），果径与高度均在配置范围内；
+未对该完整新尺寸场景重跑底盘、D405 和 MID-360 联合验收。
+原模型、网格、纹理和基线世界共 24 个文件的 SHA256 保持一致。
+证据位于 `artifacts/plant_dimensions_20261008/`，包括场景、标注、
+`generation_report.json`、`runtime_report.json`、运行世界导出、截图和 JUnit。
+验证实例已停止。[查看新尺寸植株截图](../artifacts/plant_dimensions_20261008/field.png)。
+
+以下为此前验证记录。
 
 初版球体验证（2026-10-07）：两个相关包构建成功，随机化、旧场景与启动入口共 11 项测试通过。
 示例 seed=42 的 6 株生成并在独立 Gazebo 实例查询到 21 个果实；960×640 RGB

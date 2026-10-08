@@ -19,6 +19,15 @@ python3 scripts/generate_tomato_field.py
 Use `--help` to inspect parameters. Generated worlds contain no robot; the
 robot is spawned by `agri_sim_bringup` so its pose remains configurable.
 
+`--plant-height` changes the branch/leaf crown-top height above ground, using
+the original 1.298104 m height as its Z-scale reference. `--plant-width` changes
+the maximum local X/Y branch/leaf span before yaw, using the original
+0.866695 m width as its X/Y-scale reference. Height and width are independent.
+Explicit dimensions inline a resized plant model into the output SDF and scale
+its grounded stem collision; shared model, mesh and texture assets are unchanged.
+Omitting both options retains the original world-generation path. Without fruit
+randomization, this also preserves the baseline's original collision box.
+
 完整中文步骤（依赖、构建、只打开场地、导入机器人、参数及排错）：
 [番茄田复现指南](../../../docs/tomato_field_reproduction.md)。
 底盘控制启动、低速行间路线与量化评测见
@@ -35,5 +44,28 @@ The default `--fruit-visual mesh` uses a single body extracted from the original
 `Fruit1` mesh, its original UV/normals and existing red/green albedo textures.
 `--fruit-visual sphere` restores the plain sphere appearance. Both modes retain
 the same conservative sphere collision and seeded target positions.
+
+Fruit diameter, world-frame center height and horizontal placement radius do
+not scale with the branches or leaves. Wider plants have wider stem collision
+boxes and require adequate `--fruit-radius-min`; rejection sampling may change
+positions in crowded layouts. Without `--randomize-fruits`, dimension options
+still resize the foliage, but existing fruit and blossom meshes retain their
+original sizes and positions. The optional JSON includes `plant_geometry`
+(`height`, `width`, `mesh_scale`, `stem_size`, `stem_center_z`); the last two
+fields report the actual stem collision dimensions and center Z.
+
+Example values, pending real greenhouse measurements:
+
+```bash
+python3 scripts/generate_tomato_field.py \
+  --randomize-fruits --plant-height 2.0 --plant-width 1.0 \
+  --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
+  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --output /tmp/tomato_dimensions.sdf --metadata /tmp/tomato_dimensions.json
+```
+
+After updating the package, rebuild `agri_greenhouse_worlds`, regenerate the
+world, and restart its Gazebo instance. Loading an existing SDF does not apply
+new generator parameters retroactively.
 实际尺寸待测，示例参数与模型限制见
-[果实随机化指南](../../../docs/tomato_fruit_randomization.md)。
+[植株尺寸与果实参数化指南](../../../docs/tomato_fruit_randomization.md)。
