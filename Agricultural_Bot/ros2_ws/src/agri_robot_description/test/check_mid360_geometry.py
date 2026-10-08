@@ -85,15 +85,30 @@ def main():
 
     body_position, body_rotation = origin(root.find("joint[@name='mid360_joint']"))
     scan_position, scan_rotation = origin(root.find("joint[@name='mid360_sensor_frame_joint']"))
+    horizontal_position, horizontal_rotation = origin(
+        root.find("joint[@name='mid360_scan_frame_joint']"))
     base_position, base_rotation = origin(root.find("joint[@name='base_footprint_joint']"))
     optical_cad = [a + b for a, b in zip(body_position, rotate(body_rotation, scan_position))]
     optical_ros = [a + b for a, b in zip(base_position, rotate(base_rotation, optical_cad))]
     scan_ros = matrix_product(base_rotation, matrix_product(body_rotation, scan_rotation))
+    horizontal_ros = matrix_product(
+        scan_ros, horizontal_rotation)
     close(optical_ros, [-0.401439121228018, 0.00343775880066549, 0.459044570728433],
           1e-9, "CAD optical-window center in base_footprint")
     expected = rotation([0, -math.pi / 12, 0])
     for actual_row, expected_row in zip(scan_ros, expected):
         close(actual_row, expected_row, 1e-12, "forward/left/dome-up scanning axes")
+    horizontal_optical_ros = [
+        a + b for a, b in zip(
+            optical_ros,
+            rotate(scan_ros, horizontal_position),
+        )
+    ]
+    close(horizontal_optical_ros, optical_ros, 1e-12,
+          "horizontal navigation frame origin")
+    for actual_row, expected_row in zip(horizontal_ros, rotation([0, 0, 0])):
+        close(actual_row, expected_row, 1e-12,
+              "horizontal navigation frame axes")
 
     link = root.find("link[@name='mid360_link']")
     for tag in ["visual", "collision"]:

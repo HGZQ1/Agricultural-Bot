@@ -7,6 +7,9 @@ controller_manager:
   ros__parameters:
     update_rate: 100
     use_sim_time: true
+    # Enforce the URDF joint limits in controller_manager as a second boundary
+    # behind the application-level four-wheel speed and steering limits.
+    enforce_command_limits: true
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster

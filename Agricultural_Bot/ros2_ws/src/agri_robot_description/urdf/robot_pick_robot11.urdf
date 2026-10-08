@@ -173,7 +173,7 @@
       lower="-3.1416"
       upper="3.1416"
       effort="20"
-      velocity="2" />
+      velocity="8.0" />
     <dynamics
       damping="0.1"
       friction="0.05" />
@@ -296,7 +296,7 @@
       lower="-3.1416"
       upper="3.1416"
       effort="20"
-      velocity="2" />
+      velocity="8.0" />
     <dynamics
       damping="0.1"
       friction="0.05" />
@@ -419,7 +419,7 @@
       lower="-3.1416"
       upper="3.1416"
       effort="20"
-      velocity="2" />
+      velocity="8.0" />
     <dynamics
       damping="0.1"
       friction="0.05" />
@@ -542,7 +542,7 @@
       lower="-3.1416"
       upper="3.1416"
       effort="20"
-      velocity="2" />
+      velocity="8.0" />
     <dynamics
       damping="0.1"
       friction="0.05" />
@@ -609,6 +609,20 @@
       link="mid360_link" />
     <child
       link="mid360_sensor_frame" />
+  </joint>
+  <!-- Horizontal navigation projection frame. Its origin is the calibrated
+       MID-360 optical center; +15 degrees cancels the -15 degree mount pitch. -->
+  <link name="mid360_scan_frame" />
+  <joint
+    name="mid360_scan_frame_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0.2617993877991494 0" />
+    <parent
+      link="mid360_sensor_frame" />
+    <child
+      link="mid360_scan_frame" />
   </joint>
   <link
     name="tomato_box_link">

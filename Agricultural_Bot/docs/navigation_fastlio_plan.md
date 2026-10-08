@@ -1,5 +1,7 @@
 # FAST-LIO 建图、Nav2 导航与采摘停车方案
 
+**状态更新（2026-10-08）：用户已取消 FAST-LIO，本文件保留为历史选型记录，以下内容不再作为实施路线。当前方案见 [导航开发流程](navigation_development_plan.md)，采用 SLAM Toolbox、AMCL 和 Nav2。**
+
 记录日期：2026-10-08。**本文是源码选型和接口实施计划，IMU、FAST-LIO、Nav2
 尚未在本项目接入或验收。** 文中节点、话题和配置是拟定接口，不是现有启动入口。
 本轮选择 FAST-LIO 作为三维建图前端；需求文档中原有 SLAM Toolbox 建图路线仍待

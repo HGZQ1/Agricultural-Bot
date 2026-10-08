@@ -1,6 +1,8 @@
 four_wheel_steering_node:
   ros__parameters:
     cmd_vel_type: twist_stamped
+    # The simulation launch overrides this with /cmd_vel_safe after starting
+    # agri_base_adapter. Running this package alone retains the public /cmd_vel.
     cmd_vel_topic: /cmd_vel
     joint_states_topic: /joint_states
     steering_command_topic: /steering_controller/commands
@@ -11,9 +13,19 @@ four_wheel_steering_node:
     base_frame: base_footprint
     update_rate: 50.0
     command_timeout: 0.5
+    command_max_age: 0.5
+    max_future_stamp_skew: 0.05
+    joint_state_timeout: 0.25
     wheel_radius: 0.127
     max_wheel_speed: 8.0
     steering_limits: [-3.14159265, 3.14159265]
+    # Hold drive at zero while a steering module is farther than 20 deg from
+    # its target; ramp to full speed by 2.9 deg to avoid wheel scrub.
+    steering_full_speed_error: 0.05
+    steering_stop_error: 0.35
+    # Planar wheel odometry. Z/roll/pitch are intentionally marked unobserved.
+    pose_covariance_diagonal: [0.01, 0.01, 1000000.0, 1000000.0, 1000000.0, 0.04]
+    twist_covariance_diagonal: [0.02, 0.02, 1000000.0, 1000000.0, 1000000.0, 0.08]
     # x is forward and y is left in base_footprint.  Verify these four values
     # against the final calibrated URDF wheel-joint origins.
     wheel_names: [f1, f2, r1, r2]
@@ -24,4 +36,7 @@ four_wheel_steering_node:
     # All steering axes map to -Z in base_footprint; all positive wheel axes
     # produce +X rolling velocity at steering zero. Verify again after URDF edits.
     steering_joint_signs: [-1.0, -1.0, -1.0, -1.0]
+    # physical_heading = joint_position * sign + offset. Values come from the
+    # imported CAD module zero headings measured in the 2026-10-07 diagnosis.
+    steering_joint_offsets: [0.005596326794896633, -0.005638618281266784, 0.005638618185346499, -0.005638618281326736]
     wheel_joint_signs: [1.0, 1.0, 1.0, 1.0]

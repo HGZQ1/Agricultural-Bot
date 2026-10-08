@@ -1,0 +1,38 @@
+mid360_navigation_cloud_filter:
+  ros__parameters:
+    use_sim_time: true
+    input_topic: /mid360/points
+    output_topic: /mid360/navigation_points
+    source_frame: mid360_sensor_frame
+    target_frame: mid360_scan_frame
+    min_range: 0.10
+    max_range: 40.0
+    # Bounds are expressed in the horizontal scan frame, not the tilted
+    # sensor frame. Ground is approximately -0.46 m at the optical centre.
+    min_height: -0.40
+    max_height: 0.40
+    self_filter_enabled: false
+    self_filter_x_min: -0.75
+    self_filter_x_max: 0.55
+    self_filter_y_min: -0.55
+    self_filter_y_max: 0.55
+    self_filter_z_min: -0.55
+    self_filter_z_max: 0.45
+    voxel_size: 0.0
+    tf_timeout: 0.05
+
+mid360_pointcloud_to_laserscan:
+  ros__parameters:
+    use_sim_time: true
+    target_frame: mid360_scan_frame
+    transform_tolerance: 0.10
+    min_height: -0.40
+    max_height: 0.40
+    angle_min: -3.141592653589793
+    angle_max: 3.141592653589793
+    angle_increment: 0.017453292519943295
+    scan_time: 0.10
+    range_min: 0.10
+    range_max: 40.0
+    use_inf: true
+    inf_epsilon: 1.0

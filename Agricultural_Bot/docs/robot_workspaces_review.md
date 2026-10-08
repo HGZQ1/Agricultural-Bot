@@ -26,8 +26,8 @@ Franka FR3 机械臂组成。环境与本项目相同，机器人本体和控制
 
 仓库没有 FAST-LIO 接入。主导航使用二维激光扫描；临时三维雷达在默认演示中关闭。
 路线是已知温室布局中的巡查/采摘站点，不是未知场景的自主探索建图。
-本项目可以保留 [FAST-LIO 计划](navigation_fastlio_plan.md)，参考对方 Nav2 与任务层，
-但二维地图转换和保存地图定位后端仍需完成。
+用户随后已取消 FAST-LIO。本项目采用 SLAM Toolbox＋AMCL＋Nav2 的同类路线，
+需要完成 MID-360 二维扫描投影和四舵轮适配，见[导航开发流程](navigation_development_plan.md)。
 
 ## 2. 已有功能与采摘停车方式
 
@@ -112,7 +112,7 @@ JSON 的图像时间在解析时未用于同步，默认 TF 也取最新。腕�
 
 | 参考内容 | 我方承接位置 | 必要适配 |
 | --- | --- | --- |
-| Nav2 规划、代价地图、禁行遮罩 | `agri_navigation` | 四舵轮 footprint、速度/加速度、MID-360 障碍输入与 FAST-LIO 地图/定位接口 |
+| Nav2 规划、代价地图、禁行遮罩 | `agri_navigation` | 四舵轮 footprint、速度/加速度、MID-360 扫描输入与 SLAM Toolbox/AMCL 接口 |
 | 航点、观察姿态与巡查/采摘任务状态 | `agri_task_manager` | 参数化田布局、map 对齐、实际停稳互锁、失败恢复；拆分导航与采摘动作接口 |
 | YOLO、RGB-D 记录与目标去重 | `agri_perception` | D405 话题/QoS/时间同步、果心与抓取方向估计、取消模型真值吸附 |
 | OMPL 接近＋Pilz LIN 进给/退离 | `agri_robot_moveit_config`、`agri_manipulation` | CR5 六关节、TCP、IK、关节限位、真实场景和持果碰撞、篮位规划 |
@@ -126,4 +126,5 @@ JSON 的图像时间在解析时未用于同步，默认 TF 也取最新。腕�
 
 建议按“导航到站并停稳 → D405/YOLO 定位与 IK 可达检查 → 单果采摘物理 → 入篮 →
 多站点任务”逐步接入，分别记录定位误差、计划成功率、实际抓持和入篮结果。
-仅借鉴各模块流程；当前 FAST-LIO 选型、机器人本体与运行场景不因本轮评估而改变。
+仅借鉴各模块流程，保留我方机器人本体与运行场景；当前导航路线为 SLAM Toolbox、
+AMCL 和 Nav2，FAST-LIO 不再接入。

@@ -3,6 +3,10 @@ import math
 from agri_base_kinematics.kinematics import (
     apply_joint_signs,
     FourWheelSteeringKinematics,
+    integrate_planar_pose,
+    physical_steering_to_joint,
+    steering_alignment_scale,
+    steering_feedback_to_physical,
 )
 import pytest
 
@@ -63,6 +67,15 @@ def test_joint_sign_conversion_is_consistent():
     assert feedback == pytest.approx(physical)
 
 
+def test_steering_offsets_round_trip_between_joint_and_physical_frames():
+    physical = [0.0, 0.4, -0.8, math.pi - 0.1]
+    signs = [-1.0, -1.0, -1.0, -1.0]
+    offsets = [0.0056, -0.0056, 0.0056, -0.0056]
+    joint = physical_steering_to_joint(physical, signs, offsets)
+    recovered = steering_feedback_to_physical(joint, signs, offsets)
+    assert recovered == pytest.approx(physical)
+
+
 def test_speed_limit_preserves_wheel_ratios():
     unlimited = FourWheelSteeringKinematics(
         POSITIONS, 0.1, max_wheel_speed=100.0)
@@ -76,3 +89,24 @@ def test_speed_limit_preserves_wheel_ratios():
         assert actual[name].steering == pytest.approx(expected[name].steering)
         assert actual[name].velocity == pytest.approx(
             expected[name].velocity * scale)
+
+
+def test_alignment_scale_stops_then_ramps_all_wheels_together():
+    assert steering_alignment_scale([0.0, 0.02], 0.05, 0.35) == 1.0
+    assert steering_alignment_scale([0.01, 0.35], 0.05, 0.35) == 0.0
+    assert steering_alignment_scale([0.20], 0.05, 0.35) == pytest.approx(0.5)
+    assert steering_alignment_scale([2 * math.pi - 0.02], 0.05, 0.35) == 1.0
+
+
+def test_alignment_thresholds_are_validated():
+    with pytest.raises(ValueError):
+        steering_alignment_scale([], 0.1, 0.1)
+    with pytest.raises(ValueError):
+        steering_alignment_scale([math.nan], 0.05, 0.35)
+
+
+def test_midpoint_pose_integration_reduces_arc_bias():
+    x, y, yaw = integrate_planar_pose(0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.1)
+    assert x == pytest.approx(math.cos(0.05) * 0.1)
+    assert y == pytest.approx(math.sin(0.05) * 0.1)
+    assert yaw == pytest.approx(0.1)

@@ -2,13 +2,17 @@
 
 ROS 2 Jazzy + Gazebo Harmonic 农业番茄采摘机器人项目工作空间。
 
-截至 2026-10-06，整机组件化模型、四舵轮运动学、底盘/CR5/夹爪仿真控制、MID-360
+截至 2026-10-08，整机组件化模型、四舵轮运动学、底盘/CR5/夹爪仿真控制、MID-360
 和 D405 RGB-D 仿真接口已经接通。MID-360 默认使用 GPU LiDAR，可选 RGL 官方图样；
 D405 使用 Harmonic 原生 RGB-D，连续接口与靶标场景验收通过。完整温室番茄场景、导航、
 视觉和采摘任务仍待开发。2026-10-07 集成了参数化番茄田（150 株）及入口生成机器人功能；
 依赖、构建、打开场地与复现步骤见 [番茄田复现指南](docs/tomato_field_reproduction.md)。
 开启底盘控制、行间测试路线及 Gazebo 真值量化评测见
 [番茄田底盘运动测试](docs/chassis_field_motion.md)。
+阶段一已增加速度门控、锁车、标准 `/odom` 适配和换舵稳态回归；阶段二已增加
+`agri_lidar_adapter`、水平 `mid360_scan_frame` 和 `/scan`，并在番茄田无界面仿真中通过
+8 秒接口验收。SLAM、AMCL 与 Nav2 仍按[导航开发流程](docs/navigation_development_plan.md)
+分阶段接入。
 
 原始 SolidWorks、旧版 URDF 和图纸保留原位；canonical 模型是独立修正的副本。
 RGL 第三方依赖安装到忽略的 `.cache/rgl`，版本和下载校验值由安装脚本固定。
@@ -45,7 +49,7 @@ MID-360 双后端、安装、光心基准、运行与验收记录见
 [mid360_simulation.md](docs/mid360_simulation.md)。
 D405 光学坐标、对齐投影、深度范围与验收见
 [d405_simulation.md](docs/d405_simulation.md)。
-FAST-LIO 源码选型、Nav2 接口与采摘停车的待实施方案见 [navigation_fastlio_plan.md](docs/navigation_fastlio_plan.md)。
+导航开发流程见 [navigation_development_plan.md](docs/navigation_development_plan.md)：SLAM Toolbox 建图、AMCL 定位、NavFn＋RPP 导航与停车作业状态机；FAST-LIO 已取消。
 Panther-FR3 温室项目的导航、感知与夹取源码评估见 [robot_workspaces_review.md](docs/robot_workspaces_review.md)。
 
 ## 当前约束
@@ -59,10 +63,12 @@ Panther-FR3 温室项目的导航、感知与夹取源码评估见 [robot_worksp
   侧躺问题；惯性原点仍需后续按 link 局部坐标校准。
 - 四舵轮运动学、`gz_ros2_control`、CR5/夹爪控制器已经接通，用户已确认底盘移动测试通过。
 - MID-360 已有光学 frame、GPU/RGL 双后端、点云桥接、RViz 配置与验收工具；两个后端
-  均通过连续 60 仿真秒接口、FOV 和四墙/地面场景检查。
+  均通过连续 60 仿真秒接口、FOV 和四墙/地面场景检查；`agri_lidar_adapter` 已将
+  `/mid360/points` 转为 `/mid360/navigation_points` 和 `/scan`。
 - MID-360 光心和 −15° 安装俯仰来自现有 CAD 的光学穹顶拟合，后续仍需实测外参标定。
 - D405 已接入 848×480/30 Hz RGB、对齐 32FC1 米深度和 CameraInfo；60 仿真秒接口及
-  三组靶标几何/裁剪验收通过。当前 canonical 模型为 26 个 link、25 个 joint。
+  三组靶标几何/裁剪验收通过。当前 canonical 模型为 27 个 link、26 个 joint（包含
+  水平 `mid360_scan_frame`）。
 - D405 中央虚拟 pinhole 来自 CAD 前玻璃中心向内 3.7 mm，不代表实机左眼或手眼标定。
   完整 M3 仍需温室与番茄资产。
 - MoveIt、Nav2、YOLOv8 和采摘任务逻辑仍处于规划/包骨架阶段。
@@ -95,6 +101,12 @@ ros2 launch agri_sim_bringup simulation.launch.py lidar_mode:=rgl rviz:=true
 RGL 首次安装步骤和自动回退规则见 [MID-360 文档](docs/mid360_simulation.md)。
 默认点云为 `/mid360/points`，类型 `sensor_msgs/msg/PointCloud2`，frame 为
 `mid360_sensor_frame`，10 Hz，水平 360°、垂直 −7° 至 +52°，量程 0.1–40 m。
+导航默认扫描为 `/scan`，frame 为 `mid360_scan_frame`，原点保持 MID-360 光心，默认
+高度切片 `-0.40..0.40 m`、角分辨率 1°；启动时加 `use_scan:=true`。扫描验收命令：
+
+```bash
+ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
+```
 接口快速验收在另一个已加载环境的终端运行：
 
 ```bash

@@ -9,6 +9,7 @@
 - 空世界 `empty_greenhouse.sdf`、雷达验收世界 `mid360_validation.sdf` 与相机验收世界
   `d405_validation.sdf`；
 - MID-360 GPU LiDAR/RGL 后端选择、仿真时间、桥接、RGL 规范化节点与可选 RViz；
+- MID-360 水平导航扫描：`agri_lidar_adapter` 点云过滤、`mid360_scan_frame` 和 `/scan`；
 - D405 原生对齐 RGB-D、匹配 CameraInfo、独立彩色/深度裁剪与三路桥接；
 - 运行时生成独立世界/桥接 YAML，并保留原世界目录及已有 Gazebo 资源路径。
 
@@ -29,6 +30,11 @@ ros2 launch agri_sim_bringup simulation.launch.py gui:=false world:=mid360_valid
 | `use_control` | `true` | 加载控制器 |
 | `use_kinematics` | 跟随 `use_control` | 启动四舵轮命令/里程计节点 |
 | `use_lidar` | `true` | 启动 MID-360 和公开点云输出 |
+| `use_scan` | `false` | 将 MID-360 点云过滤并转换为 `/scan`；要求 `use_lidar:=true` |
+| `scan_min_height`、`scan_max_height` | `-0.40`、`0.40` | `mid360_scan_frame` 中的导航高度切片 |
+| `scan_range_min`、`scan_range_max` | `0.10`、`40.0` | 二维扫描量程（米） |
+| `scan_angle_increment` | `0.0174533` | 二维扫描角分辨率（弧度） |
+| `scan_voxel_size` | `0` | 过滤点云体素边长；0 表示不降采样 |
 | `use_camera` | `true` | 启动 D405 RGB、对齐深度和 CameraInfo |
 | `camera_config` | 包内 d405.yaml | 覆盖相机 YAML 路径 |
 | `lidar_mode` | `gpu_lidar` | `gpu_lidar`、`rgl` 或 `auto` |

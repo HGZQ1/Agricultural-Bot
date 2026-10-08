@@ -15,6 +15,7 @@ import json
 import math
 import os
 from pathlib import Path
+import statistics
 import threading
 import time
 
@@ -141,6 +142,20 @@ def command_timeout_metrics(before, after, last_command_stamp, deadline=0.6):
     }
 
 
+def first_sustained_threshold(samples, threshold, duration=0.2):
+    """Return the first stamp whose threshold crossing persists for duration."""
+    for index, (stamp, value) in enumerate(samples):
+        if value < threshold:
+            continue
+        window = [(next_stamp, next_value)
+                  for next_stamp, next_value in samples[index:]
+                  if next_stamp <= stamp + duration + 1e-9]
+        if (window and window[-1][0] >= stamp + duration - 0.02 and
+                all(value >= threshold for _, value in window)):
+            return stamp
+    return None
+
+
 class PreconditionsError(RuntimeError):
     pass
 
@@ -160,12 +175,14 @@ class Observer:
         from rclpy.parameter import Parameter
         from rclpy.qos import qos_profile_sensor_data
         from sensor_msgs.msg import JointState
+        from std_msgs.msg import Float64MultiArray
 
         self.rclpy, self.message_type = rclpy, TwistStamped
         self.ros = Node('check_chassis_motion', parameter_overrides=[
             Parameter('use_sim_time', Parameter.Type.BOOL, True)])
         self.lock = threading.Lock()
         self.truth, self.odom, self.joints = deque(maxlen=200000), deque(maxlen=200000), deque(maxlen=200000)
+        self.wheel_commands = deque(maxlen=200000)
         self.arms = deque(maxlen=200000)
         self.initial_arm_positions = None
         self.nonincreasing_truth_messages = 0
@@ -182,6 +199,9 @@ class Observer:
         self.subscriptions = [
             self.ros.create_subscription(Odometry, '/wheel/odom', self.on_odom, qos_profile_sensor_data),
             self.ros.create_subscription(JointState, '/joint_states', self.on_joints, qos_profile_sensor_data),
+            self.ros.create_subscription(
+                Float64MultiArray, '/wheel_controller/commands',
+                self.on_wheel_command, 20),
         ]
         self.timer = self.ros.create_timer(0.05, self.publish_command)
         self.gazebo = GazeboNode()
@@ -224,6 +244,12 @@ class Observer:
         arms = {name: position for name, position in zip(message.name, message.position)
                 if name in ('arm_joint1', 'arm_joint2', 'arm_joint3', 'arm_joint4', 'arm_joint5', 'cr5_joint6')}
         self.arms.append((stamp, arms))
+
+    def on_wheel_command(self, message):
+        stamp = self.ros.get_clock().now().nanoseconds / 1e9
+        maximum = max((abs(float(value)) for value in message.data), default=0.0)
+        if math.isfinite(maximum):
+            self.wheel_commands.append((stamp, maximum))
 
     def publish_command(self):
         if self.publisher is None or not self.publish_enabled:
@@ -274,6 +300,12 @@ class Observer:
         if difference > 0.05:
             raise PreconditionsError('Odometry and Gazebo ground truth are not synchronized')
         return pose
+
+    def truth_at(self, stamp):
+        with self.lock:
+            if not self.truth:
+                raise PreconditionsError('No Gazebo truth received')
+            return min(self.truth, key=lambda pose: abs(pose.stamp - stamp))
 
     def ensure_no_other_publishers(self):
         others = [info.node_name for info in self.ros.get_publishers_info_by_topic('/cmd_vel')
@@ -414,6 +446,53 @@ def run_suite(observer, options):
         odom_error = math.hypot(aligned.x - end.x, aligned.y - end.y)
         odom_heading_error = abs(wrap_angle(aligned.yaw - end.yaw))
         position_limit = 0.05 if not yaw_rate or full_turn else 0.08
+        command_levels = [
+            (stamp, maximum) for stamp, maximum in observer.wheel_commands
+            if start.stamp <= stamp <= end.stamp
+        ]
+        measured_levels = [
+            (stamp, max(wheels.values(), default=0.0))
+            for stamp, wheels in observer.joints
+            if start.stamp <= stamp <= end.stamp and len(wheels) == 4
+        ]
+        tail_start = end.stamp - min(0.5, duration / 4.0)
+        command_tail = [value for stamp, value in command_levels if stamp >= tail_start]
+        measured_tail = [value for stamp, value in measured_levels if stamp >= tail_start]
+        steady_command = statistics.median(command_tail) if command_tail else 0.0
+        steady_measured = statistics.median(measured_tail) if measured_tail else 0.0
+        command_release = first_sustained_threshold(
+            command_levels, steady_command * 0.95) if steady_command > 0.02 else None
+        measured_settle = first_sustained_threshold(
+            measured_levels, steady_measured * 0.95) if steady_measured > 0.02 else None
+        steady_metrics = {
+            'passed': False,
+            'reason': 'wheel command or measured wheel speed did not settle',
+            'command_release_latency_s': (
+                command_release - start.stamp if command_release is not None else None),
+            'measured_wheel_settle_latency_s': (
+                measured_settle - start.stamp if measured_settle is not None else None),
+            'steady_command_peak_rad_s': steady_command,
+            'steady_measured_peak_rad_s': steady_measured,
+        }
+        if measured_settle is not None:
+            steady_start = observer.truth_at(measured_settle)
+            steady_duration = end.stamp - steady_start.stamp
+            steady_target = expected_endpoint(
+                steady_start, velocity, yaw_rate, steady_duration)
+            steady_position_error = math.hypot(
+                end.x - steady_target.x, end.y - steady_target.y)
+            steady_heading_error = abs(wrap_angle(end.yaw - steady_target.yaw))
+            steady_metrics.update({
+                'passed': (steady_duration >= 1.0 and
+                           steady_position_error <= position_limit and
+                           steady_heading_error <= math.radians(3)),
+                'reason': '',
+                'duration_s': steady_duration,
+                'start_world_pose': asdict(steady_start),
+                'target_world_pose': asdict(steady_target),
+                'position_error_m': steady_position_error,
+                'heading_error_deg': math.degrees(steady_heading_error),
+            })
         maximum_truth_gap = max((b.stamp - a.stamp for a, b in zip(samples, samples[1:])),
                                 default=math.inf)
         passed = maximum_truth_gap <= 0.1 + 1e-6 and position_error <= position_limit \
@@ -439,6 +518,7 @@ def run_suite(observer, options):
             'endpoint_odom_stamp_difference_s': abs(endpoint_odom.stamp - end.stamp),
             'odometry_vs_truth_position_error_m': odom_error,
             'odometry_vs_truth_heading_error_deg': math.degrees(odom_heading_error),
+            'transition_aware_steady_motion': steady_metrics,
         }
         results.append(result)
         print(f"{name}: {'PASS' if passed else 'FAIL'} position error={position_error:.3f} m, "
@@ -500,6 +580,14 @@ def run_suite(observer, options):
         'passed': all(result['passed'] for result in results) and corridor_passed
                   and all(value <= 0.02 for value in arm_deviation.values())
                   and observer.nonincreasing_truth_messages == 0,
+        'transition_aware_passed': all(
+            result.get('transition_aware_steady_motion', {'passed': True})['passed']
+            for result in results)
+            and all(result['passed'] for result in results
+                    if result['kind'] not in ('motion', 'full_turn'))
+            and corridor_passed
+            and all(value <= 0.02 for value in arm_deviation.values())
+            and observer.nonincreasing_truth_messages == 0,
         'limits': {'heading_error_deg': 3, 'odom_position_error_m': 0.15,
                    'odom_heading_error_deg': 5, 'rest_speed_m_s': 0.01,
                    'rest_yaw_rate_rad_s': 0.02, 'rest_duration_s': 0.5},

@@ -19,7 +19,9 @@
   <exec_depend>ros_gz_image</exec_depend>
   <exec_depend>rosgraph_msgs</exec_depend>
   <exec_depend>agri_sim_control</exec_depend>
+  <exec_depend>agri_base_adapter</exec_depend>
   <exec_depend>agri_base_kinematics</exec_depend>
+  <exec_depend>agri_lidar_adapter</exec_depend>
   <exec_depend>agri_sim_sensors</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>rviz2</exec_depend>

@@ -113,6 +113,10 @@ def _prepare_simulation(context):
     sensor_share = Path(get_package_share_directory("agri_sim_sensors"))
     description_share = Path(get_package_share_directory("agri_robot_description"))
     control_share = Path(get_package_share_directory("agri_sim_control"))
+    use_scan = _enabled(context, "use_scan")
+    if use_scan and not _enabled(context, "use_lidar"):
+        raise ValueError("use_scan:=true requires use_lidar:=true in the simulation")
+    scan_share = Path(get_package_share_directory("agri_lidar_adapter"))
     workspace = find_workspace(sensor_share)
     world_arg = Path(LaunchConfiguration("world").perform(context))
     world_source = world_arg if world_arg.is_absolute() else sim_share / "worlds" / world_arg
@@ -165,6 +169,25 @@ def _prepare_simulation(context):
         condition=IfCondition(use_control),
     )
 
+    base_adapter_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            str(
+                Path(get_package_share_directory("agri_base_adapter"))
+                / "launch"
+                / "base_adapter.launch.py"
+            )
+        ),
+        launch_arguments={
+            "config": str(
+                Path(get_package_share_directory("agri_base_adapter"))
+                / "config"
+                / "base_adapter.yaml"
+            ),
+            "use_sim_time": "true",
+        }.items(),
+        condition=IfCondition(LaunchConfiguration("use_kinematics")),
+    )
+
     kinematics_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             str(
@@ -173,8 +196,39 @@ def _prepare_simulation(context):
                 / "four_wheel_steering.launch.py"
             )
         ),
-        launch_arguments={"use_sim_time": "true"}.items(),
+        launch_arguments={
+            "config": str(
+                Path(get_package_share_directory("agri_base_kinematics"))
+                / "config"
+                / "four_wheel_steering.yaml"
+            ),
+            "use_sim_time": "true",
+            "cmd_vel_topic": "/cmd_vel_safe",
+            "odom_topic": "/wheel/odom",
+            "publish_tf": "true",
+        }.items(),
         condition=IfCondition(LaunchConfiguration("use_kinematics")),
+    )
+
+    scan_config_arg = LaunchConfiguration("scan_config").perform(context)
+    scan_config = Path(scan_config_arg) if scan_config_arg else scan_share / "config" / "lidar_to_scan.yaml"
+    scan_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(str(scan_share / "launch" / "lidar_to_scan.launch.py")),
+        launch_arguments={
+            "config": str(scan_config),
+            "input_topic": LaunchConfiguration("scan_input_topic"),
+            "cloud_topic": LaunchConfiguration("scan_cloud_topic"),
+            "scan_topic": LaunchConfiguration("scan_topic"),
+            "target_frame": LaunchConfiguration("scan_target_frame"),
+            "min_height": LaunchConfiguration("scan_min_height"),
+            "max_height": LaunchConfiguration("scan_max_height"),
+            "range_min": LaunchConfiguration("scan_range_min"),
+            "range_max": LaunchConfiguration("scan_range_max"),
+            "angle_increment": LaunchConfiguration("scan_angle_increment"),
+            "voxel_size": LaunchConfiguration("scan_voxel_size"),
+            "use_sim_time": "true",
+        }.items(),
+        condition=IfCondition(LaunchConfiguration("use_scan")),
     )
 
     clock_bridge = Node(
@@ -252,7 +306,7 @@ def _prepare_simulation(context):
                 ],
             ),
         ])
-    actions.extend([control_launch, kinematics_launch])
+    actions.extend([control_launch, base_adapter_launch, kinematics_launch, scan_launch])
     if _enabled(context, "rviz"):
         rviz_config = sensor_share / 'rviz' / 'mid360.rviz'
         if _enabled(context, 'use_camera'):
@@ -287,10 +341,23 @@ def generate_launch_description():
         DeclareLaunchArgument("use_control", default_value="true"),
         DeclareLaunchArgument("use_kinematics", default_value=LaunchConfiguration("use_control")),
         DeclareLaunchArgument("use_lidar", default_value="true"),
+        DeclareLaunchArgument("use_scan", default_value="false",
+                             description="Publish a horizontal LaserScan from MID-360 points."),
         DeclareLaunchArgument("use_camera", default_value="true"),
         DeclareLaunchArgument("camera_config", default_value=""),
         DeclareLaunchArgument("lidar_mode", default_value="gpu_lidar"),
         DeclareLaunchArgument("lidar_config", default_value=""),
+        DeclareLaunchArgument("scan_config", default_value=""),
+        DeclareLaunchArgument("scan_input_topic", default_value="/mid360/points"),
+        DeclareLaunchArgument("scan_cloud_topic", default_value="/mid360/navigation_points"),
+        DeclareLaunchArgument("scan_topic", default_value="/scan"),
+        DeclareLaunchArgument("scan_target_frame", default_value="mid360_scan_frame"),
+        DeclareLaunchArgument("scan_min_height", default_value="-0.40"),
+        DeclareLaunchArgument("scan_max_height", default_value="0.40"),
+        DeclareLaunchArgument("scan_range_min", default_value="0.10"),
+        DeclareLaunchArgument("scan_range_max", default_value="40.0"),
+        DeclareLaunchArgument("scan_angle_increment", default_value="0.017453292519943295"),
+        DeclareLaunchArgument("scan_voxel_size", default_value="0.0"),
         DeclareLaunchArgument("rgl_install_prefix", default_value=""),
         DeclareLaunchArgument("rgl_patterns_dir", default_value=""),
         OpaqueFunction(function=_prepare_simulation),

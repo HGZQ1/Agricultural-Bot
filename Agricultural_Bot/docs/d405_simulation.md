@@ -91,7 +91,8 @@ broadcaster 的 100 Hz，缩短 30 Hz 腕部相机查询图像时刻 TF 的等�
 
 ## CAD 外观与光学坐标
 
-canonical 模型现在为 26 个 link、25 个 joint；MID-360 阶段为 24/23，阶段一为 23/22。
+canonical 模型现在为 27 个 link、26 个 joint；其中新增的 `mid360_scan_frame` 是
+导航水平投影 frame，不改变 D405 外参。MID-360 阶段为 24/23，阶段一为 23/22。
 已有支架保持 `camera_link`，原名为 `camera_optical_frame` 的有质量 CAD 壳体改用
 `camera_lens_link`，继续引用原 STL，网格、惯量和安装位姿保持原装配位置。
 新增两个无质量固定 frame：

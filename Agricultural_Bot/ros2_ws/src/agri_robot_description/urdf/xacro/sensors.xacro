@@ -46,6 +46,20 @@
         <child link="mid360_sensor_frame"/>
     </joint>
 
+    <!--
+      Navigation projects the 3-D cloud in a horizontal frame.  Keep this
+      frame at exactly the calibrated optical-dome origin; only undo the
+      sensor's -15 degree installation pitch.  The point cloud header remains
+      mid360_sensor_frame and is transformed through TF, so changing a frame
+      name can never silently move the scan origin.
+    -->
+    <link name="mid360_scan_frame"/>
+    <joint name="mid360_scan_frame_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 ${mid360_scan_pitch_correction} 0"/>
+        <parent link="mid360_sensor_frame"/>
+        <child link="mid360_scan_frame"/>
+    </joint>
+
     <link name="camera_link">
         <inertial>
           <origin xyz="-0.000803740525782942 -0.022345292003549 0.00189627564202399" rpy="0 0 0"/>

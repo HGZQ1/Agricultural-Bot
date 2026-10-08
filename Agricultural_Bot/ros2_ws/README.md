@@ -20,7 +20,8 @@
 - `agri_bringup`
 - `agri_tests`
 
-当前已初始化 `agri_robot_description` 组件化 Xacro 和 `agri_base_kinematics` Python 包。
+当前已初始化 `agri_robot_description` 组件化 Xacro、`agri_base_kinematics` Python 包、
+`agri_base_adapter` 底盘速度/里程计适配包和 `agri_lidar_adapter` MID-360 导航扫描适配包。
 感知、导航、MoveIt 和任务算法包保持骨架，等待控制接口冻结后逐个实现。
 
 ## 模型检查
@@ -48,3 +49,19 @@ ros2 launch agri_base_kinematics four_wheel_steering.launch.py
 
 默认输入 `/cmd_vel` 为 `geometry_msgs/msg/TwistStamped`，输出四个转向角、四个轮速数组
 和 `/wheel/odom`；仿真控制模式会自动启动该节点。
+
+番茄田仿真入口会同时启动速度门控和 `/wheel/odom → /odom` 适配：遥控使用 `/cmd_vel`，
+后续 Nav2 使用 `/cmd_vel_nav`，四舵轮节点只接收 `/cmd_vel_safe`。门控默认限制
+`0.30 m/s / 0 / 0.50 rad/s`，输入断流 0.35 s 后归零；底层四舵轮看门狗为 0.5 s。
+`/base_motion/set_lock` 可在停车或机械臂作业前锁住底盘。
+
+MID-360 导航扫描启动（需要 `sim_ws` 中的传感器或实机点云及 TF）：
+
+```bash
+ros2 launch agri_lidar_adapter lidar_to_scan.launch.py
+```
+
+输入 `/mid360/points`（`mid360_sensor_frame`）先变换/裁剪到
+`mid360_scan_frame`，输出 `/mid360/navigation_points` 和 `/scan`。水平 frame 与雷达
+光心同原点，默认切片 `-0.40..0.40 m`、量程 `0.10..40 m`；参数见
+`src/agri_lidar_adapter/config/lidar_to_scan.yaml`。

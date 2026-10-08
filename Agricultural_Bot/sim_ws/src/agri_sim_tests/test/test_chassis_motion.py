@@ -65,3 +65,15 @@ def test_watchdog_checks_stopping_deadline_and_prior_actual_motion():
     assert motion.command_timeout_metrics(before, timely, 0)['passed']
     assert not motion.command_timeout_metrics(before, late, 0)['passed']
     assert not motion.command_timeout_metrics([pose(-0.5), pose(0)], timely, 0)['passed']
+
+
+def test_sustained_threshold_ignores_short_spike():
+    samples = [
+        (0.00, 0.0), (0.05, 1.0), (0.10, 0.0),
+        (0.20, 1.0), (0.30, 1.0), (0.40, 1.0),
+    ]
+    assert motion.first_sustained_threshold(samples, 0.9) == pytest.approx(0.2)
+
+
+def test_sustained_threshold_requires_complete_window():
+    assert motion.first_sustained_threshold([(0.0, 1.0), (0.1, 1.0)], 0.9) is None

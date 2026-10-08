@@ -12,14 +12,25 @@ def generate_launch_description():
     ])
     config = LaunchConfiguration('config')
     use_sim_time = LaunchConfiguration('use_sim_time')
+    cmd_vel_topic = LaunchConfiguration('cmd_vel_topic')
+    odom_topic = LaunchConfiguration('odom_topic')
+    publish_tf = LaunchConfiguration('publish_tf')
     return LaunchDescription([
         DeclareLaunchArgument('config', default_value=default_config),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
+        DeclareLaunchArgument('cmd_vel_topic', default_value='/cmd_vel'),
+        DeclareLaunchArgument('odom_topic', default_value='/wheel/odom'),
+        DeclareLaunchArgument('publish_tf', default_value='true'),
         Node(
             package='agri_base_kinematics',
             executable='four_wheel_steering_node',
             name='four_wheel_steering_node',
             output='screen',
-            parameters=[config, {'use_sim_time': use_sim_time}],
+            parameters=[config, {
+                'use_sim_time': use_sim_time,
+                'cmd_vel_topic': cmd_vel_topic,
+                'odom_topic': odom_topic,
+                'publish_tf': publish_tf,
+            }],
         ),
     ])

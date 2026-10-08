@@ -238,7 +238,8 @@ Xacro，并将现有网格作为对照输入。
 - Gazebo Harmonic 启动成功，`ros_gz_sim create` 返回 `Entity creation successful`。
 - 轴变换修正后，四个轮心在 SDF 中均位于同一 `z≈-0.233 m` 平面；干净启动并连续观察
   约 11 s，模型整体姿态保持接近零滚转/俯仰/偏航，没有初始侧躺。
-- 当前 canonical 模型包含 26 个 link、25 个 joint；MID-360 阶段为 24/23，新增扫描
+- 当前 canonical 模型包含 27 个 link、26 个 joint；其中 `mid360_scan_frame` 是导航
+  水平投影 frame；MID-360 阶段为 24/23，新增扫描
   frame 前的阶段一版本为 23/22；link/joint 名称无重复。质量总和约
   `161.8588 kg`（原始导出值约 `520.7283 kg`，差异主要来自四个转向 link 的质量修正）。
 - `config/joint_names.yaml` 和 RViz 配置已随描述包安装，可作为后续控制器/MoveIt 的命名入口。

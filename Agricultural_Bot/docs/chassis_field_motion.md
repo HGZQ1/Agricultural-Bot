@@ -1,8 +1,20 @@
 # 番茄田底盘运动测试
 
 本测试使用 `tomato_field.launch.py` 的中央通道出生位置，验证底盘控制、
-Gazebo 实际运动、轮式里程计及停车。先关闭传感器完成底盘基线，后续再单独验证
-MID-360、D405 与运动同时运行的效果。
+Gazebo 实际运动、轮式里程计及停车。阶段一的运行链为：
+
+```text
+/cmd_vel (遥控/测试)       /cmd_vel_nav (后续 Nav2)
+          \\                  /
+           → base_velocity_gate → /cmd_vel_safe
+                                  → four_wheel_steering_node
+                                  → steering_controller / wheel_controller
+/wheel/odom → base_odom_adapter → /odom
+```
+
+`/cmd_vel_safe` 是唯一面向四舵轮节点的速度出口。当前 `odom → base_footprint`
+仍由四舵轮节点发布，`base_odom_adapter` 只校验并转发 `/odom`，不会重复发布 TF；
+后续启用 EKF 时必须同时关闭这两项基线发布者。
 
 ## 1. 启动可运动的番茄田
 
@@ -41,6 +53,8 @@ export GZ_PARTITION=agricultural_bot_tomato_field
 
 ros2 control list_controllers
 gz model -m agri_robot -p
+ros2 topic info --verbose /cmd_vel_safe
+ros2 topic info --verbose /odom
 ```
 
 确认 `joint_state_broadcaster`、`steering_controller`、`wheel_controller` 为 `active`；
@@ -69,17 +83,25 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 | `k` / 空格 | 停车 |
 
 保持英文输入法、焦点在键盘控制终端。当前安装的 Jazzy 键盘节点按按键事件发布；
-持续运动需长按或连续按键，控制器在 0.5 仿真秒未收到新指令后停车。
+持续运动需长按或连续按键。速度门控在输入断流 0.35 仿真秒后发布零速，四舵轮节点
+再以 0.5 秒看门狗作为第二层保护。`TwistStamped` 必须使用
+`frame_id:=base_footprint` 和当前仿真时间戳；零时间戳、过期帧、NaN/Inf 和其他坐标系
+会被拒绝。
 先在中央行间前进约 1 m，停车，再倒车回入口；不要从初始位置先倒车 1 m，
 南侧地面边界为 Y=-7。小角度转弯在入口空地进行，避免把车头转向植株。
 
-当前轮半径 0.127 m、轮速上限 2 rad/s，直行指令上限对应约 0.254 m/s。
-`speed:=1.0` 会触发轮速限幅，不能用于证明底盘实际达到 1 m/s。
+当前轮半径 0.127 m、应用层轮速上限 8 rad/s；底层 URDF/controller_manager 也启用
+关节限位。实际仿真入口另由门控限制线速度 `0.30 m/s`、横向速度 `0`、角速度
+`0.50 rad/s`，所以 `speed:=1.0` 会先被门控截断，不能用于证明底盘达到 1 m/s。
+
+运动学节点单独启动时仍可接收 `/cmd_vel`，但不会自动获得速度仲裁；番茄田启动入口
+会显式加载 `agri_base_adapter`，并把运动学输入改为 `/cmd_vel_safe`。
 
 另一个同域终端可观察反馈：
 
 ```bash
 ros2 topic echo /wheel/odom
+ros2 topic echo /odom
 ros2 topic echo /joint_states
 gz model -m agri_robot -p
 ```
@@ -90,7 +112,8 @@ gz model -m agri_robot -p
 ## 3. 自动量化测试
 
 先在键盘终端 Ctrl+C 退出遥控，再从默认出生位置重新启动世界。
-自动测试会发布速度，不能同时运行键盘、导航或其他 `/cmd_vel` 发布者。
+自动测试会发布速度，不能同时运行键盘、导航或其他 `/cmd_vel` 发布者；门控会把测试
+输入和后续导航输入分成不同优先级，最终仍只向 `/cmd_vel_safe` 输出一条速度流。
 在终端 B 执行：
 
 ```bash
@@ -102,7 +125,10 @@ python3 scripts/check_chassis_motion.py --execute --repeats 5 \
 的目标终点误差、航向漂移、整轮回起点误差、里程计相对 Gazebo 真值的误差。
 启用 `--full-turns` 时，在五轮往返后单独测试五次整圈；随后执行左右小角度转弯，
 以及停发指令后的超时停车检查。
-Gazebo 真值仅用于此仿真评测，不供机器人算法使用。
+Gazebo 真值仅用于此仿真评测，不供机器人算法使用。报告中的
+`transition_aware_steady_motion` 会额外记录轮速从零释放、实际轮速稳定的延迟，并从
+稳定时刻重新计算弧线误差。这样可以把换舵等待与稳态运动误差分开，不能用固定时长测试
+掩盖换舵延迟。
 JSON 报告旁生成同名 `.truth.csv`，记录带仿真时间的世界位姿与连续展开 yaw。
 退出码 0 为通过、1 为指标失败、2 为前提不满足/超时/中断；没有 `--execute` 时只检查就绪。
 默认总墙钟上限为 600 s，较低实时因子可用 `--timeout 1200` 延长采集。
@@ -127,6 +153,8 @@ python3 scripts/check_chassis_motion.py --execute --repeats 5 --full-turns \
 
 补充回归阈值为：小弧线位置误差 ≤0.08 m，动作航向误差 ≤3°，里程计相对
 真值位置/航向误差 ≤0.15 m/5°；它们不替代轮径或滑移标定。
+换舵协调要求轮速在舵角误差大于 0.35 rad 时保持零，在误差 0.05 rad 内恢复满速；
+稳态分段至少保留 1.0 s。阶段一不把原地旋转和横移宣称为实机能力。
 全程真值采样间隙 ≤0.1 s、模型高度相对初始变化 ≤0.03 m、倾斜 ≤10°，
 六个机械臂关节相对初始保持位置的变化 ≤0.02 rad。检查机器人异常时提前停车。
 
@@ -177,3 +205,30 @@ Gazebo 真值继续只作为评测依据。
 场景 SHA、源文件 SHA、软件版本、随机种子及启动命令记录在环境快照中。
 新增数学边界测试 7 项通过，Python 语法和 `git diff --check` 通过。
 仅关闭本次独立实例；用户域 0 的 ROS 会话保留。GUI 和传感器共存尚未在本轮验收。
+
+## 6. 2026-10-08 阶段一实现与回归
+
+本轮在独立 ROS 域 196、Gazebo 分区 `agri_stage1_20261008_d`、150 株番茄田、
+关闭 GUI/LiDAR/D405 的当前配置上复测。启动日志确认 `enforce_command_limits: true`，
+节点参数实际为 `max_wheel_speed=8.0`、四个 CAD 舵角零偏和门控 `0.30/0/0.50`。
+报告为 `artifacts/chassis_stage1_20261008/report_transition_aware.json`。
+
+| 检查 | 实测 | 结果 |
+| --- | --- | --- |
+| 直行/倒车各 1 m | 位置误差最大约 5.8 mm；停稳后约 1.0 mm | 通过 |
+| 左弧 0.1 m/s、0.15 rad/s | 固定 3 s 端到端航向误差 2.81°；稳态段误差 0.0016 m/0.19° | 稳态通过 |
+| 右弧 0.1 m/s、−0.15 rad/s | 固定 3 s 端到端航向误差 3.80°；稳态段误差 0.0011 m/0.065° | 稳态通过，端到端旧判据待改 |
+| 舵轮/轮速协调 | 左弧轮速释放延迟约 0.359 s，右弧约 0.532 s；稳定后不拖拽 | 通过 |
+| 里程计 | 端点相对 Gazebo 最大位置误差约 0.0114 m、航向误差约 0.68° | 通过 |
+| 断流停车 | 末次命令后约 0.425 s 开始持续静止；底层 0.5 s 看门狗仍保留 | 通过 |
+| 锁车与标准接口 | `/cmd_vel_safe` 单一发布者，`/odom` 单一适配发布者，锁车服务清除缓存 | 通过 |
+
+固定 3 秒弧线仍会把换舵等待算作欠行程，因此右弧端到端项目按旧固定时长判据未通过；
+这不是稳态运动误差。后续导航验收应使用任务控制器等待舵轮到位，再开始路径误差窗口，
+并保留换舵延迟作为独立指标。当前报告的 `transition_aware_passed=true` 仅表示阶段一
+稳态基线通过，不等同于完整导航通过。
+
+阶段一新增实现包括：完整八关节反馈检查、有限值和时间戳校验、ROS 时钟回拨清缓存、
+CAD 舵角零偏双向换算、中点积分、协方差、速度门控/锁车、标准 `/odom` 适配、控制器
+URDF 限位和正常退出零轮速。进程被 SIGKILL 或冻结时，ForwardCommandController 仍可能
+保持最后命令；这需要后续更低层 watchdog，不能把 ROS 门控当成功能安全装置。

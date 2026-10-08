@@ -47,6 +47,10 @@
   <xacro:property name="mid360_sensor_pitch" value="-1.3089969389957472" />
   <xacro:property name="mid360_sensor_yaw" value="1.5707963267948966" />
 
+  <!-- Navigation uses mid360_scan_frame, whose fixed +15 degree pitch
+       cancels the calibrated sensor-frame -15 degree mount tilt. -->
+  <xacro:property name="mid360_scan_pitch_correction" value="0.2617993877991494" />
+
   <!--
     camera_link.STL is the wrist bracket; camera_optical_frame.STL is the
     D405 housing, retained on camera_lens_link without changing its assembly

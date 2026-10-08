@@ -1,6 +1,6 @@
 # MID-360 仿真、安装与验收
 
-更新时间：2026-10-06。MID-360 已接入整机模型，默认采用 Gazebo GPU LiDAR；RGL
+更新时间：2026-10-08。MID-360 已接入整机模型，默认采用 Gazebo GPU LiDAR；RGL
 作为可选后端使用固定的官方 MID-360 扫描图样。公开接口已按需求文档 6.3 节约束。
 GPU 后端的连续接口和场景检查已通过；RGL 本地编译、CUDA/OptiX 探针及 FOV
 规范化后的公开点云连续 60 仿真秒接口、场景检查均已通过。
@@ -9,9 +9,12 @@ GPU 后端的连续接口和场景检查已通过；RGL 本地编译、CUDA/Opti
 
 ## 工作空间与接口
 
-`ros2_ws/src/agri_robot_description` 保存机器人本体、`mid360_link` 和扫描光学 frame。
+`ros2_ws/src/agri_robot_description` 保存机器人本体、`mid360_link`、光学 frame 和水平
+导航扫描 frame。
 `sim_ws/src/agri_sim_sensors` 保存传感器 overlay、双后端参数、桥接和 RGL 规范化节点。
 `agri_sim_description` 负责启动整机、世界和传感器，`agri_sim_tests` 负责只读接口验收。
+`ros2_ws/src/agri_lidar_adapter` 负责把公开点云变换/裁剪为导航点云，并复用 Jazzy
+`pointcloud_to_laserscan` 生成二维扫描。
 算法以后只接收公开 `/mid360/points`，不依赖 Gazebo entity ID、真值或 RGL 内部 Topic。
 
 | 契约 | 当前基线 |
@@ -23,6 +26,16 @@ GPU 后端的连续接口和场景检查已通过；RGL 本地编译、CUDA/Opti
 | 视场 | 传感器局部坐标中水平 360°，垂直 −7° 至 +52° |
 | 有效距离 | 传感器局部 XYZ 范数 0.1–40 m |
 | 桥接 / QoS | 单向 `GZ_TO_ROS`，SensorDataQoS：Best Effort、Volatile、Keep Last 5 |
+
+导航接口在保留原始点云契约的基础上增加：
+
+| 契约 | 当前基线 |
+| --- | --- |
+| 过滤点云 | `/mid360/navigation_points` / `sensor_msgs/msg/PointCloud2` |
+| 过滤点云 frame | `mid360_scan_frame` |
+| 二维扫描 | `/scan` / `sensor_msgs/msg/LaserScan` |
+| 扫描 frame | `mid360_scan_frame`，原点与 `mid360_sensor_frame` 相同，XY 与 `base_footprint` 平行 |
+| 默认切片/量程 | 高度 `-0.40..0.40 m`，距离 `0.10..40 m`，角增量 1° |
 
 不承诺逐点时间、Livox 自定义消息、逐点运动畸变或物理厂商标定精度。
 GPU 模式是规则栅格功能等效，不复刻 Livox 非重复扫描。
@@ -46,6 +59,11 @@ quaternion xyzw ≈ (0, -0.130526192220, 0, 0.991444861374)
 
 这是现有 CAD 的仿真几何基准，后续应以实测安装外参替换。传感器 sensor pose 为
 该扫描 frame 的零位，两种后端一致；修改点云 header 名称不会转换点坐标。
+
+`mid360_scan_frame` 是同一光心上的水平投影 frame。它通过固定关节的 +15° 俯仰修正
+抵消雷达安装的 −15° 俯仰，不移动原点，也不修改 `/mid360/points` 的 frame。过滤节点
+按点云时间戳查 TF 后再应用高度、自体盒和可选体素规则；高度值始终以水平扫描 frame
+为基准，便于以后替换实机雷达外参。
 
 仿真 overlay 保留有质量的 `mid360_link` 固定关节，质量为空的 optical frame 正常
 参与固定关节合并，由 SDF 保留传感器位姿。RGL 的父 link 排除只忽略雷达外壳，
@@ -156,6 +174,46 @@ RGL 点云使用 `rviz:=true` 查看；当前未装载 RGLVisualize GUI 插件�
 自定义传感器射线束显示。
 launch 保留已有资源路径和原 world 目录，把临时世界与桥接配置写到独立临时目录，
 退出时清理，避免修改用户世界或把资源解析基准误指向临时目录。
+
+## 二维导航扫描启动
+
+在番茄田中同时启动 MID-360 和 `/scan`：
+
+```bash
+ros2 launch agri_sim_bringup tomato_field.launch.py \
+  gui:=false paused:=false rviz:=false \
+  use_control:=false use_kinematics:=false \
+  use_lidar:=true use_scan:=true use_camera:=false
+```
+
+也可以在已有 `/mid360/points` 和机器人 TF 的实机/仿真会话中单独运行：
+
+```bash
+ros2 launch agri_lidar_adapter lidar_to_scan.launch.py
+```
+
+常用调参入口直接位于番茄田 launch：
+
+```bash
+ros2 launch agri_sim_bringup tomato_field.launch.py \
+  use_lidar:=true use_scan:=true \
+  scan_min_height:=-0.30 scan_max_height:=0.35 \
+  scan_range_max:=20.0 scan_angle_increment:=0.00872664626 \
+  scan_voxel_size:=0.03
+```
+
+完整参数和自体过滤盒位于
+`ros2_ws/src/agri_lidar_adapter/config/lidar_to_scan.yaml`。第一次调参建议保持
+`self_filter_enabled: false`，在 RViz 同时显示原始/过滤点云和 `/scan`，先测地面、
+底盘、茎秆和行末结构，再固定给 SLAM/Nav2。转换器只有在 `/scan` 存在订阅者时才消费
+点云；验收时应同时启动 RViz、SLAM 或：
+
+```bash
+ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
+```
+
+验收器检查 frame、原点、水平姿态、时间戳、角度 bin、量程和 9–11 Hz。标准转换器在
+360°/1° 时输出 360 个 bin（`angle_max` 作为上边界），这是正常行为。
 
 ## 验收方法与结果
 

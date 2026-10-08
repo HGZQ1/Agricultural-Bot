@@ -1,7 +1,7 @@
 """Dependency-light four-wheel-steering kinematics and odometry helpers."""
 
 from dataclasses import dataclass
-from math import atan2, cos, hypot, pi, sin
+from math import atan2, cos, hypot, isfinite, pi, sin
 from typing import Dict, List, Mapping, Sequence, Tuple
 
 
@@ -11,7 +11,8 @@ def normalize_angle(angle: float) -> float:
 
 
 def apply_joint_signs(values: Sequence[float], signs: Sequence[float]) -> List[float]:
-    """Convert joint values to physical values, or vice versa.
+    """
+    Convert joint values to physical values, or vice versa.
 
     Sign-only coordinate transforms are self-inverse, so the same helper is
     deliberately used on controller commands and joint-state feedback.
@@ -19,6 +20,88 @@ def apply_joint_signs(values: Sequence[float], signs: Sequence[float]) -> List[f
     if len(values) != len(signs):
         raise ValueError('values and signs must have the same length')
     return [float(value) * float(sign) for value, sign in zip(values, signs)]
+
+
+def steering_feedback_to_physical(
+    values: Sequence[float],
+    signs: Sequence[float],
+    offsets: Sequence[float],
+) -> List[float]:
+    """
+    Convert steering-joint feedback to physical wheel headings.
+
+    The offsets describe the physical wheel heading at joint position zero.
+    This accounts for the small yaw offsets present in the imported CAD wheel
+    modules while keeping the kinematic model in the base frame.
+    """
+    if not (len(values) == len(signs) == len(offsets)):
+        raise ValueError('values, signs and offsets must have the same length')
+    return [
+        normalize_angle(float(value) * float(sign) + float(offset))
+        for value, sign, offset in zip(values, signs, offsets)
+    ]
+
+
+def physical_steering_to_joint(
+    values: Sequence[float],
+    signs: Sequence[float],
+    offsets: Sequence[float],
+) -> List[float]:
+    """Convert requested physical wheel headings to joint positions."""
+    if not (len(values) == len(signs) == len(offsets)):
+        raise ValueError('values, signs and offsets must have the same length')
+    return [
+        normalize_angle(float(value) - float(offset)) * float(sign)
+        for value, sign, offset in zip(values, signs, offsets)
+    ]
+
+
+def steering_alignment_scale(
+    errors: Sequence[float],
+    full_speed_error: float,
+    stop_error: float,
+) -> float:
+    """
+    Return a global wheel-speed scale for the measured steering errors.
+
+    Wheel drive is held at zero while any steering module is far from its
+    requested angle.  Between the two thresholds the scale rises linearly.
+    Using one global scale prevents individual wheels from dragging the base
+    while the other modules are still changing direction.
+    """
+    if (not isfinite(full_speed_error) or not isfinite(stop_error) or
+            full_speed_error < 0.0 or stop_error <= full_speed_error):
+        raise ValueError(
+            'steering thresholds must satisfy 0 <= full_speed_error < stop_error')
+    normalized_errors = [normalize_angle(float(error)) for error in errors]
+    if not all(isfinite(error) for error in normalized_errors):
+        raise ValueError('steering errors must be finite')
+    maximum_error = max((abs(error) for error in normalized_errors), default=0.0)
+    if maximum_error <= full_speed_error:
+        return 1.0
+    if maximum_error >= stop_error:
+        return 0.0
+    return (stop_error - maximum_error) / (stop_error - full_speed_error)
+
+
+def integrate_planar_pose(
+    x: float,
+    y: float,
+    yaw: float,
+    vx: float,
+    vy: float,
+    wz: float,
+    dt: float,
+) -> Tuple[float, float, float]:
+    """Integrate a body-frame twist with midpoint heading integration."""
+    if dt <= 0.0:
+        return x, y, yaw
+    middle_yaw = yaw + 0.5 * wz * dt
+    return (
+        x + (vx * cos(middle_yaw) - vy * sin(middle_yaw)) * dt,
+        y + (vx * sin(middle_yaw) + vy * cos(middle_yaw)) * dt,
+        normalize_angle(yaw + wz * dt),
+    )
 
 
 @dataclass(frozen=True)
@@ -30,7 +113,8 @@ class WheelCommand:
 
 
 class FourWheelSteeringKinematics:
-    """Inverse kinematics and odometry for a planar four-wheel-steering base.
+    """
+    Inverse kinematics and odometry for a planar four-wheel-steering base.
 
     Wheel positions are expressed in the base frame as (x, y), with +x forward
     and +y to the left.  Each steering joint rotates about +z in this model;
@@ -64,7 +148,8 @@ class FourWheelSteeringKinematics:
         wz: float,
         current_steering: Mapping[str, float] | None = None,
     ) -> Dict[str, WheelCommand]:
-        """Compute wheel commands for a body twist.
+        """
+        Compute wheel commands for a body twist.
 
         For a wheel whose desired direction differs by more than 90 degrees
         from its current direction, the steering angle is flipped by pi and

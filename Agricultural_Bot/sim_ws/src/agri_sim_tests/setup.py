@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'check_mid360 = agri_sim_tests.check_mid360:main',
             'check_d405 = agri_sim_tests.check_d405:main',
+            'check_scan = agri_sim_tests.check_scan:main',
         ],
     },
 )

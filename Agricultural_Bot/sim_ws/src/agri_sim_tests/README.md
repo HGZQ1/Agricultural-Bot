@@ -53,6 +53,20 @@ ros2 run agri_sim_tests check_d405 --duration 60 --timeout 120 --require-valid-d
 `--min-coverage` 等参数配置其他接口。`depth_metres` helper 将两种编码转成 float32 米，
 无效值统一为 NaN，可供后续算法编码适配参考；其边界测试不需要仿真进程。
 
+## 二维导航扫描
+
+启动 `use_scan:=true` 后，运行：
+
+```bash
+ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
+```
+
+检查器订阅 `/scan` 和 TF，要求默认 `mid360_scan_frame`、非零递增仿真时间戳、合法
+角度/量程元数据、正无穷空 beam、9–11 Hz，以及扫描 frame 与
+`base_footprint -> mid360_sensor_frame` 共光心且水平。`--allow-empty` 可用于没有障碍物
+的空场景；番茄田验收应保留默认的有限回波要求。标准
+`pointcloud_to_laserscan` 对 360°/1° 请求输出 360 个 bin，检查器允许其上边界约定。
+
 ## 时间与检查范围
 
 两个验收器使用 SensorDataQoS（Best Effort、Volatile、Keep Last 5）。`duration` 是
