@@ -49,6 +49,61 @@ YOLO 的[训练配置](https://github.com/ysftzc/robot_workspaces/blob/bf3e2c158
 本项目重新生成行数、行距、株距后，应重新生成或标注 map 中的站点与禁行区域；
 对方世界/map 的固定偏置和旋转不能用于我们的番茄田。
 
+### 2.1 预设停车点的来源、格式和局限
+
+对方的“停车点”不是根据当前 YOLO 果实检测实时优化出来的底盘位置，而是针对一张
+固定温室地图人工测量、调试后写入
+[`sera_waypoints.yaml`](https://github.com/ysftzc/robot_workspaces/blob/bf3e2c15817a0b17d6b6990ae57e185e7cfcc98f/combined_ws/src/combined_robot/config/sera_waypoints.yaml)
+的 map 航点。YAML 顶层按 `routes` 组织路线，每个 waypoint 至少包含：
+
+```yaml
+routes:
+  - name: tomato_row_b10
+    waypoints:
+      - name: b10_front
+        x: 7.17
+        y: -1.72
+        yaw: 3.122
+        state: scan
+        view: b10_front
+        arm_pose: b10_front
+```
+
+`x/y/yaw` 是导航使用的 **map 坐标和航向**；`state` 决定到站后的任务状态，`view` 和
+`arm_pose` 是任务层选择相机/机械臂观察姿态的标签。一个底盘站点可以对应多个
+`view/arm_pose`，也可以使用相同的 `x/y` 配不同 `yaw` 做原地转向。任务管理器读取并
+校验这些字段，直接创建 `NavigateToPose` 目标；源码没有从植株网格、IK 或实时果心
+反推新的底盘停车点。
+
+审计的固定提交中，B10/C10 等站点的相邻点约相隔 0.4 m，位于植株行两侧的通道边缘，
+同一站点再配不同观察姿态；这些数值是该地图的手工标定结果，不能直接复制到本项目。
+对方规划代码还使用固定的 world/map 对齐关系
+`map_x = gazebo_y - 4.93`、`map_y = 35.83 - gazebo_x`，并单独设置初始出生位姿。
+这说明“出生点”“Gazebo world 坐标”和“导航 map 坐标”是三套概念，不能把出生点当作
+停车点，也不能假设二者自动重合。
+
+迁移到 Agricultural_Bot 时，建议先保存地图，再根据参数化田布局生成候选点：当前
+`generate_tomato_field.py` 默认各行沿世界 Y 方向延伸，行中心沿 X 方向按 2.0 m 行距
+排列，株点沿 Y 方向按 0.7 m 株距排列。对每一行/作业侧，把候选底盘位置放在行中心
+外侧，扣除整机 footprint 半宽和安全裕量，设置朝向行内的 `yaw`，然后依次通过代价地图
+无碰撞、四舵轮转弯空间、D405 视场和 CR5 IK/碰撞检查，最后才写入 waypoint YAML。
+建议绑定以下元数据，避免地图或场景变化后误用旧点：
+
+```yaml
+map_id: tomato_field_20261009
+map_sha256: <saved-map-checksum>
+layout: {rows: 10, plants_per_row: 15, row_spacing_m: 2.0,
+         plant_spacing_m: 0.7, plant_width_m: 1.0}
+stations:
+  - {id: row_00_left, row_id: 0, side: left,
+     x: 1.20, y: -0.80, yaw: 1.57, view: left_scan}
+```
+
+上面的坐标只展示格式，必须用本项目保存的 map 实测/计算后替换。只改变果实数量或
+结果高度时，底盘站点通常不变；改变行距、冠幅、株高导致通道或碰撞边界变化时，必须
+重新建图或至少重新生成并验证站点。到站后还应执行本项目的 `STOPPING → BASE_LOCKED`
+握手，确认速度反馈持续为零再启动扫描和机械臂。
+
 固定站点采摘触发链存在，但通用 `_plan_harvest()` 分支仍有未实现代码；参考时应
 沿默认演示实际调用链阅读，不能将所有状态名都解释为完成的功能。
 

@@ -1,10 +1,10 @@
 # 导航系统开发流程
 
-更新时间：2026-10-08。用户已明确取消 FAST-LIO，采用
+更新时间：2026-10-09。用户已明确取消 FAST-LIO，采用
 [ysftzc/robot_workspaces](https://github.com/ysftzc/robot_workspaces) 的导航与任务组织作为模板。
-本文件同时记录已交付的阶段和后续计划；截至 2026-10-08，阶段二的 MID-360
-水平扫描 `/scan` 已实现并在番茄田仿真中通过 8 仿真秒接口验收，SLAM、AMCL、Nav2
-和导航任务闭环仍待后续阶段。
+本文件同时记录已交付的阶段和后续计划；截至 2026-10-09，阶段二的 MID-360
+水平扫描 `/scan`、阶段三 SLAM Toolbox 建图基线和阶段四保存地图 AMCL＋Nav2
+单目标导航基线均已接入；参数化巡查路线和导航任务闭环留给后续阶段。
 阶段一的底盘、轮式里程计、安全速度出口和标准 `/odom` 适配已实现，并已在番茄田
 仿真中完成低速动态基线；弧线的旧固定时长判据仍需按换舵延迟重构。
 参考源码评估见 [robot_workspaces_review.md](robot_workspaces_review.md)。
@@ -32,7 +32,7 @@ SLAM Toolbox 不要求 FAST-LIO 或逐点扫描时间；IMU 也不是其建图�
 | --- | --- |
 | `agri_lidar_adapter` | 点云 TF 变换、自过滤/高度裁剪、可选体素降采样，以及由 Jazzy `pointcloud_to_laserscan` 生成 `/scan` |
 | `agri_base_adapter`、`agri_base_kinematics` | 轮式里程计质量、标准 `/odom`、速度仲裁/停车门控、舵轮换向协调 |
-| `agri_navigation` | SLAM、AMCL、Nav2、footprint、代价地图、禁行遮罩、地图管理与模式启动 |
+| `agri_navigation` | 已交付 SLAM Toolbox 建图、保存地图 AMCL、NavFn＋RPP、footprint、静态/实时障碍代价地图、碰撞监控和互斥模式入口；后续补充路线、启用禁行过滤器及地图管理 |
 | `agri_task_manager` | 覆盖/巡查路线、扫描站点、导航 Action 调度、暂停/恢复/跳过/返航 |
 | `agri_interfaces` | 后续扫描作业请求、底盘互锁状态、任务结果等业务接口；复用标准 Nav2 Action |
 | `agri_sim_sensors` | 若接入 IMU，新增仿真传感器、桥接、安装 frame 与配置 |
@@ -41,7 +41,7 @@ SLAM Toolbox 不要求 FAST-LIO 或逐点扫描时间；IMU 也不是其建图�
 
 自研应用节点继续使用 Python 3.12/rclpy。SLAM Toolbox、Nav2、robot_localization 与
 pointcloud_to_laserscan 使用 Jazzy 发行组件。`ros2_ws` 不依赖 `sim_ws`。
-阶段三以后列出的配置与入口名称仍是拟定交付；阶段二的入口和参数已经可以执行。
+阶段四的配置与入口已经可以执行；阶段五以后列出的业务节点名称仍是拟定交付。
 
 拟定数据链：
 
@@ -127,13 +127,33 @@ ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
 
 ### 阶段 3：SLAM Toolbox 建图基线
 
-- 新建 `slam_toolbox.yaml` 与建图启动入口；配置 `/scan`、odom/base/map frame 和 5 cm
-  初始分辨率。建图模式不启动 AMCL 和保存地图的 map_server。
-- 先低速手动采集一条行间及行末闭合路径，检查地图拖影、重复行、错误回环和返回误差。
-- 保存地图 YAML/图像、SLAM pose graph、布局参数、随机种子和地图版本。
+- `ros2_ws/src/agri_navigation` 已新增 `slam_toolbox.yaml` 和
+  `mapping.launch.py`。入口只启动 SLAM Toolbox synchronous mapping lifecycle node，
+  订阅 `/scan`，由 SLAM 发布 `map → odom`；不会同时启动 AMCL、`map_server`、Nav2 或
+  Gazebo，避免同一 TF 边重复发布。
+- 默认契约为 `map → odom → base_footprint`，地图分辨率 0.05 m，扫描量程
+  0.10–40 m，最小运动阈值 0.15 m/0.15 rad，并启用回环检测。轮式节点仍是
+  `odom → base_footprint` 的唯一发布者。
+- 先低速手动采集一条行间及行末闭合路径，检查地图拖影、重复行、错误回环和返回误差；
+  通过 `agri_sim_tests check_mapping` 同时检查 `/map`、`/scan`、`/odom`、TF 和时间戳。
+- 用 `nav2_map_server map_saver_cli` 保存 YAML/PGM，用
+  `/slam_toolbox/serialize_map` 保存可继续建图的 pose graph；将生成的田间 SDF、
+  随机种子、扫描配置、地图分辨率/原点和验收报告绑定为同一地图版本。
 
-**验收：** 保存并重载地图可用，通道连续、无明显错行或重复墙，回到入口时定位一致。
-手动建图只完成接口基线；自主建图还需要阶段 6 的覆盖执行器。
+当前可复现入口（先在另一终端启动番茄田和 `/scan`）：
+
+```bash
+ros2 launch agri_navigation mapping.launch.py
+ros2 run agri_sim_tests check_mapping --duration 5 --timeout 90
+```
+
+2026-10-09 的无界面闭环验证中，扫描约 10 Hz、里程计约 50 Hz，`/map` 使用 0.05 m
+分辨率；机器人沿行间低速移动后，已知栅格从初始稀疏观测增加到 2,305 个，地图、TF
+和时间戳检查通过。保存地图与 pose graph 的命令也已实测成功。
+
+**验收：** 当前完成的是传感器、TF、地图发布和保存接口基线；保存并重载地图的完整
+AMCL/Nav2 验收、通道连续性和回到入口误差属于阶段四。手动建图只完成接口基线；
+自主建图还需要阶段六的覆盖执行器。
 
 ### 阶段 4：AMCL 与单目标 Nav2
 
@@ -147,12 +167,25 @@ ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
 **验收：** 先 RViz 单点，再直线、转弯、行末掉头和临时障碍测试；目标取消、输入超时
 都能停车。定位未收敛或跳变时停止任务，不能不断重发导航目标掩盖错误。
 
+**当前实现状态（2026-10-09）：** `localization.launch.py` 提供 map server＋AMCL，
+`navigation.launch.py` 用同一 lifecycle manager 先激活定位，再依次激活 RPP、NavFn、
+behaviors、BT Navigator 与 collision monitor。全局代价地图启用静态、LaserScan 障碍和
+膨胀层，局部代价地图启用实时障碍和膨胀层；速度链接入现有底盘门控。启动、发目标及
+布局变化后的地图重建命令见 [阶段四导航说明](navigation_stage4.md)。参数化多站点、
+KeepoutFilter 服务器与停车作业状态机尚未纳入此入口。
+
 ### 阶段 5：参数化田的巡查与扫描路线
 
-- 新建 `waypoints.yaml` 与 `field_route_executor.py`：定义地图版本、home、行入口/出口、
-  站点 `[x,y,yaw]`、作业侧、扫描姿态标识、允许微调区域。
-- 可利用场地行数、株距和行距作为布局先验，经明确 map 对齐后生成站点；果实真值
-  不作为站点或在线采摘目标。站点需与实际 footprint、转弯空间及后续 CR5 可达性核对。
+- 新建 `waypoints.yaml` 与 `field_route_executor.py`：定义地图版本、地图/布局校验值、
+  home、行入口/出口、站点 `[x,y,yaw]`、`row_id`、`side`、作业侧、扫描姿态标识和
+  允许微调区域。站点的坐标是 **map 坐标**，不能直接复制 Gazebo world 坐标。
+- 可利用生成器的行数、株距和行距作为布局先验，经明确 world→map 对齐后生成候选站点；
+  例如当前生成器默认各行沿世界 Y 方向延伸、行中心沿 X 方向相隔 2.0 m，候选底盘
+  停车点应位于行中心外侧并扣除底盘半宽与安全裕量，再经过 footprint、代价地图和
+  CR5 IK/FOV 核验。果实真值不作为站点或在线采摘目标。
+- 站点生成器必须记录输入布局（行距、株距、冠幅、底盘 footprint、对齐变换）和输出
+  seed；只改变果实数量/高度不必移动底盘站点，改变行距、冠幅或株高导致通道变化时
+  必须重新生成并重新验证站点。
 - 参考上游预定义路线，先实现单行往返，再相邻两行、完整蛇形巡查和返航。
 - 增加暂停、继续、跳过、取消、超时和任务日志。生成与地图同尺寸/分辨率/原点的植株行
   禁行遮罩，避免规划器穿行植株间缝隙；遮罩版本与地图绑定。
@@ -197,9 +230,9 @@ ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
 
 ## 4. 现在首先做什么
 
-阶段一的“现有番茄田＋四舵轮控制＋连续里程计/TF”基线已经完成；下一里程碑是接入
-MID-360 的正确二维 `/scan`。确认扫描原点、时间戳和障碍物高度过滤后，再接 SLAM
-Toolbox，随后接 AMCL/Nav2。
+阶段一底盘/里程计、阶段二 MID-360 二维 `/scan`、阶段三 SLAM Toolbox 建图接口和
+阶段四 AMCL＋Nav2 单目标基线已经完成。下一里程碑是阶段五：依据参数化田布局和
+world→map 对齐生成巡查路线、扫描站点与版本绑定的禁行遮罩。
 IMU/EKF 可并行准备，启用时切换 odom TF 发布者；不能让两套节点同时发布同一变换。
 
 ## 5. 官方参考

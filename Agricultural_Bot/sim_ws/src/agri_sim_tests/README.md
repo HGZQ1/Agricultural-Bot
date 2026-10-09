@@ -1,8 +1,8 @@
 # agri_sim_tests
 
-提供 MID-360 和 D405 的可执行接口验收。仿真运行后，在另一个已加载两个工作空间
+提供 MID-360、D405 和阶段三建图基线的可执行接口验收。仿真运行后，在另一个已加载两个工作空间
 的终端运行；验收器只订阅传感器、TF 和仿真时钟，不发布运动指令。
-输出 JSON 报告，退出码 0 表示通过、1 表示失败。两个验收器均已启用 `use_sim_time`。
+输出 JSON 报告，退出码 0 表示通过、1 表示失败。所有验收器均已启用 `use_sim_time`。
 
 ## MID-360
 
@@ -67,14 +67,37 @@ ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
 的空场景；番茄田验收应保留默认的有限回波要求。标准
 `pointcloud_to_laserscan` 对 360°/1° 请求输出 360 个 bin，检查器允许其上边界约定。
 
+## 阶段三建图基线
+
+启动 SLAM Toolbox 建图入口和番茄田仿真后，运行：
+
+```bash
+ros2 run agri_sim_tests check_mapping --duration 5 --timeout 90
+```
+
+检查器使用 transient-local QoS 接收 `/map`（同时保留 volatile 兼容订阅），并验证
+`/map` 的 `map` frame、5 cm 分辨率、合法占据值和至少一个已知栅格；使用 SensorDataQoS
+检查 `/scan`，使用可靠 QoS 检查 `/odom`。扫描和里程计 stamp 必须非零且严格递增；地图
+允许内容更新时复用相同 stamp，但禁止倒退。扫描和里程计默认至少覆盖 5 个仿真秒；默认要求
+`/scan` 为 9–11 Hz、`/odom` 为 5–100 Hz。
+同时要求以下 TF 可查询且四元数有限、归一化：
+`map -> odom`（SLAM）、`odom -> base_footprint`（底盘里程计）以及
+`base_footprint -> mid360_scan_frame`（固定传感器 TF）。
+
+纯接口调试可以放宽场景约束：`--allow-unknown-map` 允许 SLAM 初始全未知栅格，
+`--allow-empty-scan` 允许没有有限回波的空场景。默认不放宽，番茄田建图验收应保留默认值。
+检查器只观察接口，不发布速度，不读取 Gazebo 真值；输出 JSON，退出码 0 表示基线通过。
+
 ## 时间与检查范围
 
-两个验收器使用 SensorDataQoS（Best Effort、Volatile、Keep Last 5）。`duration` 是
+传感器验收器使用 SensorDataQoS（Best Effort、Volatile、Keep Last 5）；建图验收器对
+`/odom` 使用可靠 QoS，并为 `/map` 同时兼容 transient-local 和 volatile。`duration` 是
 有效 sensor stamp 的仿真跨度，`timeout` 是墙钟上限。sim Hz 使用递增 stamp，wall Hz
 使用接收时间；较慢实时因子可降低 wall Hz，但不会单独导致失败。重复、倒退或无效
 stamp 仍判失败，且不污染有效频率统计。暂停、采集不足、超时或中断不能返回通过。
 
-验收器不代替场景几何、扫描真实性、IMU、地图或实机外参标定测试。独立场景脚本和
+静态 `base_footprint -> mid360_scan_frame` TF 允许零时间戳，这是 `/tf_static` 的正常约定；
+动态 `map -> odom` 与 `odom -> base_footprint` 仍要求正时间戳。验收器不代替场景几何、扫描真实性、IMU、地图或实机外参标定测试。独立场景脚本和
 指标见 [MID-360 文档](../../../docs/mid360_simulation.md) 与
 [D405 文档](../../../docs/d405_simulation.md)。
 

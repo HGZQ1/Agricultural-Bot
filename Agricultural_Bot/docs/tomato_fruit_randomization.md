@@ -1,8 +1,8 @@
 # 植株尺寸与番茄果实参数化
 
 实际温室尺寸尚未确定，本功能先提供可复现的参数生成流程。以下数值为测试示例，
-不是实测株高、冠幅或结果高度。可以分别调整枝叶株高、冠幅，以及独立果实的数量、
-高度和直径。不传植株尺寸且不启用 `--randomize-fruits` 时，原有 150 株场景
+不是实测株高、冠幅或结果高度。可以分别调整枝叶株高、冠幅、简化茎杆碰撞盒，
+以及独立果实的数量、高度和直径。不传植株尺寸且不启用 `--randomize-fruits` 时，原有 150 株场景
 保持逐字节复现；所有模式均保留 `tomato_0` 等原资产文件。
 
 ## 生成并查看
@@ -107,12 +107,69 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 改为 `lidar_mode:=rgl`。这些组合参数已核对启动入口，尚未对完整 150 株新网格场景
 重新执行底盘与两种传感器联合验收。
 
+## 3 m 行距的兼容测试场景
+
+默认地面为 22×14 m。若仍保留 10 行并把行距改成 3 m，原来的 `origin-x=-9` 会让
+植株位置扩展到 `x=18`，超出地面边界；同时可能把一行放在机器人出生通道上。测试阶段
+可把行数改为偶数 6，使行列以 `x=0` 对称并留下中心间距为 3 m 的中央通道（1 m
+视觉冠幅扣除后净宽约 2 m）。每行植株数量只影响
+沿 Y 方向的长度，因此先保留 15 株；需要更短的测试路线时可改成 8 或 10 株。
+生成器现在会在写文件前拒绝越出地面边界的行列布局，报错时按提示同步调整行数、
+每行株数、首株坐标或地面尺寸。
+
+下面的 profile 保持 22×14 m 地面、6 行×15 株、行距 3 m、株距 0.7 m，视觉冠幅为
+1 m，简化茎杆碰撞盒 X/Y 为 0.06 m。`--plant-collision-height` 未指定时按株高比例
+保留完整的茎杆高度；若只关心底盘通行，优先缩小 X/Y，不要把视觉冠层一起缩小：
+
+```bash
+cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
+FIELD_ID="rows6_n15_row3p0_plant0p7_h2p6_w1p0_c0p06_seed42"
+mkdir -p "artifacts/fields/$FIELD_ID"
+
+python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
+  --rows 6 --plants-per-row 15 \
+  --row-spacing 3.0 --plant-spacing 0.7 \
+  --origin-x -7.5 --origin-y -5.0 \
+  --ground-x 22.0 --ground-y 14.0 \
+  --plant-height 2.6 --plant-width 1.0 \
+  --plant-collision-width 0.06 \
+  --randomize-fruits --fruit-visual mesh \
+  --fruit-count-min 2 --fruit-count-max 6 \
+  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
+  --ripe-ratio 0.7 --seed 42 \
+  --output "artifacts/fields/$FIELD_ID/tomato_field.sdf" \
+  --metadata "artifacts/fields/$FIELD_ID/tomato_field.json"
+
+source /opt/ros/jazzy/setup.bash
+source ros2_ws/install/setup.bash
+source sim_ws/install/setup.bash
+export ROS_DOMAIN_ID=96
+export GZ_PARTITION="agri_row3_${ROS_DOMAIN_ID}_$(date +%s%N)"
+
+ros2 launch agri_sim_bringup tomato_field.launch.py \
+  world:="$PWD/artifacts/fields/$FIELD_ID/tomato_field.sdf" \
+  gz_partition:="$GZ_PARTITION" \
+  spawn_x:=0.0 spawn_y:=-6.0 spawn_yaw:=1.5708 \
+  gui:=true paused:=false rviz:=true \
+  use_control:=true use_kinematics:=true \
+  use_lidar:=true use_scan:=true use_camera:=false
+```
+
+6 行的横向坐标为 `-7.5、-4.5、-1.5、1.5、4.5、7.5`，所以默认出生点
+`(0,-6,1.5708)` 位于中央通道。若改成 4 行或 8 行，仍应使用偶数行并重新计算
+`origin-x = -(rows - 1) * row-spacing / 2`；若每行株数改变，按
+`origin-y`、`plant-spacing` 重新检查 Y 边界。每次布局变化都必须重新建图，旧地图和
+旧停车点不能继续配套使用。
+
 ## 参数含义
 
 | 参数 | 默认值 | 含义 |
 | --- | --- | --- |
 | `--plant-height` | 不覆盖：1.298104 | 枝叶冠顶离地高度，单位 m；只调整枝叶 Z 缩放 |
 | `--plant-width` | 不覆盖：0.866695 | 偏航前枝叶局部 X/Y 包围盒跨度的较大值，单位 m；X/Y 同倍缩放，与株高独立 |
+| `--plant-collision-width` | 不覆盖：按冠幅缩放 | 简化茎杆碰撞盒的 X/Y 边长，单位 m；正方形，独立于枝叶冠幅 |
+| `--plant-collision-height` | 不覆盖：按株高缩放 | 简化茎杆碰撞盒的 Z 高度，单位 m；独立于枝叶株高，底面保持贴地 |
 | `--randomize-fruits` | 关闭 | 移除旧模型中的固定果实，生成独立随机果实 |
 | `--fruit-visual` | `mesh` | 原单果网格与贴图；`sphere` 可回退纯色球体 |
 | `--fruit-count-min / --fruit-count-max` | 2 / 6 | 每株整数数量范围，包含两个端点；允许 0 |
@@ -138,17 +195,20 @@ JSON 用于离线核对和评测，不自动发布给 YOLO 或机器人算法作
 
 ## 独立调整株高和冠幅
 
-`--plant-height` 和 `--plant-width` 调整茎杆、叶片视觉网格及简化茎杆碰撞体，
-不会自动改变独立果实的直径、世界 Z 高度或水平分布半径。只增高植株时，
+`--plant-height` 和 `--plant-width` 调整枝叶视觉网格，并在未指定独立碰撞参数时
+按比例推导简化茎杆碰撞体；不会自动改变独立果实的直径、世界 Z 高度或水平分布半径。
+只增高植株时，
 可以仅传 `--plant-height`，冠幅保持原值；只增大冠幅时仅传 `--plant-width`，
-株高保持原值。两者均须为有限正数。
+株高保持原值。`--plant-collision-width` 和 `--plant-collision-height` 可覆盖碰撞盒
+的对应尺寸，两者均须为有限正数。
 
 缩放以地面 Z=0 和原模型坐标为基准：
 
 ```text
 枝叶 X/Y 缩放倍数 = plant-width / 0.866695
 枝叶 Z 缩放倍数   = plant-height / 1.298104
-茎杆碰撞体尺寸    = [0.1 × X/Y 倍数, 0.1 × X/Y 倍数, 1.2416 × Z 倍数]
+茎杆碰撞体 X/Y    = plant-collision-width（未指定时为 0.1 × X/Y 倍数）
+茎杆碰撞体 Z      = plant-collision-height（未指定时为 1.2416 × Z 倍数）
 茎杆中心 Z        = 茎杆碰撞体高度 / 2
 ```
 
@@ -160,11 +220,14 @@ Z 包围盒跨度定义株高。冠幅是偏航前局部 X/Y 跨度的最大值�
 都恰好等于该数值；设置 1 m 冠幅时，仍保留原 X/Y 长宽比例。植株随机偏航后，
 世界轴方向上的包围盒宽度会随角度变化。
 
-果实独立缩放，所以增高枝叶不会拉长番茄。增大冠幅会同时加宽茎杆碰撞体，
+果实独立缩放，所以增高枝叶不会拉长番茄。使用默认推导碰撞盒时，增大冠幅会同时
+加宽茎杆碰撞体；若显式指定 `--plant-collision-width`，果实净空检查使用该实际宽度。
 `--fruit-radius-min` 至少须满足：
 
 ```text
-fruit-radius-min >= 0.05 × X/Y 缩放倍数 + fruit-diameter-max / 2 + fruit-min-clearance
+fruit-radius-min >= collision-width / 2 + fruit-diameter-max / 2 + fruit-min-clearance
+
+其中 collision-width 为 --plant-collision-width；未指定时为 0.1 × X/Y 缩放倍数。
 ```
 
 生成器还会检查旋转茎杆和跨株果实的实际净空。拥挤布局中的候选拒绝可能改变
@@ -176,7 +239,7 @@ fruit-radius-min >= 0.05 × X/Y 缩放倍数 + fruit-diameter-max / 2 + fruit-mi
 原位置及原大小，果实参数不生效。需要改变果实数量、高度和直径时，应启用
 `--randomize-fruits`，由独立果实模型替代原固定果实。
 
-显式指定任意植株尺寸时，生成器把调整后的植物模型写入输出 SDF；
+显式指定任意植株尺寸或碰撞盒尺寸时，生成器把调整后的植物模型写入输出 SDF；
 它继续引用原网格和贴图，不修改或覆盖共享资产。不指定这两个参数时仍使用原
 模型引用方式。JSON 的 `plant_geometry` 记录实际生效的 `height`、`width`、
 `mesh_scale: [X, Y, Z]`、`stem_size: [X, Y, Z]` 和 `stem_center_z`，
@@ -192,7 +255,8 @@ fruit-radius-min >= 0.05 × X/Y 缩放倍数 + fruit-diameter-max / 2 + fruit-mi
 网格中心归零并等比例归一化，世界模型的中心位置和碰撞球中心相同。
 视觉网格完整包在简化球形碰撞体内，原间距与地面检查继续有效。
 新枝叶资产的简化茎杆碰撞体默认从地面延伸至 1.2416 m，指定植株尺寸时按上述
-倍数调整并保持底面贴地；叶片仍只有视觉网格。
+倍数调整并保持底面贴地；显式碰撞参数可以缩小其 X/Y 或 Z 尺寸；叶片仍只有视觉网格。
+碰撞盒缩小不会缩小枝叶视觉网格，也不会直接消除 GPU LiDAR 对叶片的回波。
 
 本阶段适合验证检测、深度反投影及目标选择。果实位置不保证落在真实果柄上，
 果柄连接、夹持后脱落、落入筐或计数状态更新尚未实现；不能据此宣称采摘物理完成。

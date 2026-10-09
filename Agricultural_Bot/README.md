@@ -2,17 +2,19 @@
 
 ROS 2 Jazzy + Gazebo Harmonic 农业番茄采摘机器人项目工作空间。
 
-截至 2026-10-08，整机组件化模型、四舵轮运动学、底盘/CR5/夹爪仿真控制、MID-360
+截至 2026-10-09，整机组件化模型、四舵轮运动学、底盘/CR5/夹爪仿真控制、MID-360
 和 D405 RGB-D 仿真接口已经接通。MID-360 默认使用 GPU LiDAR，可选 RGL 官方图样；
-D405 使用 Harmonic 原生 RGB-D，连续接口与靶标场景验收通过。完整温室番茄场景、导航、
-视觉和采摘任务仍待开发。2026-10-07 集成了参数化番茄田（150 株）及入口生成机器人功能；
+D405 使用 Harmonic 原生 RGB-D，连续接口与靶标场景验收通过。参数化温室、导航路线、
+视觉和采摘任务仍在分阶段开发。2026-10-07 集成了参数化番茄田（150 株）及入口生成机器人功能；
 依赖、构建、打开场地与复现步骤见 [番茄田复现指南](docs/tomato_field_reproduction.md)。
 开启底盘控制、行间测试路线及 Gazebo 真值量化评测见
 [番茄田底盘运动测试](docs/chassis_field_motion.md)。
 阶段一已增加速度门控、锁车、标准 `/odom` 适配和换舵稳态回归；阶段二已增加
 `agri_lidar_adapter`、水平 `mid360_scan_frame` 和 `/scan`，并在番茄田无界面仿真中通过
-8 秒接口验收。SLAM、AMCL 与 Nav2 仍按[导航开发流程](docs/navigation_development_plan.md)
-分阶段接入。
+8 秒接口验收。阶段三已增加 `agri_navigation` 的 SLAM Toolbox 建图入口、5 cm 地图
+参数、地图/pose graph 保存流程和 `check_mapping` 验收器。阶段四已加入保存地图
+`map_server`＋AMCL 定位、NavFn（Dijkstra）＋RPP 单目标导航、静态/实时障碍代价地图和
+碰撞监控；参数化路线仍按[导航开发流程](docs/navigation_development_plan.md)继续开发。
 
 原始 SolidWorks、旧版 URDF 和图纸保留原位；canonical 模型是独立修正的副本。
 RGL 第三方依赖安装到忽略的 `.cache/rgl`，版本和下载校验值由安装脚本固定。
@@ -71,7 +73,8 @@ Panther-FR3 温室项目的导航、感知与夹取源码评估见 [robot_worksp
   水平 `mid360_scan_frame`）。
 - D405 中央虚拟 pinhole 来自 CAD 前玻璃中心向内 3.7 mm，不代表实机左眼或手眼标定。
   完整 M3 仍需温室与番茄资产。
-- MoveIt、Nav2、YOLOv8 和采摘任务逻辑仍处于规划/包骨架阶段。
+- AMCL 与 Nav2 单目标基线已经接入；参数化田路线、停车作业状态机、MoveIt、YOLOv8
+  和采摘任务逻辑仍待实现。`agri_navigation` 同时提供互斥的建图与保存地图导航入口。
 
 ## 当前最小运行入口
 
@@ -107,6 +110,44 @@ RGL 首次安装步骤和自动回退规则见 [MID-360 文档](docs/mid360_simu
 ```bash
 ros2 run agri_sim_tests check_scan --duration 8 --timeout 60
 ```
+
+阶段三建图基线（先启动带 `use_scan:=true` 的番茄田仿真，再在另一终端运行）：
+
+```bash
+ros2 launch agri_navigation mapping.launch.py
+ros2 run agri_sim_tests check_mapping --duration 5 --timeout 90
+```
+
+`mapping.launch.py` 只启动 SLAM Toolbox，发布 `map → odom` 和 `/map`；它不会同时
+启动 AMCL、`map_server` 或 Nav2。确认 RViz 中地图闭合后保存：
+
+```bash
+MAP_DIR="artifacts/maps/field_$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$MAP_DIR"
+ros2 run nav2_map_server map_saver_cli -f "$MAP_DIR/tomato_field" \
+  --ros-args -p use_sim_time:=true \
+    -p map_subscribe_transient_local:=true -p save_map_timeout:=10.0
+ros2 service call /slam_toolbox/serialize_map \
+  slam_toolbox/srv/SerializePoseGraph \
+  "{filename: '$MAP_DIR/tomato_field'}"
+```
+
+地图 YAML/PGM、pose graph、生成田场景的 seed 和布局参数应作为同一地图版本保存；
+改变行距、冠幅或通道边界后需重新建图并重新标定停车点。
+
+阶段四保存地图定位和 Nav2 单目标导航（不要同时运行 `mapping.launch.py`）：
+
+```bash
+ros2 launch agri_navigation navigation.launch.py \
+  use_sim_time:=true initial_pose_x:=0.0 initial_pose_y:=0.0 initial_pose_yaw:=0.0
+```
+
+省略 `map` 参数时使用仓库内置的 `stage3_baseline.yaml`；自定义场景完成建图后，再将
+`map` 指向该场景实际存在的 YAML 文件。
+
+布局参数改变后的地图/代价地图重建、单目标命令和可选植株禁行遮罩见
+[阶段四导航说明](docs/navigation_stage4.md)。
+
 接口快速验收在另一个已加载环境的终端运行：
 
 ```bash

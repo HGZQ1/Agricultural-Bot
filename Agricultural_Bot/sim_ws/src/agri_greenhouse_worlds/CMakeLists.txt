@@ -9,7 +9,10 @@ install(
 )
 
 install(
-  PROGRAMS scripts/generate_tomato_field.py scripts/extract_tomato_fruit.py
+  PROGRAMS
+    scripts/generate_tomato_field.py
+    scripts/extract_tomato_fruit.py
+    scripts/generate_keepout_mask.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

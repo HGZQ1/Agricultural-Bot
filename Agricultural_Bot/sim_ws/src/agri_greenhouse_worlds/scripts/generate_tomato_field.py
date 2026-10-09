@@ -39,10 +39,28 @@ def plant_geometry(args: argparse.Namespace) -> dict:
     width = PLANT_WIDTH if args.plant_width is None else args.plant_width
     horizontal = width / PLANT_WIDTH
     vertical = height / PLANT_HEIGHT
-    stem_size = [2 * STEM_HALF_WIDTH * horizontal,
-                 2 * STEM_HALF_WIDTH * horizontal, STEM_HEIGHT * vertical]
+    # The visual canopy width and the collision footprint are deliberately
+    # independent.  A dense visual model can otherwise make the row spacing
+    # look correct while its simplified stem box still blocks the chassis.
+    collision_width = (
+        2 * STEM_HALF_WIDTH * horizontal
+        if args.plant_collision_width is None
+        else args.plant_collision_width
+    )
+    collision_height = (
+        STEM_HEIGHT * vertical
+        if args.plant_collision_height is None
+        else args.plant_collision_height
+    )
+    stem_size = [collision_width, collision_width, collision_height]
     stem_center_z = stem_size[2] / 2
-    if not args.randomize_fruits and args.plant_height is None and args.plant_width is None:
+    if (
+        not args.randomize_fruits
+        and args.plant_height is None
+        and args.plant_width is None
+        and args.plant_collision_width is None
+        and args.plant_collision_height is None
+    ):
         # Report the actual untouched legacy include, whose box is half buried.
         stem_size = [0.1, 0.1, 1.0]
         stem_center_z = 0.0
@@ -52,6 +70,8 @@ def plant_geometry(args: argparse.Namespace) -> dict:
         "mesh_scale": [horizontal, horizontal, vertical],
         "stem_size": stem_size,
         "stem_center_z": stem_center_z,
+        "collision_width": stem_size[0],
+        "collision_height": stem_size[2],
     }
 
 
@@ -66,7 +86,11 @@ def validate_args(args: argparse.Namespace) -> None:
     for name in float_names:
         if not math.isfinite(getattr(args, name)):
             raise ValueError(f"{name.replace('_', '-')} must be finite")
-    for name in ("plant_height", "plant_width"):
+    # These two options are optional so ``None`` means "derive the collision
+    # box from the corresponding visual dimension".  Validate them separately
+    # instead of passing None to math.isfinite().
+    for name in ("plant_height", "plant_width",
+                 "plant_collision_width", "plant_collision_height"):
         value = getattr(args, name)
         if value is not None and (not math.isfinite(value) or value <= 0):
             raise ValueError(f"{name.replace('_', '-')} must be finite and positive")
@@ -80,6 +104,25 @@ def validate_args(args: argparse.Namespace) -> None:
         raise ValueError("row-spacing and plant-spacing must both be positive")
     if args.ground_x <= 0 or args.ground_y <= 0:
         raise ValueError("ground dimensions must both be positive")
+    # ``origin_*`` are the first plant centers.  Check the complete row/column
+    # span before writing anything so a larger row spacing cannot silently put
+    # plants outside the ground collision.  The diagonal bound is conservative
+    # for a yawed canopy and remains valid for the source model's asymmetric X/Y
+    # spans.
+    canopy_radius = geometry["width"] / math.sqrt(2)
+    min_x = args.origin_x - canopy_radius
+    max_x = args.origin_x + (args.rows - 1) * args.row_spacing + canopy_radius
+    min_y = args.origin_y - canopy_radius
+    max_y = args.origin_y + (args.plants_per_row - 1) * args.plant_spacing + canopy_radius
+    if min_x < -args.ground_x / 2 or max_x > args.ground_x / 2:
+        raise ValueError(
+            "plant rows exceed ground-x; adjust rows/row-spacing/origin-x or enlarge ground-x"
+        )
+    if min_y < -args.ground_y / 2 or max_y > args.ground_y / 2:
+        raise ValueError(
+            "plant columns exceed ground-y; adjust plants-per-row/plant-spacing/origin-y "
+            "or enlarge ground-y"
+        )
     if args.yaw_jitter < 0:
         raise ValueError("yaw-jitter must be nonnegative")
     if args.fruit_count_min < 0 or args.fruit_count_min > args.fruit_count_max:
@@ -138,6 +181,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--plant-width", type=float,
         help="Maximum local X/Y branch/leaf canopy span before yaw (meters). "
              f"Scales plant X/Y independently of height; original {PLANT_WIDTH:g} m.",
+    )
+    parser.add_argument(
+        "--plant-collision-width", type=float,
+        help="Square X/Y width of each plant's simplified collision box (meters). "
+             "Independent of the visual canopy width; omitted uses the scaled stem width.",
+    )
+    parser.add_argument(
+        "--plant-collision-height", type=float,
+        help="Height of each plant's simplified collision box (meters). "
+             "Independent of the visual canopy height; omitted uses the scaled stem height.",
     )
     parser.add_argument(
         "--randomize-fruits", action="store_true",
@@ -373,8 +426,16 @@ def build_world(args: argparse.Namespace, fruits: list[dict] | None = None) -> s
     ]
 
     plant_uri = "tomato_plant" if args.randomize_fruits else "tomato_0"
-    template = (plant_template(args)
-                if args.plant_height is not None or args.plant_width is not None else None)
+    template = (
+        plant_template(args)
+        if (
+            args.plant_height is not None
+            or args.plant_width is not None
+            or args.plant_collision_width is not None
+            or args.plant_collision_height is not None
+        )
+        else None
+    )
     for plant in plant_poses(args):
         if template is not None:
             model = copy.deepcopy(template)

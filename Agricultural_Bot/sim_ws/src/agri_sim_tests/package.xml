@@ -2,11 +2,12 @@
 <package format="3">
   <name>agri_sim_tests</name>
   <version>0.1.0</version>
-  <description>Executable acceptance checks for Agricultural Bot simulation sensors.</description>
+  <description>Executable acceptance checks for Agricultural Bot sensors and mapping interfaces.</description>
   <maintainer email="maintainer@example.com">Agricultural Bot developers</maintainer>
   <license>Apache-2.0</license>
   <buildtool_depend>ament_python</buildtool_depend>
   <exec_depend>rclpy</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>sensor_msgs_py</exec_depend>
   <exec_depend>tf2_ros</exec_depend>

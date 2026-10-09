@@ -11,7 +11,9 @@ mid360_navigation_cloud_filter:
     # sensor frame. Ground is approximately -0.46 m at the optical centre.
     min_height: -0.40
     max_height: 0.40
-    self_filter_enabled: false
+    # Remove points on the robot / sensor mount before projection.  Without
+    # this, the collision monitor sees the gripper as a permanent obstacle.
+    self_filter_enabled: true
     self_filter_x_min: -0.75
     self_filter_x_max: 0.55
     self_filter_y_min: -0.55

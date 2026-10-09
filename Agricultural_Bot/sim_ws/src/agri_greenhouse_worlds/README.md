@@ -27,6 +27,15 @@ Explicit dimensions inline a resized plant model into the output SDF and scale
 its grounded stem collision; shared model, mesh and texture assets are unchanged.
 Omitting both options retains the original world-generation path. Without fruit
 randomization, this also preserves the baseline's original collision box.
+Use `--plant-collision-width` to override the square X/Y footprint of that
+simplified stem box without shrinking the visual canopy.  `--plant-collision-height`
+can independently override its Z extent; when either option is omitted, that
+dimension is derived from the corresponding plant scale.  These options affect
+Gazebo physical collision and fruit clearance only; LiDAR/GPU rendering still
+sees the visual branch and leaf meshes.
+The generator rejects row/column layouts whose conservative yawed-canopy bounds
+leave the configured ground box; change the row count, plant count, origin, or
+ground dimensions together.
 
 完整中文步骤（依赖、构建、只打开场地、导入机器人、参数及排错）：
 [番茄田复现指南](../../../docs/tomato_field_reproduction.md)。
@@ -46,13 +55,15 @@ The default `--fruit-visual mesh` uses a single body extracted from the original
 the same conservative sphere collision and seeded target positions.
 
 Fruit diameter, world-frame center height and horizontal placement radius do
-not scale with the branches or leaves. Wider plants have wider stem collision
-boxes and require adequate `--fruit-radius-min`; rejection sampling may change
+not scale with the branches or leaves. Wider plants have wider derived stem
+collision boxes unless `--plant-collision-width` overrides them, and require adequate
+`--fruit-radius-min`; rejection sampling may change
 positions in crowded layouts. Without `--randomize-fruits`, dimension options
 still resize the foliage, but existing fruit and blossom meshes retain their
 original sizes and positions. The optional JSON includes `plant_geometry`
-(`height`, `width`, `mesh_scale`, `stem_size`, `stem_center_z`); the last two
-fields report the actual stem collision dimensions and center Z.
+(`height`, `width`, `mesh_scale`, `stem_size`, `stem_center_z`,
+`collision_width`, `collision_height`); the collision fields report the actual
+stem box dimensions and center Z.
 
 Example values, pending real greenhouse measurements:
 

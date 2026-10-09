@@ -259,6 +259,23 @@ cd ..
 [果实随机化指南](tomato_fruit_randomization.md)。自定义文件可直接用
 `tomato_field.launch.py world:=/绝对路径/场景.sdf` 加载，世界名称自动读取。
 
+### 9.1 布局变化后更新导航地图
+
+改变 `--rows`、`--plants-per-row`、`--row-spacing`、`--plant-spacing` 或植株冠幅后，
+旧静态地图、禁行遮罩和停车点都应视为失效。将新 SDF 与 `--metadata` JSON 保存到新的
+`FIELD_ID` 目录，用该世界重新运行 `agri_navigation mapping.launch.py`，完成通道覆盖后
+保存新的 YAML/PGM 和 pose graph。导航时把 `navigation.launch.py` 的 `map` 参数改成
+新 YAML；局部代价地图会继续通过实时 `/scan` 更新。仅改变果实数量、高度、直径或成熟
+比例且植株碰撞边界不变时，通常可以复用导航地图。完整命令和 keepout mask 生成方式见
+[阶段四导航说明](navigation_stage4.md)。
+
+当前底盘转向测试若采用 3 m 行距，建议在默认 22×14 m 地面内使用 6 行而不是继续
+放置 10 行：`origin-x=-7.5`、`rows=6`、`plants-per-row=15`，行坐标为
+`-7.5…7.5`，机器人默认出生点 `(0,-6,1.5708)` 位于中央通道。可同时传
+`--plant-collision-width 0.06` 缩小简化茎杆碰撞盒，枝叶视觉冠幅仍由
+`--plant-width` 控制。生成命令、启动命令及重建地图步骤见
+[果实随机化指南中的 3 m 兼容场景](tomato_fruit_randomization.md)。
+
 ## 10. 常见故障与限制
 
 | 现象 | 先检查什么 |

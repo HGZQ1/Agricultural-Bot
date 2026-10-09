@@ -143,6 +143,7 @@ def _prepare_simulation(context):
     runtime = TemporaryDirectory(prefix="agri_mid360_")
     world = Path(runtime.name) / "world.sdf"
     bridge_config = Path(runtime.name) / "bridge.yaml"
+    clock_bridge_config = Path(runtime.name) / "clock_bridge.yaml"
     camera_bridge_config = Path(runtime.name) / "camera_bridge.yaml"
     camera_raw_info_topic = camera_config['info_topic'] + '/gz_raw'
     write_world(world_source, world, config, mode)
@@ -231,17 +232,33 @@ def _prepare_simulation(context):
         condition=IfCondition(LaunchConfiguration("use_scan")),
     )
 
+    # Bridge the clock owned by this exact world instead of Gazebo's global
+    # /clock alias.  The alias can be supplied by another server in the same
+    # Gazebo partition.  CLOCK QoS (depth 1, best effort, volatile) also keeps
+    # a 1 kHz simulation clock from accumulating stale samples under load.
+    gz_clock_topic = f"/world/{actual_world_name}/clock"
+    clock_bridge_config.write_text(
+        "- ros_topic_name: /clock\n"
+        f"  gz_topic_name: {gz_clock_topic}\n"
+        "  ros_type_name: rosgraph_msgs/msg/Clock\n"
+        "  gz_type_name: gz.msgs.Clock\n"
+        "  direction: GZ_TO_ROS\n"
+        "  lazy: false\n"
+        "  qos_profile: CLOCK\n",
+        encoding="utf-8",
+    )
     clock_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
         name="clock_bridge",
         output="screen",
-        arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"],
+        parameters=[{"config_file": str(clock_bridge_config), "use_sim_time": True}],
     )
 
     actions = [resource_path,
                SetEnvironmentVariable("GZ_PARTITION", LaunchConfiguration("gz_partition")),
-               LogInfo(msg=message)]
+               LogInfo(msg=message),
+               LogInfo(msg=f"Clock bridge: {gz_clock_topic} -> /clock (CLOCK QoS)")]
     if mode == "rgl":
         actions.extend([
             SetEnvironmentVariable("GZ_SIM_SYSTEM_PLUGIN_PATH", os.pathsep.join(filter(None, [

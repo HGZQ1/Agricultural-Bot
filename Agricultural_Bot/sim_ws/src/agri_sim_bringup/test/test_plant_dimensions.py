@@ -187,6 +187,43 @@ class PlantDimensionsTest(unittest.TestCase):
                     world, data, _ = self.generate(f"{randomize}_{height}", arguments, randomize)
                     self.assert_dimensions(world, data, height, 0.75)
 
+    def test_collision_box_is_independent_from_visual_canopy(self):
+        arguments = (
+            "--rows", "1", "--plants-per-row", "1",
+            "--plant-height", "2.6", "--plant-width", "1.0",
+            "--plant-collision-width", "0.06",
+            "--plant-collision-height", "1.10",
+            "--fruit-count-min", "0", "--fruit-count-max", "0",
+        )
+        for randomize in (False, True):
+            with self.subTest(randomize=randomize):
+                world, data, _ = self.generate(
+                    f"collision_{randomize}", arguments, randomize
+                )
+                model = self.plant_models(world, data)[0]
+                collision = model.find("link/collision")
+                size = [float(value) for value in collision.findtext(
+                    "geometry/box/size").split()]
+                pose = [float(value) for value in collision.findtext("pose").split()]
+                self.assertEqual(size, [0.06, 0.06, 1.10])
+                self.assertEqual(pose[:2] + pose[3:], [0.0] * 5)
+                self.assertAlmostEqual(pose[2], 0.55, delta=1e-12)
+                foliage = [visual for visual in model.findall("link/visual")
+                           if visual.findtext("geometry/mesh/submesh/name") in FOLIAGE_NAMES]
+                self.assertEqual(len(foliage), 3)
+                for visual in foliage:
+                    scale = [float(value) for value in visual.findtext(
+                        "geometry/mesh/scale").split()]
+                    expected_width_scale = 1.0 / self.source_width
+                    self.assertAlmostEqual(scale[0], expected_width_scale, delta=1e-12)
+                    self.assertAlmostEqual(scale[1], expected_width_scale, delta=1e-12)
+                    self.assertAlmostEqual(scale[2], 2.6 / self.source_height, delta=1e-12)
+                geometry = data["plant_geometry"]
+                self.assertEqual(geometry["collision_width"], 0.06)
+                self.assertEqual(geometry["collision_height"], 1.10)
+                self.assertEqual(data["parameters"]["plant_collision_width"], 0.06)
+                self.assertEqual(data["parameters"]["plant_collision_height"], 1.10)
+
     def test_original_fixed_fruit_and_blossom_meshes_are_not_rescaled(self):
         world, data, _ = self.generate(arguments=("--rows", "1", "--plants-per-row", "1",
                                                   "--plant-height", "2", "--plant-width", "1.5"),
@@ -240,9 +277,13 @@ class PlantDimensionsTest(unittest.TestCase):
                                 (self.root / f"other.{suffix}").read_bytes())
 
     def test_invalid_dimensions_and_scaled_stem_radius_preserve_existing_outputs(self):
-        invalid = [(flag, value) for flag in ("--plant-height", "--plant-width")
+        invalid = [(flag, value) for flag in (
+            "--plant-height", "--plant-width",
+            "--plant-collision-width", "--plant-collision-height",
+        )
                    for value in ("nan", "inf", "0", "-0.1")]
         invalid.append(("--plant-width", "2"))  # Default 0.12 m fruit radius invades widened stem.
+        invalid.append(("--plant-collision-width", "2"))
         for index, arguments in enumerate(invalid):
             with self.subTest(arguments=arguments):
                 name = f"invalid{index}"
@@ -254,6 +295,21 @@ class PlantDimensionsTest(unittest.TestCase):
                 self.assertIn("error:", result.stderr)
                 self.assertEqual(output.read_text(), "original world")
                 self.assertEqual(metadata.read_text(), "original metadata")
+
+    def test_layout_bounds_reject_rows_that_leave_the_ground(self):
+        output, metadata = self.root / "out_of_bounds.sdf", self.root / "out_of_bounds.json"
+        output.write_text("original world")
+        metadata.write_text("original metadata")
+        _, _, result = self.generate(
+            "out_of_bounds",
+            ("--rows", "10", "--plants-per-row", "15", "--row-spacing", "3.0"),
+            randomize=False,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("plant rows exceed ground-x", result.stderr)
+        self.assertEqual(output.read_text(), "original world")
+        self.assertEqual(metadata.read_text(), "original metadata")
 
     def test_scaled_stem_neighbor_clearance_uses_actual_width_and_height(self):
         common = ("--rows", "3", "--plants-per-row", "3", "--row-spacing", "0.45",
