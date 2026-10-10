@@ -11,7 +11,9 @@ def generate_launch_description():
     sim_share = Path(get_package_share_directory("agri_sim_description"))
     worlds_share = Path(get_package_share_directory("agri_greenhouse_worlds"))
     simulation = sim_share / "launch" / "simulation.launch.py"
-    world = worlds_share / "worlds" / "tomato_field_22x14.sdf"
+    # Project default: compact 6 x 10 field, 2.0 m row spacing, 2.0 m plant height.
+    # The legacy 10 x 15 reference remains available as tomato_field_22x14.sdf.
+    world = worlds_share / "worlds" / "tomato_field_default.sdf"
 
     return LaunchDescription(
         [

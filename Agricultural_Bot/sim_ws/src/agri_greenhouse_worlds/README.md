@@ -6,11 +6,39 @@ Agricultural_Bot simulation workspace.
 The initial tomato mesh and textures were adapted from
 [`LCAS/aoc_tomato_farm`](https://github.com/LCAS/aoc_tomato_farm), commit
 `d8243e48c92377fbd9754400e0ddb1fcffded9d7`, under the repository's Apache-2.0
-license. The generated baseline reproduces the reference layout with 10 rows,
-15 plants per row, 2.0 m row spacing, and 0.7 m plant spacing. A single plant
-asset is instanced to keep the repository and Gazebo resource load manageable.
+license. A single plant asset is instanced to keep the repository and Gazebo
+resource load manageable.
 
-Regenerate the baseline world from this package directory:
+`agri_sim_bringup/tomato_field.launch.py` uses
+`worlds/tomato_field_default.sdf` by default. Its checked-in metadata is
+`worlds/tomato_field_default.json`. The navigation development profile has 6
+rows, 10 plants per row, 2.0 m row spacing, 0.7 m plant spacing, a 2.0 m plant
+height, a 1.0 m visual crown width, and a 0.06 m simplified stem collision
+width. The rows are centered at world X = `-5, -3, -1, 1, 3, 5`, so the robot
+spawn line at X = 0 lies in the central aisle.
+
+Regenerate the project default from this package directory with:
+
+```bash
+python3 scripts/generate_tomato_field.py \
+  --rows 6 --plants-per-row 10 \
+  --row-spacing 2.0 --plant-spacing 0.7 \
+  --origin-x -5.0 --origin-y -5.0 \
+  --ground-x 22.0 --ground-y 14.0 \
+  --plant-height 2.0 --plant-width 1.0 \
+  --plant-collision-width 0.06 \
+  --randomize-fruits --fruit-visual mesh \
+  --fruit-count-min 2 --fruit-count-max 6 \
+  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
+  --ripe-ratio 0.7 --seed 42 \
+  --output worlds/tomato_field_default.sdf \
+  --metadata worlds/tomato_field_default.json
+```
+
+The generic generator's no-argument defaults remain the original 10-row,
+15-plants-per-row reference profile for backward compatibility and reproduce
+the legacy `worlds/tomato_field_22x14.sdf`:
 
 ```bash
 python3 scripts/generate_tomato_field.py

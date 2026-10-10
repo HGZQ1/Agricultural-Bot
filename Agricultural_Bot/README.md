@@ -5,7 +5,9 @@ ROS 2 Jazzy + Gazebo Harmonic 农业番茄采摘机器人项目工作空间。
 截至 2026-10-09，整机组件化模型、四舵轮运动学、底盘/CR5/夹爪仿真控制、MID-360
 和 D405 RGB-D 仿真接口已经接通。MID-360 默认使用 GPU LiDAR，可选 RGL 官方图样；
 D405 使用 Harmonic 原生 RGB-D，连续接口与靶标场景验收通过。参数化温室、导航路线、
-视觉和采摘任务仍在分阶段开发。2026-10-07 集成了参数化番茄田（150 株）及入口生成机器人功能；
+视觉和采摘任务仍在分阶段开发。2026-10-07 集成了参数化番茄田及入口生成机器人功能；
+当前 `tomato_field.launch.py` 的默认场景为 6 行×10 株、2 m 行距、0.7 m 株距的导航开发
+profile，旧 10 行×15 株场景保留为兼容基线；
 依赖、构建、打开场地与复现步骤见 [番茄田复现指南](docs/tomato_field_reproduction.md)。
 开启底盘控制、行间测试路线及 Gazebo 真值量化评测见
 [番茄田底盘运动测试](docs/chassis_field_motion.md)。
@@ -142,8 +144,8 @@ ros2 launch agri_navigation navigation.launch.py \
   use_sim_time:=true initial_pose_x:=0.0 initial_pose_y:=0.0 initial_pose_yaw:=0.0
 ```
 
-省略 `map` 参数时使用仓库内置的 `stage3_baseline.yaml`；自定义场景完成建图后，再将
-`map` 指向该场景实际存在的 YAML 文件。
+省略 `map` 参数时使用仓库内置的 `stage3_baseline.yaml`，它只是旧阶段测试夹具，不与
+当前默认番茄田匹配；完成建图后必须将 `map` 显式指向该场景实际生成的 YAML 文件。
 
 布局参数改变后的地图/代价地图重建、单目标命令和可选植株禁行遮罩见
 [阶段四导航说明](docs/navigation_stage4.md)。

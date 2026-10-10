@@ -4,9 +4,9 @@
 由 `map_server` 发布地图、AMCL 发布 `map → odom`，Nav2 通过 `/cmd_vel_nav`
 发送导航速度；建图模式的 SLAM Toolbox 不应同时运行。
 
-## 当前 3 m 番茄田：从参数修改到导航测试的完整流程
+## 当前默认 2 m 番茄田：从参数修改到导航测试的完整流程
 
-本节以当前推荐的 `6 行 × 15 株、3 m 行距、0.7 m 株距` 场景为准。命令均从
+本节以当前默认的 `6 行 × 10 株、2 m 行距、0.7 m 株距` 场景为准。命令均从
 `Agricultural_Bot` 仓库根目录执行。所有 ROS 终端必须使用相同的 `ROS_DOMAIN_ID`；
 `FIELD_ID` 是 shell 变量，每打开一个新终端都要重新定义。建图模式只运行
 SLAM Toolbox，导航模式只运行 map server、AMCL 和 Nav2，两种模式不能同时运行。
@@ -18,12 +18,12 @@ SLAM Toolbox，导航模式只运行 map server、AMCL 和 Nav2，两种模式�
 | 内容 | 参数 | 当前值 |
 | --- | --- | --- |
 | 行数 | `--rows` | 6 |
-| 每行植株数 | `--plants-per-row` | 15 |
-| 行距 | `--row-spacing` | 3.0 m |
+| 每行植株数 | `--plants-per-row` | 10 |
+| 行距 | `--row-spacing` | 2.0 m |
 | 株距 | `--plant-spacing` | 0.7 m |
-| 第一行/第一株坐标 | `--origin-x/--origin-y` | -7.5 / -5.0 m |
+| 第一行/第一株坐标 | `--origin-x/--origin-y` | -5.0 / -5.0 m |
 | 地面尺寸 | `--ground-x/--ground-y` | 22 / 14 m |
-| 冠幅/株高 | `--plant-width/--plant-height` | 1.0 / 2.6 m |
+| 冠幅/株高 | `--plant-width/--plant-height` | 1.0 / 2.0 m |
 | 简化茎杆碰撞宽度 | `--plant-collision-width` | 0.06 m |
 
 偶数行以 `x=0` 对称排列时，可用下面的公式计算第一行坐标：
@@ -38,10 +38,12 @@ origin-x = -((rows - 1) × row-spacing) / 2
 origin-y = -((plants-per-row - 1) × plant-spacing) / 2
 ```
 
-当前 `origin-y=-5.0` 保留了出生区空间。默认 22 m 宽地面无法容纳 10 行、3 m 行距；
-生成器会在植株冠幅越过地面边界时拒绝生成。减少每行植株数只会缩短 Y 向路线，例如
-10 株可取 `origin-y=-3.15`。碰撞宽度只影响 Gazebo 物理碰撞，GPU LiDAR 仍会看到
-由 `--plant-width` 决定的枝叶视觉网格。
+当前 `origin-y=-5.0` 在第一株前保留 1 m 出生区；6 行的 X 坐标为
+`-5、-3、-1、1、3、5`，机器人从 `world=(0,-6)` 沿世界 `+Y` 进入位于
+`x=-1` 与 `x=1` 两行之间的中央通道。1 m 视觉冠幅下通道净宽约 1 m，0.06 m
+简化茎杆碰撞盒下物理净宽约 1.94 m。碰撞宽度只影响 Gazebo 物理碰撞，GPU LiDAR
+仍会看到由 `--plant-width` 决定的枝叶视觉网格。2 m profile 应沿行直行并在行末
+宽阔区域转弯；若需要在通道内完成更大的转向扫掠，使用后文的 3 m 宽通道 profile。
 
 ### 2. 构建工作空间并生成场景
 
@@ -63,21 +65,21 @@ cd ..
 ```
 
 只改变行数、株数和间距等运行参数时，可以跳过重新构建，直接重新生成 SDF。生成当前
-3 m 场景：
+默认 2 m 场景：
 
 ```bash
 cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
-FIELD_ID="rows6_n15_row3p0_plant0p7_h2p6_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 mkdir -p "$FIELD_DIR" "$MAP_DIR"
 
 python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
-  --rows 6 --plants-per-row 15 \
-  --row-spacing 3.0 --plant-spacing 0.7 \
-  --origin-x -7.5 --origin-y -5.0 \
+  --rows 6 --plants-per-row 10 \
+  --row-spacing 2.0 --plant-spacing 0.7 \
+  --origin-x -5.0 --origin-y -5.0 \
   --ground-x 22.0 --ground-y 14.0 \
-  --plant-height 2.6 --plant-width 1.0 \
+  --plant-height 2.0 --plant-width 1.0 \
   --plant-collision-width 0.06 \
   --randomize-fruits --fruit-visual mesh \
   --fruit-count-min 2 --fruit-count-max 6 \
@@ -92,7 +94,7 @@ test -s "$FIELD_DIR/tomato_field.json"
 gz sdf -k "$FIELD_DIR/tomato_field.sdf"
 ```
 
-最后一条命令应输出 `Valid.`。这个 profile 会生成 90 株；若改变任一布局参数，应使用
+最后一条命令应输出 `Valid.`。这个 profile 会生成 60 株；若改变任一布局参数，应使用
 新的 `FIELD_ID`，以免地图覆盖或错配。
 
 ### 3. 终端一：启动待建图仿真
@@ -108,7 +110,7 @@ source sim_ws/install/setup.bash
 
 export ROS_DOMAIN_ID=96
 export GZ_PARTITION="agri_map_${ROS_DOMAIN_ID}_$(date +%s%N)"
-FIELD_ID="rows6_n15_row3p0_plant0p7_h2p6_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 
 ros2 launch agri_sim_bringup tomato_field.launch.py \
   world:="$PWD/artifacts/fields/$FIELD_ID/tomato_field.sdf" \
@@ -149,12 +151,28 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 
-ros2 lifecycle get /slam_toolbox
-ros2 node list | rg '^/(slam_toolbox|amcl|map_server)$'
+ros2 lifecycle get /slam_toolbox --no-daemon --spin-time 10
+ros2 node list --no-daemon --spin-time 10 | \
+  grep -E '^/(slam_toolbox|amcl|map_server)$'
 ros2 topic info /clock --verbose --no-daemon --spin-time 8
 ros2 control list_controllers
 ros2 run agri_sim_tests check_mapping --duration 5 --timeout 90
 ```
+
+`check_mapping` 会在超时时间内静默等待 `/map`、`/scan`、`/odom` 和 TF 数据；运行期间
+暂时没有终端输出属于正常现象。等待它返回 JSON 结果后再判断是否通过。
+
+如果第一条命令显示 `/slam_toolbox` 为 `inactive [2]`，先在 SLAM 终端确认没有启动报错，
+再执行下面的恢复命令：
+
+```bash
+ros2 lifecycle set /slam_toolbox activate --no-daemon --spin-time 10
+ros2 lifecycle get /slam_toolbox --no-daemon --spin-time 10
+ros2 run agri_sim_tests check_mapping --duration 5 --timeout 90
+```
+
+第二条命令应显示 `active [3]`。如果激活失败，不要开始遥控建图；回到第 4 步检查
+`mapping.launch.py` 的日志以及 `/scan`、`/odom` 是否存在。
 
 继续建图前应同时满足：
 
@@ -210,7 +228,7 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 
-FIELD_ID="rows6_n15_row3p0_plant0p7_h2p6_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 mkdir -p "$MAP_DIR"
@@ -261,7 +279,7 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 
-FIELD_ID="rows6_n15_row3p0_plant0p7_h2p6_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 test -s "$MAP_DIR/tomato_field.yaml"
 test -s "$MAP_DIR/tomato_field.pgm"
@@ -361,8 +379,10 @@ export ROS_DOMAIN_ID=96
 export GZ_PARTITION="agri_stage4_${ROS_DOMAIN_ID}_$(date +%s%N)"
 ```
 
-先启动仓库自带的阶段四基线番茄田、底盘、里程计、MID-360 和 `/scan`。
-省略 `world` 参数时会使用与默认导航地图配套的 `tomato_field_22x14.sdf`：
+先启动仓库默认的 6 行×10 株番茄田、底盘、里程计、MID-360 和 `/scan`。
+省略 `world` 参数时会使用 `tomato_field_default.sdf`。仓库内的
+`stage3_baseline.yaml` 是旧阶段测试夹具，不与该默认场景匹配；完成本节前半部分建图并
+显式传入同一 `FIELD_ID` 的地图后，才能启动导航：
 
 ```bash
 ros2 launch agri_sim_bringup tomato_field.launch.py \
@@ -419,7 +439,8 @@ ros2 launch agri_navigation navigation.launch.py \
   use_sim_time:=true
 ```
 
-省略 `map` 参数时会使用 `agri_navigation/maps/stage3_baseline.yaml`。`params_file`
+省略 `map` 参数时会使用 `agri_navigation/maps/stage3_baseline.yaml`，它只是旧阶段测试
+夹具，不适用于当前默认番茄田。完成建图后必须显式传入同一 `FIELD_ID` 的 YAML。`params_file`
 覆盖 Nav2 planner/controller/costmap 参数，`amcl_params_file` 覆盖 AMCL
 参数；不要在同一 ROS 域中再启动 `mapping.launch.py`。导航节点先发布
 `/cmd_vel_nav_raw`，collision monitor 输出 `/cmd_vel_nav`，再由
@@ -431,7 +452,7 @@ ros2 launch agri_navigation navigation.launch.py \
 地图。`FIELD_ID` 只是文档中的版本变量，不能把字符串 `FIELD_ID` 原样写进路径：
 
 ```bash
-FIELD_ID="rows10_n15_row2p0_plant0p7_h2p6_w1p0_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 
 ros2 launch agri_sim_bringup tomato_field.launch.py \
   world:="$PWD/artifacts/fields/$FIELD_ID/tomato_field.sdf" \
@@ -444,7 +465,7 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 另一终端加载相同环境、设置相同 `ROS_DOMAIN_ID` 和 `FIELD_ID` 后启动导航：
 
 ```bash
-FIELD_ID="rows10_n15_row2p0_plant0p7_h2p6_w1p0_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 ros2 launch agri_navigation navigation.launch.py \
   map:="$PWD/artifacts/maps/$FIELD_ID/tomato_field.yaml" \
   use_sim_time:=true \
@@ -541,11 +562,12 @@ python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
 随后按上面的建图、保存地图和 keepout mask 命令完成新版本；如果仅修改果实数量、结果
 高度或成熟比例而不改变植株碰撞边界，则不必重建导航静态地图。
 
-针对当前底盘转向测试，可直接使用 3 m 行距的 6 行 profile。它保持原地面尺寸，
-把行列居中到 `x=-7.5…7.5`，并把简化茎杆碰撞盒 X/Y 缩为 0.06 m；枝叶视觉冠幅仍为
-1 m。完整生成和启动命令见 [植株尺寸与番茄果实参数化](tomato_fruit_randomization.md)
-的“3 m 行距的兼容测试场景”一节。这里的碰撞盒缩小只改变 Gazebo 物理碰撞，GPU
-LiDAR 仍可能看到枝叶视觉网格，所以必须用该新 SDF 重新跑 SLAM 并保存新地图。
+当前默认导航建图使用 2 m 行距的 6 行×10 株 profile。它保持原地面尺寸，
+将 6 行布置在 `x=-5…5`，并把简化茎杆碰撞盒 X/Y 缩为 0.06 m；枝叶视觉冠幅仍为
+1 m。完整生成说明见 [植株尺寸与番茄果实参数化](tomato_fruit_randomization.md)
+的“导航建图默认场景（2 m 行距）”一节。需要更宽的转弯通道时，可以改用该文档中的
+“3 m 行距的宽通道备选场景”，但必须使用独立 `FIELD_ID` 重新建图。碰撞盒缩小只改变
+Gazebo 物理碰撞，GPU LiDAR 仍可能看到枝叶视觉网格。
 
 建图时使用同一场景和出生点：
 
@@ -574,7 +596,7 @@ ros2 launch agri_navigation navigation.launch.py \
 
 若机器人仍在原点附近被判定为障碍，先在 RViz 重新发送 `2D Pose Estimate`，再检查
 `/scan`、`/amcl_pose` 和 `ros2 run tf2_ros tf2_echo map base_footprint`。旧的
-`stage3_baseline.yaml` 与新的 3 m 场景坐标不匹配，不能继续用于定位；静态地图、
+`stage3_baseline.yaml` 与当前参数化场景坐标不匹配，不能继续用于定位；静态地图、
 keepout mask、路线和停车点必须使用同一 `FIELD_ID`。
 
 仓库中的 `generate_keepout_mask.py` 可以把植株元数据投影到保存地图的同尺寸栅格。它
@@ -586,8 +608,8 @@ python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_keepout_mask.py \
   --map-yaml "artifacts/maps/$FIELD_ID/tomato_field.yaml" \
   --output "artifacts/maps/$FIELD_ID/keepout_mask" \
   --robot-start-world 0.0 -6.0 1.5708 \
-  --rows 8 --plants-per-row 12 \
-  --row-spacing 1.8 --plant-spacing 0.6 --plant-width 1.0 \
+  --rows 6 --plants-per-row 10 \
+  --row-spacing 2.0 --plant-spacing 0.7 --plant-width 1.0 \
   --keepout-margin 0.15
 ```
 
@@ -601,13 +623,16 @@ Nav2 KeepoutFilter 配置加载；阶段四当前只启用静态/障碍/膨胀�
 推荐为每次场景建立独立目录：
 
 ```bash
-FIELD_ID="rows10_n15_row2p0_plant0p7_h2p6_w1p0_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
 mkdir -p "artifacts/fields/$FIELD_ID" "artifacts/maps/$FIELD_ID"
 
 python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
-  --rows 10 --plants-per-row 15 \
+  --rows 6 --plants-per-row 10 \
   --row-spacing 2.0 --plant-spacing 0.7 \
-  --plant-height 2.6 --plant-width 1.0 \
+  --origin-x -5.0 --origin-y -5.0 \
+  --ground-x 22.0 --ground-y 14.0 \
+  --plant-height 2.0 --plant-width 1.0 \
+  --plant-collision-width 0.06 \
   --randomize-fruits --fruit-visual mesh \
   --fruit-count-min 2 --fruit-count-max 6 \
   --fruit-height-min 0.80 --fruit-height-max 1.60 \
@@ -617,7 +642,7 @@ python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --metadata "artifacts/fields/$FIELD_ID/tomato_field.json"
 ```
 
-阶段四的默认回归场景采用 10 行×15 株、行距 2.0 m、株距 0.7 m；这是当前场地生成器
+阶段四的默认回归场景采用 6 行×10 株、行距 2.0 m、株距 0.7 m；这是当前场地生成器
 按开源番茄温室行列组织方式整理的可复现 profile。它不是对方 `map` 坐标或温室尺寸的
 直接复制；更换机器人 footprint、温室边界或行向后，必须重新建图和标定站点。
 
