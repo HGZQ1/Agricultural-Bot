@@ -103,6 +103,8 @@ def generate_launch_description():
         DeclareLaunchArgument('odom_frame', default_value='odom'),
         DeclareLaunchArgument('base_frame', default_value='base_footprint'),
         slam_node,
-        configure,
+        # Register before emitting configure so a fast configuring -> inactive
+        # transition cannot occur before the activation handler is installed.
         activate,
+        configure,
     ])

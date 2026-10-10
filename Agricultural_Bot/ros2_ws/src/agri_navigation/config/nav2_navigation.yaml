@@ -203,7 +203,8 @@ collision_monitor:
     polygons: [RobotStop]
     RobotStop:
       type: polygon
-      points: "[[0.50, 0.38], [0.50, -0.38], [-0.54, -0.38], [-0.54, 0.38]]"
+      # Match the costmap footprint after its 0.04 m padding.
+      points: "[[0.50, 0.40], [0.50, -0.40], [-0.54, -0.40], [-0.54, 0.40]]"
       action_type: stop
       min_points: 4
       visualize: true

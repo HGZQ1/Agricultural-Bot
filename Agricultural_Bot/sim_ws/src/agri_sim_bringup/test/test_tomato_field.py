@@ -4,6 +4,7 @@ Run after building and sourcing both workspaces.
 """
 
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -35,6 +36,7 @@ class TomatoFieldTest(unittest.TestCase):
             if path.name == "tomato_field.launch.py":
                 defaults = {a.name: perform_substitutions(LaunchContext(), a.default_value)
                             for a in arguments if a.name != "use_kinematics"}
+                self.assertEqual(Path(defaults["world"]).name, "tomato_field_default.sdf")
                 self.assertEqual(defaults["paused"], "true")
                 for switch in ("use_control", "use_lidar", "use_camera"):
                     self.assertEqual(defaults[switch], "false")
@@ -61,6 +63,34 @@ class TomatoFieldTest(unittest.TestCase):
                 if element.text and element.text.strip().startswith("model://tomato_0/"):
                     target = share / "models" / element.text.strip().removeprefix("model://")
                     self.assertTrue(target.exists(), str(target))
+
+    def test_default_world_matches_compact_navigation_profile(self):
+        share = Path(get_package_share_directory("agri_greenhouse_worlds"))
+        world_path = share / "worlds/tomato_field_default.sdf"
+        metadata_path = share / "worlds/tomato_field_default.json"
+        data = json.loads(metadata_path.read_text(encoding="utf-8"))
+        parameters = data["parameters"]
+        expected = {
+            "rows": 6,
+            "plants_per_row": 10,
+            "row_spacing": 2.0,
+            "plant_spacing": 0.7,
+            "origin_x": -5.0,
+            "origin_y": -5.0,
+            "plant_height": 2.0,
+            "plant_width": 1.0,
+            "plant_collision_width": 0.06,
+        }
+        self.assertEqual({key: parameters[key] for key in expected}, expected)
+        self.assertEqual(len(data["plants"]), 60)
+        self.assertEqual(len(data["fruits"]), 224)
+
+        world = ET.parse(world_path).getroot().find("world")
+        plant_names = {plant["id"] for plant in data["plants"]}
+        fruit_names = {fruit["id"] for fruit in data["fruits"]}
+        model_names = {model.get("name") for model in world.findall("model")}
+        self.assertTrue(plant_names <= model_names)
+        self.assertTrue(fruit_names <= model_names)
 
 
 if __name__ == "__main__":

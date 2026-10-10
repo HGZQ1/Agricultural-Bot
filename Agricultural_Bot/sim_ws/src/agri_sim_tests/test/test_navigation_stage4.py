@@ -69,3 +69,6 @@ def test_collision_monitor_connects_nav2_to_base_gate():
     assert monitor['enable_stamped_cmd_vel'] is True
     assert monitor['cmd_vel_in_topic'] == '/cmd_vel_nav_raw'
     assert monitor['cmd_vel_out_topic'] == '/cmd_vel_nav'
+    assert yaml.safe_load(monitor['RobotStop']['points']) == [
+        [0.50, 0.40], [0.50, -0.40], [-0.54, -0.40], [-0.54, 0.40],
+    ]

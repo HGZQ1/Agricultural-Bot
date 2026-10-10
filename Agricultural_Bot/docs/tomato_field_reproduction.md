@@ -3,7 +3,8 @@
 维护者：fsy；更新日期：2026-10-07。
 
 目标：在 Ubuntu 24.04、ROS 2 Jazzy、Gazebo Harmonic 中加载 22×14 m 番茄田，
-并可选择在入口生成 agri_robot。10 行×15 株，共 150 株；行距 2 m，株距 0.7 m。
+并可选择在入口生成 agri_robot。当前启动默认是 6 行×10 株，共 60 株；行距 2 m，
+株距 0.7 m，六行以 `x=0` 对称排列。原 10 行×15 株世界仍作为兼容基线保留。
 本功能已与远端 10.6.2 的 MID-360/D405 启动框架集成。
 
 ## 1. 文件与下载来源
@@ -13,7 +14,8 @@
 | 场地包 | `sim_ws/src/agri_greenhouse_worlds` | 随本次代码一起提供 |
 | 番茄网格、纹理、材质 | 上述包的 `models/tomato_0` | 已内置，无需联网下载模型 |
 | 场地生成器 | `scripts/generate_tomato_field.py`（位于场地包内） | 已内置；仅用 Python 标准库，无额外 pip 依赖 |
-| 生成后的世界 | 场地包内 `worlds/tomato_field_22x14.sdf` | 已内置；可直接运行 |
+| 生成后的默认世界 | 场地包内 `worlds/tomato_field_default.sdf` 及同名 JSON | 已内置；可直接运行 |
+| 兼容基线世界 | 场地包内 `worlds/tomato_field_22x14.sdf` | 旧 10 行×15 株回归使用 |
 | 一键入口 | `sim_ws/src/agri_sim_bringup/launch/tomato_field.launch.py` | 已内置 |
 | 原始番茄项目 | https://github.com/LCAS/aoc_tomato_farm | 仅追溯或修改原始资产时需要 |
 | 另一调研项目 | https://github.com/javadibrahimli/tomato_agribot_ros2 | 仅学习参考；本入口不依赖它 |
@@ -164,7 +166,7 @@ source sim_ws/install/setup.bash
 export GZ_PARTITION=agricultural_bot_field_only
 field_share="$(ros2 pkg prefix --share agri_greenhouse_worlds)"
 export GZ_SIM_RESOURCE_PATH="$field_share/models${GZ_SIM_RESOURCE_PATH:+:$GZ_SIM_RESOURCE_PATH}"
-gz sim "$field_share/worlds/tomato_field_22x14.sdf"
+gz sim "$field_share/worlds/tomato_field_default.sdf"
 ```
 
 - `GZ_PARTITION` 给本次 Gazebo 通信设置独立名称。
@@ -172,7 +174,8 @@ gz sim "$field_share/worlds/tomato_field_22x14.sdf"
 - `GZ_SIM_RESOURCE_PATH` 告诉 Gazebo 到哪里寻找 `model://tomato_0`。
 - `gz sim` 打开世界；这里没有 `-r`，默认暂停，点击左下角播放才运行物理。
 
-应看到褐色地面、150 株番茄、太阳；Entity Tree 中有 `ground_plane` 和 `tomato_0` 至 `tomato_149`。
+应看到褐色地面、60 株番茄、太阳；Entity Tree 中有 `ground_plane` 和 `tomato_0` 至
+`tomato_59`，以及随机果实模型。
 这是三维仿真世界，不是 SLAM 生成的二维导航地图。
 此模式没有机器人，属于预期行为。完成后在启动终端按 `Ctrl+C`，等待退出。
 
@@ -298,14 +301,14 @@ cd ..
 
 本轮在独立安装目录构建成功（机器人层2包、仿真层6包），237项 Python 回归测试通过。
 `rosdep check --from-paths ros2_ws/src sim_ws/src --ignore-src --skip-keys ament_python` 通过。
-测试覆盖基线世界逐字节再生成、150株计数、地面碰撞、资源引用、传感器处理后保留场地、
+这里的历史记录覆盖旧基线世界逐字节再生成、150株计数、地面碰撞、资源引用、传感器处理后保留场地、
 Launch无重复参数及安全默认值。无界面暂停启动创建实体成功，查询到
 `agri_robot` 位姿 `[0,-6,0.40]`、yaw `1.5708`，列表包含150株和机器人。
 45秒后测试主动发送 SIGINT 退出（timeout 返回124，Gazebo日志退出码-2）；不是启动失败。
 执行环境限制了默认 `.gz` 日志目录写入，故出现日志写入提示，未妨碍实体查询。
 GUI、开启物理后的长时间稳定性和新传感器联动没有在此次上传验证中重新验收。
 具体本轮测试结果见仓库根目录 `开发日志.md` 的 2026-10-07 fsy 条目。
-验收应至少覆盖：生成可复现、150个实例与地面 collision、资源路径、双工作空间构建、
+旧基线验收至少覆盖：生成可复现、150个实例与地面 collision、资源路径、双工作空间构建、
 launch 参数、机器人实体生成和同分区查询。原 GUI 成果见 2026-10-06 记录；
 未经本轮重测的图形/传感器效果不应写成“新版本已完整验收”。
 

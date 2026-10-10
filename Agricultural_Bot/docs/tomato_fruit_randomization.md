@@ -2,8 +2,8 @@
 
 实际温室尺寸尚未确定，本功能先提供可复现的参数生成流程。以下数值为测试示例，
 不是实测株高、冠幅或结果高度。可以分别调整枝叶株高、冠幅、简化茎杆碰撞盒，
-以及独立果实的数量、高度和直径。不传植株尺寸且不启用 `--randomize-fruits` 时，原有 150 株场景
-保持逐字节复现；所有模式均保留 `tomato_0` 等原资产文件。
+以及独立果实的数量、高度和直径。不传植株尺寸且不启用 `--randomize-fruits` 时，旧的
+150 株兼容基线保持逐字节复现；项目启动默认场景的 6 行×10 株 profile 见下文。
 
 ## 生成并查看
 
@@ -38,7 +38,8 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 
 此示例使用 2 m 株高、1 m 冠幅和 0.80–1.60 m 果实中心高度，均为测试值，
 实际温室尺寸仍待实测。示例生成 6 株，便于先检查画面。删除 `--rows`、`--plants-per-row`、
-`--origin-x`、`--origin-y` 四个覆盖项，即使用原有 10 行 × 15 株布局。
+`--origin-x`、`--origin-y` 四个覆盖项，会恢复生成器原有的 10 行 × 15 株基线布局；
+当前导航建图默认场景使用后文单独定义的 6 行 × 10 株 profile。
 修改参数后需重新生成文件，并退出对应 Gazebo 后重启；已加载的世界不会自动刷新。
 始终显式填写 `--output`，避免覆盖正式基线或向安装目录写入场景。
 
@@ -51,7 +52,7 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 [底盘运动指南](chassis_field_motion.md)。传感器仍可用 `use_camera:=true`、
 `use_lidar:=true` 启用；本轮随机化验证不替代传感器联合验收。
 
-## 同时启动底盘、参数化番茄田和传感器
+## 同时启动底盘、参数化番茄田和传感器（150 株示例）
 
 先在旧仿真的启动终端按 Ctrl+C 退出，再在终端一执行。此例为 150 株，
 株高 2 m、冠幅 1 m、每株 2–6 个果实、中心高度 0.80–1.60 m（测试值），启用底盘控制、MID-360、
@@ -107,7 +108,45 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 改为 `lidar_mode:=rgl`。这些组合参数已核对启动入口，尚未对完整 150 株新网格场景
 重新执行底盘与两种传感器联合验收。
 
-## 3 m 行距的兼容测试场景
+## 导航建图默认场景（2 m 行距）
+
+当前导航建图默认使用 22×14 m 地面、6 行×10 株、行距 2 m、株距 0.7 m。6 行的
+世界 X 坐标为 `-5、-3、-1、1、3、5`，因此机器人从世界坐标
+`(0,-6,1.5708)` 出生时位于 `x=-1` 与 `x=1` 两行之间，并沿世界 `+Y` 进入中央通道。
+株高为 2 m、视觉冠幅为 1 m，简化茎杆碰撞盒 X/Y 为 0.06 m。该 profile 共生成
+60 株；它与地图、pose graph、keepout mask 和停车点共同使用同一个 `FIELD_ID`：
+
+```bash
+cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
+MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
+mkdir -p "$FIELD_DIR" "$MAP_DIR"
+
+python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
+  --rows 6 --plants-per-row 10 \
+  --row-spacing 2.0 --plant-spacing 0.7 \
+  --origin-x -5.0 --origin-y -5.0 \
+  --ground-x 22.0 --ground-y 14.0 \
+  --plant-height 2.0 --plant-width 1.0 \
+  --plant-collision-width 0.06 \
+  --randomize-fruits --fruit-visual mesh \
+  --fruit-count-min 2 --fruit-count-max 6 \
+  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
+  --ripe-ratio 0.7 --seed 42 \
+  --output "$FIELD_DIR/tomato_field.sdf" \
+  --metadata "$FIELD_DIR/tomato_field.json"
+
+test -s "$FIELD_DIR/tomato_field.sdf"
+test -s "$FIELD_DIR/tomato_field.json"
+gz sdf -k "$FIELD_DIR/tomato_field.sdf"
+```
+
+最后一条命令应输出 `Valid.`。完整的仿真启动、SLAM、地图保存和导航测试流程见
+[阶段四导航文档](navigation_stage4.md#当前默认-2-m-番茄田从参数修改到导航测试的完整流程)。
+
+## 3 m 行距的宽通道备选场景
 
 默认地面为 22×14 m。若仍保留 10 行并把行距改成 3 m，原来的 `origin-x=-9` 会让
 植株位置扩展到 `x=18`，超出地面边界；同时可能把一行放在机器人出生通道上。测试阶段
@@ -117,7 +156,7 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 生成器现在会在写文件前拒绝越出地面边界的行列布局，报错时按提示同步调整行数、
 每行株数、首株坐标或地面尺寸。
 
-下面的 profile 保持 22×14 m 地面、6 行×15 株、行距 3 m、株距 0.7 m，视觉冠幅为
+下面的备选 profile 保持 22×14 m 地面、6 行×15 株、行距 3 m、株距 0.7 m，视觉冠幅为
 1 m，简化茎杆碰撞盒 X/Y 为 0.06 m。`--plant-collision-height` 未指定时按株高比例
 保留完整的茎杆高度；若只关心底盘通行，优先缩小 X/Y，不要把视觉冠层一起缩小：
 

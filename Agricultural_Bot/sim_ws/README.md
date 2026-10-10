@@ -23,7 +23,8 @@ source ../ros2_ws/install/setup.bash
 已包含机器人 spawn、资源路径、四舵轮/CR5/双指夹爪控制接口与控制器。
 `agri_sim_sensors` 已提供 MID-360 的 GPU LiDAR/RGL 双后端、D405 原生对齐 RGB-D、
 桥接、RGL 数据规范化节点和 RViz；`agri_sim_tests` 提供两类传感器可执行验收。
-`agri_greenhouse_worlds` 已提供 22×14 m、10 行×15 株的参数化番茄田。
+`agri_greenhouse_worlds` 已提供 22×14 m 参数化番茄田；`tomato_field.launch.py` 默认加载
+6 行×10 株、2 m 行距、0.7 m 株距的导航开发场景，旧 10 行×15 株场景仍作为兼容基线保留。
 首次依赖准备、构建、只打开场地、导入机器人和排错见
 [番茄田复现指南](../docs/tomato_field_reproduction.md)。完整温室结构和可采摘果实仍待开发。
 
