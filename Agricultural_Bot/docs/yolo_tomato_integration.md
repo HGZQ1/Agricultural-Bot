@@ -5,10 +5,11 @@
 
 ## 1. 模型文件
 
-本项目使用 Ultralytics YOLO 分割模型。当前训练好的权重在项目外部：
+本项目使用 Ultralytics YOLO 分割模型。按照《需求文档.md》的目录约定，训练好的
+权重放在 `data/weights/`：
 
 ```text
-/home/fsy/tomato_seg-6_package/weights/best.pt
+/home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/data/weights/best.pt
 ```
 
 该模型包含两个类别：
@@ -18,13 +19,14 @@
 1: tomato_G
 ```
 
-权重文件不提交到 Git 仓库。这样仓库不会因为模型文件过大而无法正常克隆；
-其他电脑只需要把权重放在任意位置，并在启动时修改路径。
+权重文件不提交到 Git 仓库。`.gitignore` 已排除 `*.pt`，因此仓库不会因为模型
+文件过大而无法正常克隆。其他电脑应先取得权重并放到 `data/weights/`，或者在
+启动时传入其他绝对路径。
 
 推荐设置环境变量：
 
 ```bash
-export AGRI_TOMATO_MODEL=/home/fsy/tomato_seg-6_package/weights/best.pt
+export AGRI_TOMATO_MODEL=/home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/data/weights/best.pt
 ```
 
 每次重新打开终端后都需要重新执行，或者把这行加入个人 shell 配置文件。
@@ -41,7 +43,7 @@ colcon --log-base ros2_ws/log build --symlink-install \
   --base-paths ros2_ws/src \
   --build-base ros2_ws/build \
   --install-base ros2_ws/install \
-  --packages-select agri_vision_detector
+  --packages-select agri_perception
 
 source ros2_ws/install/setup.bash
 ```
@@ -67,15 +69,15 @@ source /opt/ros/jazzy/setup.bash
 source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 
-ros2 launch agri_vision_detector tomato_detector.launch.py \
+ros2 launch agri_perception tomato_detector.launch.py \
   device:=0
 ```
 
 如果没有设置环境变量，直接传入绝对路径：
 
 ```bash
-ros2 launch agri_vision_detector tomato_detector.launch.py \
-  model_path:=/home/fsy/tomato_seg-6_package/weights/best.pt \
+ros2 launch agri_perception tomato_detector.launch.py \
+  model_path:=/home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/data/weights/best.pt \
   device:=0
 ```
 

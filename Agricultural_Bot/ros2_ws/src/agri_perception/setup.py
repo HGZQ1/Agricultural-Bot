@@ -4,7 +4,7 @@ import os
 from setuptools import find_packages, setup
 
 
-package_name = 'agri_vision_detector'
+package_name = 'agri_perception'
 
 setup(
     name=package_name,
@@ -26,7 +26,7 @@ setup(
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
-            'tomato_detector = agri_vision_detector.tomato_detector:main',
+            'tomato_detector = agri_perception.tomato_detector:main',
         ],
     },
 )

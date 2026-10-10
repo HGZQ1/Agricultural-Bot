@@ -1,4 +1,4 @@
-# agri_vision_detector
+# agri_perception
 
 这个包把训练好的 Ultralytics YOLO 番茄分割模型接入 ROS 2，并使用仿真的
 Intel RealSense D405 RGB-D 相机进行检测。完整中文流程见
@@ -14,16 +14,16 @@ Intel RealSense D405 RGB-D 相机进行检测。完整中文流程见
 
 ## 模型文件
 
-模型权重不放进 Git 仓库。当前使用的权重文件是：
+模型权重按项目结构放在 `data/weights/`，但不放进 Git 仓库。当前本机权重文件是：
 
 ```text
-/home/fsy/tomato_seg-6_package/weights/best.pt
+/home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/data/weights/best.pt
 ```
 
 推荐用环境变量保存本机路径：
 
 ```bash
-export AGRI_TOMATO_MODEL=/home/fsy/tomato_seg-6_package/weights/best.pt
+export AGRI_TOMATO_MODEL=/home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/data/weights/best.pt
 ```
 
 也可以只在本次启动时传入 `model_path:=...`。如果两者都没有设置，节点会提示
@@ -38,7 +38,7 @@ cd /home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot
 source /opt/ros/jazzy/setup.bash
 colcon --log-base ros2_ws/log build --symlink-install --base-paths ros2_ws/src \
   --build-base ros2_ws/build --install-base ros2_ws/install \
-  --packages-select agri_vision_detector
+  --packages-select agri_perception
 source ros2_ws/install/setup.bash
 ```
 
@@ -51,15 +51,15 @@ source /opt/ros/jazzy/setup.bash
 source /home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/ros2_ws/install/setup.bash
 source /home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/sim_ws/install/setup.bash
 
-ros2 launch agri_vision_detector tomato_detector.launch.py \
+ros2 launch agri_perception tomato_detector.launch.py \
   device:=0
 ```
 
 未设置环境变量时，直接使用绝对路径：
 
 ```bash
-ros2 launch agri_vision_detector tomato_detector.launch.py \
-  model_path:=/home/fsy/tomato_seg-6_package/weights/best.pt \
+ros2 launch agri_perception tomato_detector.launch.py \
+  model_path:=/home/fsy/Documents/Codex/Agricultural-Bot/Agricultural_Bot/data/weights/best.pt \
   device:=0
 ```
 

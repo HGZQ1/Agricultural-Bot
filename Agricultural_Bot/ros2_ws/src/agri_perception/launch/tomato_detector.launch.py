@@ -48,7 +48,7 @@ def generate_launch_description():
         DeclareLaunchArgument('image_size', default_value='640'),
         DeclareLaunchArgument('device', default_value='0'),
         Node(
-            package='agri_vision_detector',
+            package='agri_perception',
             executable='tomato_detector',
             name='tomato_detector',
             output='screen',
