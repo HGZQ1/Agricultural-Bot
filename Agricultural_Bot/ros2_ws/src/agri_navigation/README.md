@@ -67,17 +67,27 @@ ros2 launch agri_navigation navigation.launch.py \
   initial_pose_x:=0.0 initial_pose_y:=0.0 initial_pose_yaw:=0.0
 ```
 
+Omit `map:=...` to load the packaged `tomato_field_default.yaml`, which is the
+validated 192 x 213 central-corridor map for the default tomato field. Pass an
+absolute map path only when using another field or map version.
+
 One lifecycle manager activates map server and AMCL before the controller,
 planner, behaviors, BT navigator, and collision monitor. The default planner is
 NavFn in Dijkstra mode and the controller is Regulated Pure Pursuit. Commands
 flow through `/cmd_vel_nav_raw`, the collision monitor, `/cmd_vel_nav`, and the
 base velocity gate before reaching `/cmd_vel_safe`.
 
+The default controller profile is specialized for the validated central
+corridor: `allow_reversing` is enabled and `use_rotate_to_heading` is disabled.
+Use the same yaw for outbound and return goals so the robot reverses along the
+route instead of turning in place beside the plants.
+
 `localization.launch.py` starts map server and AMCL without the navigation
-servers. The packaged `stage3_baseline.yaml` is a startup fixture; use a complete
-saved field map for driving. Layout changes require regenerating the field,
-re-running SLAM, saving a new map version, and restarting navigation with that
-YAML. See `docs/navigation_stage4.md` at the repository root for commands.
+servers. The packaged `stage3_baseline.yaml` remains an explicit legacy test
+fixture; the launch defaults use `tomato_field_default.yaml`. Layout changes
+require regenerating the field, re-running SLAM, saving a new map version, and
+restarting navigation with that YAML. See `docs/navigation_stage4.md` at the
+repository root for commands.
 
 ## Important boundaries
 

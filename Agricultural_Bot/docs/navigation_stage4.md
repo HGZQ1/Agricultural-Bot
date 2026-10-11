@@ -197,6 +197,73 @@ rviz2 -d "$(ros2 pkg prefix --share nav2_bringup)/rviz/nav2_default_view.rviz" \
 
 RViz 的 Fixed Frame 应为 `map`，并确认 `/map`、`/scan` 与机器人 TF 能正确叠加。
 
+### 5.1 单通道演示建图（重复植株场景推荐）
+
+当前 6 行场景可以保留，不需要把 SDF 改成只有一排植株。演示范围定义为机器人出生点
+正前方的**中央作业通道**：机器人在 world `(0,-6)` 面向 `+Y`，沿 `world x=0`
+行驶，两侧作物行位于 `world x=-1` 和 `world x=1`。在初始 `map` 坐标中，通道中心线
+约为 `map y=0`，前进方向为 `map +X`；实际保存后的边界应以 RViz 栅格为准。
+
+相邻行中心距为 2 m，而常规参数会在 3 m 内搜索回环。重复的植株外形可能让 SLAM
+把相邻通道错误关联，并使 `map → odom` 突然跳转。单通道演示使用独立参数文件，保留
+连续扫描匹配、关闭非局部回环，并把建图使用的激光最大距离限制为 1.8 m，使两侧边界
+仍可见而更远的重复行不参与匹配：
+
+```bash
+cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
+source /opt/ros/jazzy/setup.bash
+source ros2_ws/install/setup.bash
+source sim_ws/install/setup.bash
+export ROS_DOMAIN_ID=96
+
+ros2 launch agri_navigation mapping.launch.py \
+  slam_params_file:="$(ros2 pkg prefix --share agri_navigation)/config/slam_toolbox_single_corridor.yaml" \
+  use_sim_time:=true scan_topic:=/scan \
+  map_frame:=map odom_frame:=odom base_frame:=base_footprint
+```
+
+路线只执行以下动作：
+
+1. 从出生点沿中央通道中心低速直行，覆盖入口、全部采摘停车点和行末停车区；
+2. 行末不横移到邻行，也不在狭窄通道内原地掉头；
+3. 停车后沿原轨迹低速倒车回出生点，保持车头方向不变；
+4. 若 RViz 中 `map → odom` 出现突跳、植株边界重影或地图整体错层，本轮地图作废，
+   重启仿真和 SLAM 后重新采集。
+
+当前单通道地图版本保存在对应 `FIELD_ID` 的地图目录：
+
+```bash
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
+MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
+mkdir -p "$MAP_DIR"
+
+ros2 run nav2_map_server map_saver_cli \
+  -f "$MAP_DIR/tomato_field" \
+  --ros-args -p use_sim_time:=true \
+    -p map_subscribe_transient_local:=true \
+    -p save_map_timeout:=10.0
+
+ros2 service call /slam_toolbox/serialize_map \
+  slam_toolbox/srv/SerializePoseGraph \
+  "{filename: '$MAP_DIR/tomato_field'}"
+
+sha256sum "$FIELD_DIR/tomato_field.sdf" "$FIELD_DIR/tomato_field.json" \
+  > "$MAP_DIR/field.sha256"
+test -s "$MAP_DIR/tomato_field.yaml"
+test -s "$MAP_DIR/tomato_field.pgm"
+```
+
+导航演示只发送中央通道内、已知自由栅格上的预定义目标。初始候选范围可用
+`map y≈0、map x≈0.5～7.5`，每个点都必须先在最终地图中复核。默认 RPP profile 已关闭
+`use_rotate_to_heading` 并启用 `allow_reversing`：从行末返回入口时保持 `yaw≈0`，沿原路径
+倒车，禁止在植株旁原地掉头。去程和回程目标都应保持相同航向；当前全局规划器允许经过
+未知区域，任务层还应拒绝通道范围外的任意目标，后续接入 keepout filter 后再把该约束
+下沉到代价地图。
+
+此 profile 的验收边界是“固定出生点、中央单通道、预定义停车/采摘点”。它不表示系统
+已经解决多行温室中的全局重定位或重复结构数据关联问题。
+
 ### 6. 终端四：低速遥控并完成闭环
 
 ```bash
@@ -211,10 +278,11 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
   -p speed:=0.10 -p turn:=0.20
 ```
 
-先直行通过中央通道，再依次覆盖需要导航的行间通道、两端回转区和外围边界。转弯时降低
-速度，多次经过已有区域，并最终回到出生点附近和初始朝向，使 SLAM 获得回环约束。
-建图过程中在 RViz 检查植株行没有明显重影、断裂或整体错层；出现错层时应在保存前重新
-经过同一区域，无法恢复时重新开始本轮建图。
+使用常规全场 profile 时，先直行通过中央通道，再依次覆盖需要导航的行间通道、两端
+回转区和外围边界，多次经过已有区域并回到出生点附近。使用 5.1 节的单通道演示 profile
+时，不执行全场覆盖和跨行闭环，只按该节规定直行并原路倒车。建图过程中在 RViz 检查
+植株行没有明显重影、断裂或整体错层；出现错层且无法通过当前通道的连续扫描恢复时，
+应放弃并重新开始本轮建图。
 
 ### 7. 保存占据地图和 pose graph
 
@@ -261,6 +329,16 @@ sed -n '1,20p' "$MAP_DIR/tomato_field.yaml"
 `artifacts/fields/$FIELD_ID/`，地图和可继续建图的 pose graph 位于
 `artifacts/maps/$FIELD_ID/`，目录中包含 `tomato_field.yaml/.pgm`、
 `tomato_field.posegraph/.data`、`field.sha256` 和 `manifest.json`。
+当前默认占据栅格已切换为中央单通道演示地图：分辨率 0.05 m、192×213 像素，原点为
+`[-0.622,-5.431,0]`。默认 Nav2 配置将局部与全局 inflation radius 从 0.45 m 降为
+0.40 m，将 costmap footprint padding 从 0.04 m 调整为 0.035 m，并把 cost scaling factor
+从 3.0 提高为 5.0。Nav2 实际计算的内切半径约为 0.395000014 m，因此 0.40 m 不会触发
+边界告警；在 0.05 m 分辨率下，膨胀范围由 9 个栅格减为 8 个栅格。Collision Monitor
+仍保留 0.04 m padding 对应的硬停车多边形，比规划 footprint 多 5 mm。该配置只针对保持
+`yaw≈0` 的中央直行通道演示；RPP 允许沿原路径倒车返航，并关闭自动面向路径的原地旋转。
+考虑 0.10 m 到点容差和定位误差，采摘停车点到占据栅格的名义距离建议至少 0.60 m。
+AMCL 同时把激光使用范围限制为 1.8 m，并在每次启动时采用固定初始位姿，减少远处重复
+植株行对定位的干扰。
 
 `agri_navigation` 包内也安装了同一张 `tomato_field_default.yaml/.pgm`，因此重新构建
 该包后，省略 `map:=...` 的 `navigation.launch.py` 和 `localization.launch.py` 会使用
@@ -343,8 +421,28 @@ ros2 action send_goal -f -t 120 \
 ```
 
 成功时 Action 结果应为 `SUCCEEDED`，机器人最终停止，定位无跳变。配置中的目标容差为
-位置 0.10 m、航向约 0.0873 rad。确认原点在 RViz 中是自由空间后，可把目标位置改成
-`x: 0.00, y: 0.00` 测试返回起点。
+位置 0.10 m、航向约 0.0873 rad。长距离往返测试可先发送 `(3.50, 0.00, yaw=0)`，到达后
+发送 `(0.50, 0.00, yaw=0)`；返程 `/cmd_vel_nav_raw` 的 `linear.x` 应为负值，车体保持
+`yaw≈0` 倒车。默认使用 `x=0.50` 作为返航终点，因为 `x=0` 附近仍有出生点雷达盲区
+留下的少量未知栅格。
+
+完整往返命令如下；必须等待第一条 Action 返回 `SUCCEEDED` 后再执行第二条：
+
+```bash
+ros2 action send_goal -f -t 120 \
+  /navigate_to_pose nav2_msgs/action/NavigateToPose \
+  "{pose: {header: {frame_id: map}, pose: {
+    position: {x: 3.50, y: 0.00, z: 0.0},
+    orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}
+  }}}"
+
+ros2 action send_goal -f -t 120 \
+  /navigate_to_pose nav2_msgs/action/NavigateToPose \
+  "{pose: {header: {frame_id: map}, pose: {
+    position: {x: 0.50, y: 0.00, z: 0.0},
+    orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}
+  }}}"
+```
 
 ### 11. 常见故障定位
 
@@ -400,9 +498,9 @@ export GZ_PARTITION="agri_stage4_${ROS_DOMAIN_ID}_$(date +%s%N)"
 ```
 
 先启动仓库默认的 6 行×10 株番茄田、底盘、里程计、MID-360 和 `/scan`。
-省略 `world` 参数时会使用 `tomato_field_default.sdf`。仓库内的
-`stage3_baseline.yaml` 是旧阶段测试夹具，不与该默认场景匹配；完成本节前半部分建图并
-显式传入同一 `FIELD_ID` 的地图后，才能启动导航：
+省略 `world` 参数时会使用 `tomato_field_default.sdf`，省略导航的 `map` 参数时会加载
+与其配套的中央单通道 `tomato_field_default.yaml`。只有切换到其他 `FIELD_ID` 或地图版本
+时，才需要显式传入对应地图：
 
 ```bash
 ros2 launch agri_sim_bringup tomato_field.launch.py \
@@ -459,8 +557,8 @@ ros2 launch agri_navigation navigation.launch.py \
   use_sim_time:=true
 ```
 
-省略 `map` 参数时会使用 `agri_navigation/maps/stage3_baseline.yaml`，它只是旧阶段测试
-夹具，不适用于当前默认番茄田。完成建图后必须显式传入同一 `FIELD_ID` 的 YAML。`params_file`
+省略 `map` 参数时会使用 `agri_navigation/maps/tomato_field_default.yaml`；
+`stage3_baseline.yaml` 只保留为显式选择的旧阶段测试夹具。`params_file`
 覆盖 Nav2 planner/controller/costmap 参数，`amcl_params_file` 覆盖 AMCL
 参数；不要在同一 ROS 域中再启动 `mapping.launch.py`。导航节点先发布
 `/cmd_vel_nav_raw`，collision monitor 输出 `/cmd_vel_nav`，再由
@@ -495,14 +593,18 @@ ros2 launch agri_navigation navigation.launch.py \
 单目标调试可以使用 Nav2 标准 Action：
 
 ```bash
-ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
+ros2 action send_goal -f -t 120 \
+  /navigate_to_pose nav2_msgs/action/NavigateToPose \
   "{pose: {header: {frame_id: map}, pose: {
-    position: {x: 1.20, y: -0.80, z: 0.0},
-    orientation: {z: 0.7071, w: 0.7071}}}}"
+    position: {x: 0.50, y: 0.00, z: 0.0},
+    orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}}}}"
 ```
 
-坐标必须是当前地图的 `map` 坐标。示例位置和航向只用于说明消息格式，不能直接当作
-番茄田采摘站点。
+该点已经在当前默认地图上通过短距离冒烟测试，期望结果为
+`Goal finished with status: SUCCEEDED`。坐标必须是当前地图的 `map` 坐标；后续采摘站点
+仍须逐点检查静态地图和实时 `/scan`，使机器人中心到侧方占据栅格保持至少 0.60 m，且
+保持 `yaw≈0`。默认 RPP 允许原路倒车返航并关闭自动原地转向；不要为返航目标设置
+`yaw=π`，也不要在植株旁主动执行 Spin。
 
 ## 阶段四验收清单
 
@@ -513,7 +615,8 @@ ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
 2. 定位检查：发布 `/initialpose` 后观察 `/amcl_pose` 和 TF，确认粒子收敛、协方差在项目
    阈值内且短时间内没有跳变。
 3. 单目标检查：在行间入口、行中和行末各发送一个目标，记录 Action 结果、最终位置/航向
-   误差、路径是否进入植株禁行区域，以及最终 `/cmd_vel_safe` 是否归零。
+   误差、路径是否进入植株禁行区域，以及最终 `/cmd_vel_safe` 是否归零；同航向返程时确认
+   `/cmd_vel_nav_raw` 的 `linear.x < 0`，且未触发 Spin 或植株旁原地掉头。
 4. 障碍检查：在局部代价地图范围内加入临时障碍，确认障碍层、膨胀层、重新规划和速度
    门控生效；目标取消、传感器超时和控制器失活时应停车。
 5. 数据记录：至少记录 `/map`、`/tf`、`/tf_static`、`/scan`、`/odom`、`/amcl_pose`、

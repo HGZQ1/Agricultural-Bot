@@ -13,8 +13,10 @@ amcl:
     scan_topic: /scan
     laser_model_type: likelihood_field
     laser_min_range: 0.10
-    laser_max_range: 40.0
-    laser_likelihood_max_dist: 2.0
+    # The default map covers only the central aisle.  Ignore farther repeated
+    # rows so AMCL scores the two borders of this aisle instead of aliases.
+    laser_max_range: 1.8
+    laser_likelihood_max_dist: 0.8
     max_beams: 90
     min_particles: 500
     max_particles: 2000
@@ -37,7 +39,8 @@ amcl:
     tf_broadcast: true
     robot_model_type: nav2_amcl::DifferentialMotionModel
     set_initial_pose: true
-    always_reset_initial_pose: false
+    # The demonstration always starts from the fixed, reproducible spawn.
+    always_reset_initial_pose: true
     initial_pose:
       x: 0.0
       y: 0.0

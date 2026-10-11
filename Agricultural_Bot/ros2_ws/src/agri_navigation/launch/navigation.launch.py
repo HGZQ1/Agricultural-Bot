@@ -21,10 +21,13 @@ def generate_launch_description() -> LaunchDescription:
     # The packaged default is generated from the current default tomato field.
     # Keep ``stage3_baseline.yaml`` available as an explicit legacy fixture.
     default_map = os.path.join(share_dir, 'maps', 'tomato_field_default.yaml')
+    default_keepout = os.path.join(
+        share_dir, 'maps', 'tomato_field_default_keepout.yaml')
     default_params = os.path.join(share_dir, 'config', 'nav2_navigation.yaml')
     default_amcl_params = os.path.join(share_dir, 'config', 'amcl.yaml')
 
     map_file = LaunchConfiguration('map')
+    keepout_mask = LaunchConfiguration('keepout_mask')
     params_file = LaunchConfiguration('params_file')
     amcl_params_file = LaunchConfiguration('amcl_params_file')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -32,6 +35,7 @@ def generate_launch_description() -> LaunchDescription:
 
     launch_args = [
         DeclareLaunchArgument('map', default_value=default_map),
+        DeclareLaunchArgument('keepout_mask', default_value=default_keepout),
         DeclareLaunchArgument('params_file', default_value=default_params),
         DeclareLaunchArgument(
             'amcl_params_file', default_value=default_amcl_params),
@@ -65,6 +69,29 @@ def generate_launch_description() -> LaunchDescription:
             },
         ],
         remappings=nav_remappings,
+    )
+    filter_mask_server = Node(
+        package='nav2_map_server', executable='map_server',
+        name='filter_mask_server', output='screen',
+        parameters=[{
+            'use_sim_time': use_clock,
+            'yaml_filename': keepout_mask,
+            'topic_name': 'keepout_filter_mask',
+            'frame_id': 'map',
+        }],
+        remappings=nav_remappings,
+    )
+    filter_info_server = Node(
+        package='nav2_map_server', executable='costmap_filter_info_server',
+        name='costmap_filter_info_server', output='screen',
+        parameters=[{
+            'use_sim_time': use_clock,
+            'type': 0,
+            'filter_info_topic': 'costmap_filter_info',
+            'mask_topic': 'keepout_filter_mask',
+            'base': 0.0,
+            'multiplier': 1.0,
+        }],
     )
     controller = Node(
         package='nav2_controller', executable='controller_server',
@@ -104,7 +131,8 @@ def generate_launch_description() -> LaunchDescription:
                 'use_sim_time': use_clock,
                 'autostart': ParameterValue(autostart, value_type=bool),
                 'node_names': [
-                    'map_server', 'amcl',
+                    'map_server', 'amcl', 'filter_mask_server',
+                    'costmap_filter_info_server',
                     'controller_server', 'planner_server', 'behavior_server',
                     'bt_navigator', 'collision_monitor',
                 ],
@@ -114,6 +142,7 @@ def generate_launch_description() -> LaunchDescription:
 
     return LaunchDescription(
         launch_args + [
-            map_server, amcl, controller, planner, behavior, bt_navigator,
-            collision_monitor, lifecycle_manager,
+            map_server, amcl, filter_mask_server, filter_info_server,
+            controller, planner, behavior, bt_navigator, collision_monitor,
+            lifecycle_manager,
         ])

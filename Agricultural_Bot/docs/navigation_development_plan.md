@@ -4,7 +4,8 @@
 [ysftzc/robot_workspaces](https://github.com/ysftzc/robot_workspaces) 的导航与任务组织作为模板。
 本文件同时记录已交付的阶段和后续计划；截至 2026-10-09，阶段二的 MID-360
 水平扫描 `/scan`、阶段三 SLAM Toolbox 建图基线和阶段四保存地图 AMCL＋Nav2
-单目标导航基线均已接入；参数化巡查路线和导航任务闭环留给后续阶段。
+单目标导航基线均已接入。此后阶段五已交付中央单通道的参数化预设路线、禁行过滤、
+地图/场景版本绑定和导航任务状态机；完整仿真路线仍按阶段五验收表执行。
 阶段一的底盘、轮式里程计、安全速度出口和标准 `/odom` 适配已实现，并已在番茄田
 仿真中完成低速动态基线；弧线的旧固定时长判据仍需按换舵延迟重构。
 参考源码评估见 [robot_workspaces_review.md](robot_workspaces_review.md)。
@@ -32,8 +33,8 @@ SLAM Toolbox 不要求 FAST-LIO 或逐点扫描时间；IMU 也不是其建图�
 | --- | --- |
 | `agri_lidar_adapter` | 点云 TF 变换、自过滤/高度裁剪、可选体素降采样，以及由 Jazzy `pointcloud_to_laserscan` 生成 `/scan` |
 | `agri_base_adapter`、`agri_base_kinematics` | 轮式里程计质量、标准 `/odom`、速度仲裁/停车门控、舵轮换向协调 |
-| `agri_navigation` | 已交付 SLAM Toolbox 建图、保存地图 AMCL、NavFn＋RPP、footprint、静态/实时障碍代价地图、碰撞监控和互斥模式入口；后续补充路线、启用禁行过滤器及地图管理 |
-| `agri_task_manager` | 覆盖/巡查路线、扫描站点、导航 Action 调度、暂停/恢复/跳过/返航 |
+| `agri_navigation` | 已交付 SLAM Toolbox 建图、保存地图 AMCL、NavFn＋RPP、footprint、静态/实时障碍代价地图、碰撞监控和互斥模式入口；阶段五已在全局/局部代价地图启用版本绑定的 KeepoutFilter |
+| `agri_task_manager` | 已交付中央单通道 20 株逻辑任务/10 个停车位、场景/地图/mask 双层校验、NavigateToPose 调度、暂停/恢复/跳过/取消/返航/超时、锁车和任务日志；多通道覆盖后续扩展 |
 | `agri_interfaces` | 后续扫描作业请求、底盘互锁状态、任务结果等业务接口；复用标准 Nav2 Action |
 | `agri_sim_sensors` | 若接入 IMU，新增仿真传感器、桥接、安装 frame 与配置 |
 | `agri_sim_bringup` | 将导航与任务入口加入现有番茄田启动，隔离 mapping/navigation 两种模式 |
@@ -41,15 +42,16 @@ SLAM Toolbox 不要求 FAST-LIO 或逐点扫描时间；IMU 也不是其建图�
 
 自研应用节点继续使用 Python 3.12/rclpy。SLAM Toolbox、Nav2、robot_localization 与
 pointcloud_to_laserscan 使用 Jazzy 发行组件。`ros2_ws` 不依赖 `sim_ws`。
-阶段四的配置与入口已经可以执行；阶段五以后列出的业务节点名称仍是拟定交付。
+阶段四导航入口和阶段五 `agri_task_manager` 已经可以执行；阶段六以后的业务节点与正式
+作业接口仍是拟定交付。
 
 拟定数据链：
 
 ```text
 /mid360/points → 自过滤/高度裁剪 → /scan → SLAM Toolbox 或 AMCL
 /wheel/odom → agri_base_adapter `/odom`（后续可替换为 EKF）→ Nav2
-/map + /scan + TF + /odom → NavFn + RPP → `/cmd_vel_nav` → 速度门控 `/cmd_vel_safe` → 四舵轮
-站点路线 → NavigateToPose → 到站复核 → 锁车且停稳 → 扫描作业接口
+/map + keepout mask + /scan + TF + /odom → NavFn + RPP → `/cmd_vel_nav` → 速度门控 `/cmd_vel_safe` → 四舵轮
+版本绑定站点路线 → NavigateToPose → 到站锁车 → 逐株作业事件（阶段七补停稳与机械臂握手）
 ```
 
 TF 所有权必须随模式明确配置：
@@ -164,15 +166,17 @@ AMCL/Nav2 验收、通道连续性和回到入口误差属于阶段四。手动�
 - Nav2 所有速度相关节点启用 stamped 消息；实际启用并测试碰撞监控，而不是照搬
   对方默认关闭的监控输入。初始恢复限制为已验收的动作。
 
-**验收：** 先 RViz 单点，再直线、转弯、行末掉头和临时障碍测试；目标取消、输入超时
-都能停车。定位未收敛或跳变时停止任务，不能不断重发导航目标掩盖错误。
+**验收：** 先 RViz 单点，再测试中央通道直行去程、保持同航向的倒车返程和临时障碍；
+行末掉头只在具备足够转动空间的独立 profile 中验收。目标取消、输入超时都能停车。
+定位未收敛或跳变时停止任务，不能不断重发导航目标掩盖错误。
 
 **当前实现状态（2026-10-09）：** `localization.launch.py` 提供 map server＋AMCL，
 `navigation.launch.py` 用同一 lifecycle manager 先激活定位，再依次激活 RPP、NavFn、
 behaviors、BT Navigator 与 collision monitor。全局代价地图启用静态、LaserScan 障碍和
 膨胀层，局部代价地图启用实时障碍和膨胀层；速度链接入现有底盘门控。启动、发目标及
-布局变化后的地图重建命令见 [阶段四导航说明](navigation_stage4.md)。参数化多站点、
-KeepoutFilter 服务器与停车作业状态机尚未纳入此入口。
+布局变化后的地图重建命令见 [阶段四导航说明](navigation_stage4.md)。阶段五随后已在该
+入口加入 `filter_mask_server`、`costmap_filter_info_server` 和全局/局部 KeepoutFilter；
+参数化多站点由独立的 `agri_task_manager` 调度。
 
 ### 阶段 5：参数化田的巡查与扫描路线
 
@@ -192,6 +196,16 @@ KeepoutFilter 服务器与停车作业状态机尚未纳入此入口。
 
 **验收：** 自动完成多站点巡查并返航，路径保持在通道内；行数/行距/冠幅等变化使旧
 地图和旧路线失效，重新建图/验证。单独改变果实数量或高度时也检查导航层是否受影响。
+
+**当前实现状态：** 已新增 `agri_task_manager`，默认任务覆盖中央通道两侧 row 2/3 的
+20 株植株，共用 10 个实际停车位；每株均记录 map 底盘位姿、植株身份、作业侧、扫描/
+机械臂姿态标识和允许微调范围。任务同时绑定场景 SDF/元数据、占据地图和 keepout mask
+哈希；离线检查 home、停车 footprint、微调包络和相邻路线段，运行时再校验实际 `/map`
+与 `/keepout_filter_mask` 的完整 OccupancyGrid 内容。Nav2 入口已发布 mask/filter info，
+任务执行器提供暂停、继续、跳过、取消、主动返航、超时、底盘锁和 JSONL 日志。生成、
+三终端启动与验收命令见 [阶段五导航说明](navigation_stage5.md)。完整多通道蛇形巡查仍
+不属于当前中央单通道演示 profile；任务文件中的 `navigation_status: pending_runtime`
+需在整条路线实测并保存报告后更新。
 
 ### 阶段 6：自主覆盖建图
 
@@ -231,8 +245,10 @@ KeepoutFilter 服务器与停车作业状态机尚未纳入此入口。
 ## 4. 现在首先做什么
 
 阶段一底盘/里程计、阶段二 MID-360 二维 `/scan`、阶段三 SLAM Toolbox 建图接口和
-阶段四 AMCL＋Nav2 单目标基线已经完成。下一里程碑是阶段五：依据参数化田布局和
-world→map 对齐生成巡查路线、扫描站点与版本绑定的禁行遮罩。
+阶段四 AMCL＋Nav2 单目标基线已经完成；阶段五中央单通道实现已经交付。现在先按
+[阶段五导航说明](navigation_stage5.md) 完成 10 个停车位、20 个逻辑任务、故障分支和
+返航的端到端运行验收，再进入阶段七的实际停稳/机械臂收纳握手。阶段六自主覆盖建图是
+独立能力；当前演示若继续使用人工建好的固定单通道地图，不阻塞阶段七接口开发。
 IMU/EKF 可并行准备，启用时切换 odom TF 发布者；不能让两套节点同时发布同一变换。
 
 ## 5. 官方参考

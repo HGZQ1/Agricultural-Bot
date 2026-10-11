@@ -1,0 +1,815 @@
+schema_version: 1
+mission_id: rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42_single_corridor_harvest
+description: Central single-corridor mission; one logical harvest waypoint per adjacent plant and one
+  shared base stop per left/right pair.
+work_side_reference: base_footprint_at_goal
+field:
+  id: rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42
+  metadata_sha256: c4190f9c99ab89775258cfd993e20233cb28e46397d1a1d4b4d19504f74504dc
+  sdf_sha256: c5b6227a2e4d49ff399ebe7316412d8b6510b43d468f5fedcac914f8d534e1b1
+  seed: 42
+  rows: 6
+  plants_per_row: 10
+  row_spacing_m: 2.0
+  plant_spacing_m: 0.7
+  plant_width_m: 1.0
+  plant_collision_width_m: 0.06
+  selected_rows:
+  - 2
+  - 3
+  excluded_plant_count: 40
+map:
+  frame_id: map
+  package: agri_navigation
+  yaml_relative_path: maps/tomato_field_default.yaml
+  image_sha256: 0efabc59ccaf08f2c1804d992969b032556850000b92a502977b0cbbed32f78b
+  occupancy_sha256: 92367b58876eff1dc8c95ea9f5f080077c63af71a49f7b8a0b3f4726629bf784
+  keepout_yaml_relative_path: maps/tomato_field_default_keepout.yaml
+  keepout_image_sha256: b5c3dd2fa01553b85c3f2b1f703aeb9753c6beb4bed70c4bae19b740169f7829
+  keepout_occupancy_sha256: 536673b71d4131784e127b5b2d7b0cb7576a4d8703932ee440a467492c55199e
+  resolution_m: 0.05
+  origin:
+  - -0.622
+  - -5.431
+  - 0.0
+  width_px: 192
+  height_px: 213
+  mode: trinary
+  negate: false
+  occupied_thresh: 0.65
+  free_thresh: 0.196
+alignment:
+  world_to_map:
+  - 6.0
+  - 0.0
+  - -1.570796326795
+  mapping_start_world:
+    x: 0.0
+    y: -6.0
+    yaw: 1.5707963267948966
+robot:
+  base_frame: base_footprint
+  arm_base_longitudinal_offset_m: -0.17998
+  note: Arm/scan pose IDs are stage-7 integration contracts; their IK and camera FOV remain to be validated.
+route:
+  profile: single_corridor_forward_reverse
+  home:
+    id: home
+    pose:
+      x: 0.5
+      y: 0.0
+      yaw: 0.0
+  return_home: true
+  corridor:
+    x_min: 0.4
+    x_max: 7.5
+    y_min: -0.35
+    y_max: 0.12
+    required_yaw: 0.0
+    yaw_tolerance: 0.0873
+  footprint:
+    front_m: 0.495
+    rear_m: 0.535
+    half_width_m: 0.395
+  max_unknown_cells: 8
+  waypoints:
+  - id: harvest_tomato_20
+    sequence: 1
+    stop_id: stop_00
+    base_pose:
+      x: 1.0
+      y: 0.07
+      yaw: 0.0
+    plant:
+      id: tomato_20
+      row_id: 2
+      index_in_row: 0
+      pose_world:
+        x: -1.0
+        y: -5.0
+        yaw: 0.073397
+      pose_map:
+        x: 1.0
+        y: 1.0
+        yaw: -1.497399
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 1
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_30
+    sequence: 2
+    stop_id: stop_00
+    base_pose:
+      x: 1.0
+      y: 0.07
+      yaw: 0.0
+    plant:
+      id: tomato_30
+      row_id: 3
+      index_in_row: 0
+      pose_world:
+        x: 1.0
+        y: -5.0
+        yaw: 0.073711
+      pose_map:
+        x: 1.0
+        y: -1.0
+        yaw: -1.497085
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 1
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_21
+    sequence: 3
+    stop_id: stop_01
+    base_pose:
+      x: 1.7
+      y: 0.05
+      yaw: 0.0
+    plant:
+      id: tomato_21
+      row_id: 2
+      index_in_row: 1
+      pose_world:
+        x: -1.0
+        y: -4.3
+        yaw: 0.047553
+      pose_map:
+        x: 1.7
+        y: 1.0
+        yaw: -1.523243
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 1
+      base_origin_to_nearest_occupied_m: 0.591899
+  - id: harvest_tomato_31
+    sequence: 4
+    stop_id: stop_01
+    base_pose:
+      x: 1.7
+      y: 0.05
+      yaw: 0.0
+    plant:
+      id: tomato_31
+      row_id: 3
+      index_in_row: 1
+      pose_world:
+        x: 1.0
+        y: -4.3
+        yaw: 0.055136
+      pose_map:
+        x: 1.7
+        y: -1.0
+        yaw: -1.51566
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 1
+      base_origin_to_nearest_occupied_m: 0.591899
+  - id: harvest_tomato_22
+    sequence: 5
+    stop_id: stop_02
+    base_pose:
+      x: 2.4
+      y: 0.02
+      yaw: 0.0
+    plant:
+      id: tomato_22
+      row_id: 2
+      index_in_row: 2
+      pose_world:
+        x: -1.0
+        y: -3.6
+        yaw: -0.03834
+      pose_map:
+        x: 2.4
+        y: 1.0
+        yaw: -1.609136
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_32
+    sequence: 6
+    stop_id: stop_02
+    base_pose:
+      x: 2.4
+      y: 0.02
+      yaw: 0.0
+    plant:
+      id: tomato_32
+      row_id: 3
+      index_in_row: 2
+      pose_world:
+        x: 1.0
+        y: -3.6
+        yaw: 0.008695
+      pose_map:
+        x: 2.4
+        y: -1.0
+        yaw: -1.562101
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_23
+    sequence: 7
+    stop_id: stop_03
+    base_pose:
+      x: 3.1
+      y: -0.01
+      yaw: 0.0
+    plant:
+      id: tomato_23
+      row_id: 2
+      index_in_row: 3
+      pose_world:
+        x: -1.0
+        y: -2.9
+        yaw: -0.082685
+      pose_map:
+        x: 3.1
+        y: 1.0
+        yaw: -1.653481
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.548566
+  - id: harvest_tomato_33
+    sequence: 8
+    stop_id: stop_03
+    base_pose:
+      x: 3.1
+      y: -0.01
+      yaw: 0.0
+    plant:
+      id: tomato_33
+      row_id: 3
+      index_in_row: 3
+      pose_world:
+        x: 1.0
+        y: -2.9
+        yaw: 0.113548
+      pose_map:
+        x: 3.1
+        y: -1.0
+        yaw: -1.457248
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.548566
+  - id: harvest_tomato_24
+    sequence: 9
+    stop_id: stop_04
+    base_pose:
+      x: 3.8
+      y: -0.04
+      yaw: 0.0
+    plant:
+      id: tomato_24
+      row_id: 2
+      index_in_row: 4
+      pose_world:
+        x: -1.0
+        y: -2.2
+        yaw: 0.109731
+      pose_map:
+        x: 3.8
+        y: 1.0
+        yaw: -1.461065
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.575296
+  - id: harvest_tomato_34
+    sequence: 10
+    stop_id: stop_04
+    base_pose:
+      x: 3.8
+      y: -0.04
+      yaw: 0.0
+    plant:
+      id: tomato_34
+      row_id: 3
+      index_in_row: 4
+      pose_world:
+        x: 1.0
+        y: -2.2
+        yaw: -0.029152
+      pose_map:
+        x: 3.8
+        y: -1.0
+        yaw: -1.599948
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.575296
+  - id: harvest_tomato_25
+    sequence: 11
+    stop_id: stop_05
+    base_pose:
+      x: 4.5
+      y: -0.08
+      yaw: 0.0
+    plant:
+      id: tomato_25
+      row_id: 2
+      index_in_row: 5
+      pose_world:
+        x: -1.0
+        y: -1.5
+        yaw: -0.039217
+      pose_map:
+        x: 4.5
+        y: 1.0
+        yaw: -1.610013
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_35
+    sequence: 12
+    stop_id: stop_05
+    base_pose:
+      x: 4.5
+      y: -0.08
+      yaw: 0.0
+    plant:
+      id: tomato_35
+      row_id: 3
+      index_in_row: 5
+      pose_world:
+        x: 1.0
+        y: -1.5
+        yaw: 0.01249
+      pose_map:
+        x: 4.5
+        y: -1.0
+        yaw: -1.558306
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_26
+    sequence: 13
+    stop_id: stop_06
+    base_pose:
+      x: 5.2
+      y: -0.08
+      yaw: 0.0
+    plant:
+      id: tomato_26
+      row_id: 2
+      index_in_row: 6
+      pose_world:
+        x: -1.0
+        y: -0.8
+        yaw: -0.097741
+      pose_map:
+        x: 5.2
+        y: 1.0
+        yaw: -1.668537
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.524009
+  - id: harvest_tomato_36
+    sequence: 14
+    stop_id: stop_06
+    base_pose:
+      x: 5.2
+      y: -0.08
+      yaw: 0.0
+    plant:
+      id: tomato_36
+      row_id: 3
+      index_in_row: 6
+      pose_world:
+        x: 1.0
+        y: -0.8
+        yaw: 0.079057
+      pose_map:
+        x: 5.2
+        y: -1.0
+        yaw: -1.491739
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.524009
+  - id: harvest_tomato_27
+    sequence: 15
+    stop_id: stop_07
+    base_pose:
+      x: 5.9
+      y: -0.16
+      yaw: 0.0
+    plant:
+      id: tomato_27
+      row_id: 2
+      index_in_row: 7
+      pose_world:
+        x: -1.0
+        y: -0.1
+        yaw: -0.096788
+      pose_map:
+        x: 5.9
+        y: 1.0
+        yaw: -1.667584
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.548566
+  - id: harvest_tomato_37
+    sequence: 16
+    stop_id: stop_07
+    base_pose:
+      x: 5.9
+      y: -0.16
+      yaw: 0.0
+    plant:
+      id: tomato_37
+      row_id: 3
+      index_in_row: 7
+      pose_world:
+        x: 1.0
+        y: -0.1
+        yaw: 0.028445
+      pose_map:
+        x: 5.9
+        y: -1.0
+        yaw: -1.542351
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.548566
+  - id: harvest_tomato_28
+    sequence: 17
+    stop_id: stop_08
+    base_pose:
+      x: 6.6
+      y: -0.23
+      yaw: 0.0
+    plant:
+      id: tomato_28
+      row_id: 2
+      index_in_row: 8
+      pose_world:
+        x: -1.0
+        y: 0.6
+        yaw: 0.083399
+      pose_map:
+        x: 6.6
+        y: 1.0
+        yaw: -1.487397
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_38
+    sequence: 18
+    stop_id: stop_08
+    base_pose:
+      x: 6.6
+      y: -0.23
+      yaw: 0.0
+    plant:
+      id: tomato_38
+      row_id: 3
+      index_in_row: 8
+      pose_world:
+        x: 1.0
+        y: 0.6
+        yaw: 0.08681
+      pose_map:
+        x: 6.6
+        y: -1.0
+        yaw: -1.483986
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.574008
+  - id: harvest_tomato_29
+    sequence: 19
+    stop_id: stop_09
+    base_pose:
+      x: 7.3
+      y: -0.3
+      yaw: 0.0
+    plant:
+      id: tomato_29
+      row_id: 2
+      index_in_row: 9
+      pose_world:
+        x: -1.0
+        y: 1.3
+        yaw: 0.024894
+      pose_map:
+        x: 7.3
+        y: 1.0
+        yaw: -1.545902
+    work_side: left
+    task: harvest
+    scan_pose_id: d405_left_scan
+    arm_pose_id: cr5_left_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.55852
+  - id: harvest_tomato_39
+    sequence: 20
+    stop_id: stop_09
+    base_pose:
+      x: 7.3
+      y: -0.3
+      yaw: 0.0
+    plant:
+      id: tomato_39
+      row_id: 3
+      index_in_row: 9
+      pose_world:
+        x: 1.0
+        y: 1.3
+        yaw: 0.018565
+      pose_map:
+        x: 7.3
+        y: -1.0
+        yaw: -1.552231
+    work_side: right
+    task: harvest
+    scan_pose_id: d405_right_scan
+    arm_pose_id: cr5_right_harvest
+    micro_adjust:
+      longitudinal_m: 0.05
+      lateral_m: 0.025
+      yaw_rad: 0.025
+    goal_timeout_s: 120.0
+    station_dwell_s: 1.0
+    enabled: true
+    validation:
+      map_status: offline_footprint_clear
+      navigation_status: pending_runtime
+      ik_status: pending_stage7
+      fov_status: pending_stage7
+      unknown_cells: 0
+      base_origin_to_nearest_occupied_m: 0.55852
