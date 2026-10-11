@@ -5,7 +5,8 @@ ROS 2 Jazzy + Gazebo Harmonic 农业番茄采摘机器人项目工作空间。
 截至 2026-10-09，整机组件化模型、四舵轮运动学、底盘/CR5/夹爪仿真控制、MID-360
 和 D405 RGB-D 仿真接口已经接通。MID-360 默认使用 GPU LiDAR，可选 RGL 官方图样；
 D405 使用 Harmonic 原生 RGB-D，连续接口与靶标场景验收通过。参数化温室、导航路线、
-视觉和采摘任务仍在分阶段开发。2026-10-07 集成了参数化番茄田及入口生成机器人功能；
+YOLO 番茄检测已经接入 `ros2_ws`，可读取 D405 RGB-D 图像并发布检测结果和三维位置；
+采摘任务仍在分阶段开发。2026-10-07 集成了参数化番茄田（150 株）及入口生成机器人功能；
 当前 `tomato_field.launch.py` 的默认场景为 6 行×10 株、2 m 行距、0.7 m 株距的导航开发
 profile，旧 10 行×15 株场景保留为兼容基线；
 依赖、构建、打开场地与复现步骤见 [番茄田复现指南](docs/tomato_field_reproduction.md)。
@@ -173,7 +174,8 @@ ros2 run agri_sim_tests check_d405 --duration 60 --timeout 120 --max-depth 2
 ```
 
 扩展配置不保证实机 D405 在 2 m 的精度。后续感知距离过滤需参数化，远处粗定位后
-接近至 0.10–0.50 m 再估计抓取位姿；YOLO 仍待接入。量程与靶标验收见
+接近至 0.10–0.50 m 再估计抓取位姿。YOLO 启动、模型路径和话题验收见
+[YOLO 番茄检测接入说明](docs/yolo_tomato_integration.md)。量程与靶标验收见
 [D405 文档](docs/d405_simulation.md)。
 
 公开 CameraInfo 主点为 `(423.5,239.5)`；仿真专用节点补偿原生 Gazebo 的半像素

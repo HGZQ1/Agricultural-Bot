@@ -27,6 +27,10 @@ data/weights/*
 !data/datasets/raw/.gitkeep
 !data/datasets/synthetic/.gitkeep
 !data/weights/.gitkeep
+!data/weights/README.md
+
+# YOLO model weights stay outside the repository
+*.pt
 
 # Editors and OS files
 .vscode/
