@@ -6,7 +6,7 @@
 
 ## 当前默认 2 m 番茄田：从参数修改到导航测试的完整流程
 
-本节以当前默认的 `6 行 × 10 株、2 m 行距、0.7 m 株距` 场景为准。命令均从
+本节以当前默认的 `6 行 × 10 株、2 m 行距、0.7 m 株距` 场景为准；当前默认株高为 2.4 m，果实中心高度为 1.00–1.70 m。命令均从
 `Agricultural_Bot` 仓库根目录执行。所有 ROS 终端必须使用相同的 `ROS_DOMAIN_ID`；
 `FIELD_ID` 是 shell 变量，每打开一个新终端都要重新定义。建图模式只运行
 SLAM Toolbox，导航模式只运行 map server、AMCL 和 Nav2，两种模式不能同时运行。
@@ -23,7 +23,7 @@ SLAM Toolbox，导航模式只运行 map server、AMCL 和 Nav2，两种模式�
 | 株距 | `--plant-spacing` | 0.7 m |
 | 第一行/第一株坐标 | `--origin-x/--origin-y` | -5.0 / -5.0 m |
 | 地面尺寸 | `--ground-x/--ground-y` | 22 / 14 m |
-| 冠幅/株高 | `--plant-width/--plant-height` | 1.0 / 2.0 m |
+| 冠幅/株高 | `--plant-width/--plant-height` | 1.0 / 2.4 m |
 | 简化茎杆碰撞宽度 | `--plant-collision-width` | 0.06 m |
 
 偶数行以 `x=0` 对称排列时，可用下面的公式计算第一行坐标：
@@ -69,7 +69,7 @@ cd ..
 
 ```bash
 cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 mkdir -p "$FIELD_DIR" "$MAP_DIR"
@@ -79,11 +79,11 @@ python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --row-spacing 2.0 --plant-spacing 0.7 \
   --origin-x -5.0 --origin-y -5.0 \
   --ground-x 22.0 --ground-y 14.0 \
-  --plant-height 2.0 --plant-width 1.0 \
+  --plant-height 2.4 --plant-width 1.0 \
   --plant-collision-width 0.06 \
   --randomize-fruits --fruit-visual mesh \
   --fruit-count-min 2 --fruit-count-max 6 \
-  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-height-min 1.00 --fruit-height-max 1.70 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --ripe-ratio 0.7 --seed 42 \
   --output "$FIELD_DIR/tomato_field.sdf" \
@@ -110,7 +110,7 @@ source sim_ws/install/setup.bash
 
 export ROS_DOMAIN_ID=96
 export GZ_PARTITION="agri_map_${ROS_DOMAIN_ID}_$(date +%s%N)"
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 
 ros2 launch agri_sim_bringup tomato_field.launch.py \
   world:="$PWD/artifacts/fields/$FIELD_ID/tomato_field.sdf" \
@@ -228,7 +228,7 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 mkdir -p "$MAP_DIR"
@@ -253,6 +253,26 @@ sed -n '1,20p' "$MAP_DIR/tomato_field.yaml"
 `tomato_field.posegraph` 和 `tomato_field.data`。YAML 中分辨率应为 `0.05`，`image`
 应指向同目录的 PGM。保存前还应在 RViz 确认所有目标通道均为已知自由空间、行末有足够
 转弯区、闭环后没有双墙或双排植株。
+
+### 当前默认地图产物
+
+当前默认场景已经按 `FIELD_ID=rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42`
+完成一次建图。场景快照位于
+`artifacts/fields/$FIELD_ID/`，地图和可继续建图的 pose graph 位于
+`artifacts/maps/$FIELD_ID/`，目录中包含 `tomato_field.yaml/.pgm`、
+`tomato_field.posegraph/.data`、`field.sha256` 和 `manifest.json`。
+
+`agri_navigation` 包内也安装了同一张 `tomato_field_default.yaml/.pgm`，因此重新构建
+该包后，省略 `map:=...` 的 `navigation.launch.py` 和 `localization.launch.py` 会使用
+当前默认地图；旧的 `stage3_baseline.yaml` 仍保留为显式 legacy fixture。若要固定使用
+本次版本，仍可显式传入：
+
+```bash
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+ros2 launch agri_navigation navigation.launch.py \
+  map:="$PWD/artifacts/maps/$FIELD_ID/tomato_field.yaml" \
+  use_sim_time:=true initial_pose_x:=0.0 initial_pose_y:=0.0 initial_pose_yaw:=0.0
+```
 
 ### 8. 停止建图并重启同一场景
 
@@ -279,7 +299,7 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 test -s "$MAP_DIR/tomato_field.yaml"
 test -s "$MAP_DIR/tomato_field.pgm"
@@ -452,7 +472,7 @@ ros2 launch agri_navigation navigation.launch.py \
 地图。`FIELD_ID` 只是文档中的版本变量，不能把字符串 `FIELD_ID` 原样写进路径：
 
 ```bash
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 
 ros2 launch agri_sim_bringup tomato_field.launch.py \
   world:="$PWD/artifacts/fields/$FIELD_ID/tomato_field.sdf" \
@@ -465,7 +485,7 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 另一终端加载相同环境、设置相同 `ROS_DOMAIN_ID` 和 `FIELD_ID` 后启动导航：
 
 ```bash
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 ros2 launch agri_navigation navigation.launch.py \
   map:="$PWD/artifacts/maps/$FIELD_ID/tomato_field.yaml" \
   use_sim_time:=true \
@@ -562,7 +582,7 @@ python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
 随后按上面的建图、保存地图和 keepout mask 命令完成新版本；如果仅修改果实数量、结果
 高度或成熟比例而不改变植株碰撞边界，则不必重建导航静态地图。
 
-当前默认导航建图使用 2 m 行距的 6 行×10 株 profile。它保持原地面尺寸，
+当前默认导航建图使用 2 m 行距的 6 行×10 株、2.4 m 株高 profile。它保持原地面尺寸，
 将 6 行布置在 `x=-5…5`，并把简化茎杆碰撞盒 X/Y 缩为 0.06 m；枝叶视觉冠幅仍为
 1 m。完整生成说明见 [植株尺寸与番茄果实参数化](tomato_fruit_randomization.md)
 的“导航建图默认场景（2 m 行距）”一节。需要更宽的转弯通道时，可以改用该文档中的
@@ -623,7 +643,7 @@ Nav2 KeepoutFilter 配置加载；阶段四当前只启用静态/障碍/膨胀�
 推荐为每次场景建立独立目录：
 
 ```bash
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p0_w1p0_c0p06_seed42"
+FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 mkdir -p "artifacts/fields/$FIELD_ID" "artifacts/maps/$FIELD_ID"
 
 python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
@@ -631,11 +651,11 @@ python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --row-spacing 2.0 --plant-spacing 0.7 \
   --origin-x -5.0 --origin-y -5.0 \
   --ground-x 22.0 --ground-y 14.0 \
-  --plant-height 2.0 --plant-width 1.0 \
+  --plant-height 2.4 --plant-width 1.0 \
   --plant-collision-width 0.06 \
   --randomize-fruits --fruit-visual mesh \
   --fruit-count-min 2 --fruit-count-max 6 \
-  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-height-min 1.00 --fruit-height-max 1.70 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --seed 42 \
   --output "artifacts/fields/$FIELD_ID/tomato_field.sdf" \

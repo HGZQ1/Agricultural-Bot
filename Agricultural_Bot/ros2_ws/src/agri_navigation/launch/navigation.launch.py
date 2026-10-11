@@ -18,7 +18,9 @@ def _float_parameter(name: str) -> ParameterValue:
 def generate_launch_description() -> LaunchDescription:
     """Build localization, planner, controller, recovery, and BT nodes."""
     share_dir = get_package_share_directory('agri_navigation')
-    default_map = os.path.join(share_dir, 'maps', 'stage3_baseline.yaml')
+    # The packaged default is generated from the current default tomato field.
+    # Keep ``stage3_baseline.yaml`` available as an explicit legacy fixture.
+    default_map = os.path.join(share_dir, 'maps', 'tomato_field_default.yaml')
     default_params = os.path.join(share_dir, 'config', 'nav2_navigation.yaml')
     default_amcl_params = os.path.join(share_dir, 'config', 'amcl.yaml')
 

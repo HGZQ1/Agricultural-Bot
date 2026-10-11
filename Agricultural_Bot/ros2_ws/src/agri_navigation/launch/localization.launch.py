@@ -22,7 +22,9 @@ def _float_parameter(name: str) -> ParameterValue:
 def generate_launch_description() -> LaunchDescription:
     """Build map server, AMCL, and their lifecycle manager."""
     share_dir = get_package_share_directory('agri_navigation')
-    default_map = os.path.join(share_dir, 'maps', 'stage3_baseline.yaml')
+    # Match navigation.launch.py so localization without an explicit map uses
+    # the current default tomato field rather than the legacy stage 3 fixture.
+    default_map = os.path.join(share_dir, 'maps', 'tomato_field_default.yaml')
     default_params = os.path.join(share_dir, 'config', 'amcl.yaml')
 
     map_file = LaunchConfiguration('map')
