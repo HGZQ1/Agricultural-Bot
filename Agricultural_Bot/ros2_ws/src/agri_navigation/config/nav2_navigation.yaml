@@ -137,7 +137,12 @@ bt_navigator:
     robot_base_frame: base_footprint
     odom_topic: /odom
     bt_loop_duration: 10
-    default_server_timeout: 20
+    # Milliseconds for BT Action goal acknowledgements (not navigation time).
+    # The GUI waypoint test hit compute_path_to_pose acknowledgement timeout
+    # between stations despite successful navigation and parking at the prior
+    # station. Allow scheduling/DDS latency while keeping each BT spin bounded
+    # by half of bt_loop_duration. Nav2 must be reconfigured to load this value.
+    default_server_timeout: 1000
     wait_for_service_timeout: 1000
     action_server_result_timeout: 900.0
     navigators: [navigate_to_pose, navigate_through_poses]

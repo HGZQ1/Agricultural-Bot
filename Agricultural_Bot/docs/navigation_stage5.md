@@ -798,3 +798,31 @@ ros2 topic echo /field_route_executor/current_harvest_point --once --full-length
 已有定位正确且停在 home 的同一仿真可继续使用，不要重设 AMCL 到原点。
 关闭正在执行的测试前，先调用 `cancel` 并确认锁车和无活动目标，再依次停止执行器、
 导航、显示脚本/RViz 和 Gazebo；已经 `COMPLETED` 的任务可直接按该顺序关闭。
+
+### 请求确认超时与 FAILED 状态
+
+`complete_current` 只接受 `AT_STATION`。返回 `no current work while FAILED` 时，先查看
+`status.detail` 和本次 Nav2 日志，不能靠重复完成确认恢复导航。
+`waypoint_index` 从 0 开始；`waypoint_index=9` 对应第 10 个采摘站。
+
+本次人工可视测试 `run_id=221870000000` 已完成前 9 站。第 9 站 `tomato_28` 停位误差
+为 0.063486 m / 2.44104°，已接受完成确认；切换到第 10 站 `tomato_29` 时，
+BT Navigator 报 `Timed out while waiting for action server to acknowledge goal request
+for compute_path_to_pose`，然后导航中止并锁车。该次失败发生在规划 Action 的目标确认
+阶段。日志不能进一步证明具体的调度延迟来源。
+
+`nav2_navigation.yaml` 中的 `bt_navigator.default_server_timeout` 已由 20 调为 1000。
+单位是毫秒，控制 BT 对规划/控制 Action 目标确认的等待预算，不是每站的 120 秒导航
+超时，也不是服务器发现参数 `wait_for_service_timeout`。Jazzy 在配置 BT 时读取该值，
+因此只调用 `ros2 param set` 不会更新现有行为树，需重启导航并重新测试。
+
+构建并重新启动后检查：
+
+```bash
+ros2 param get /bt_navigator default_server_timeout
+```
+
+应输出 `Integer value is: 1000`。从第 5 节的出生点初始位姿重新开始测试时，要一起
+重启仿真，避免把仍停在第 9 站的机器人定位到原点。当前 `start` 会从第 1 站重建任务，
+`resume` 只接受 `PAUSED`，不支持从 `FAILED` 直接恢复第 10 站。
+本项参数更新不改变场景、地图、航点和停位公差；更新后的完整可视巡航仍需复测。
