@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from agri_task_manager.route_validation import verify_mission_map
+from agri_task_manager.validate_field_route import validate
 from agri_task_manager.waypoint_schema import load_mission, MissionConfigError
 
 import pytest
@@ -30,7 +31,8 @@ def test_default_mission_has_one_task_per_adjacent_plant():
     assert mission.field.excluded_plant_count == 40
     assert len(mission.enabled_waypoints) == 20
     assert len({point.plant.plant_id for point in mission.waypoints}) == 20
-    assert len({point.stop_id for point in mission.waypoints}) == 10
+    assert len({point.stop_id for point in mission.waypoints}) == 20
+    assert mission.route_layout == 'independent_side_stops'
     assert {point.work_side for point in mission.waypoints} == {
         'left', 'right',
     }
@@ -38,28 +40,37 @@ def test_default_mission_has_one_task_per_adjacent_plant():
     assert mission.home == mission.home.__class__(0.5, 0.0, 0.0)
 
 
-def test_paired_plants_share_exactly_one_base_stop():
-    """Pair one left and one right task at each physical stop."""
+def test_each_plant_has_its_own_work_side_base_stop():
+    """Visit the left row outbound and right row on the reverse return."""
     mission = load_mission(MISSION_FILE)
-    by_stop = {}
-    for point in mission.waypoints:
-        by_stop.setdefault(point.stop_id, []).append(point)
-    for points in by_stop.values():
-        assert len(points) == 2
-        assert points[0].pose == points[1].pose
-        assert {point.work_side for point in points} == {'left', 'right'}
-        assert {point.plant.row_id for point in points} == {2, 3}
+    assert [p.plant.index_in_row for p in mission.waypoints[:10]] == list(
+        range(10))
+    assert [p.plant.index_in_row for p in mission.waypoints[10:]] == list(
+        reversed(range(10)))
+    assert all(p.work_side == 'left' and p.pose.y > 0
+               for p in mission.waypoints[:10])
+    assert all(p.work_side == 'right' and p.pose.y < 0
+               for p in mission.waypoints[10:])
+    assert len(mission.route_transits) == 3
 
 
-def test_route_follows_actual_curved_free_space_and_validates_against_map():
+def test_cli_report_separates_harvest_stops_from_navigation_transits():
+    """Do not count navigation-only anchors as extra harvesting stations."""
+    report = validate(MISSION_FILE, MAP_FILE, KEEPOUT_FILE)
+    assert report['unique_stop_count'] == report['waypoint_count'] == 20
+    assert report['transit_count'] == 3
+    assert len(report['stops']) == 23
+
+
+def test_route_follows_saved_free_space_and_validates_against_map():
     """Follow the mapped corridor and keep each footprint clear."""
     mission = load_mission(MISSION_FILE)
     _, reports = verify_mission_map(mission, MAP_FILE, KEEPOUT_FILE)
     stop_poses = {}
     for point in mission.waypoints:
         stop_poses.setdefault(point.stop_id, point.pose)
-    assert stop_poses['stop_00'].y == pytest.approx(0.07)
-    assert stop_poses['stop_09'].y == pytest.approx(-0.30)
+    assert stop_poses['stop_00_left'].y == pytest.approx(0.46)
+    assert stop_poses['stop_00_right'].y == pytest.approx(-0.43)
     assert all(report.occupied_cells == 0 for report in reports.values())
     assert all(report.outside_cells == 0 for report in reports.values())
     assert max(report.unknown_cells for report in reports.values()) <= 1

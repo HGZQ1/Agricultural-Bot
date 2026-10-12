@@ -21,9 +21,13 @@ ros2 launch agri_lidar_adapter lidar_to_scan.launch.py
 The default slice is `-0.40..0.40 m` in `mid360_scan_frame`, range
 `0.10..40 m`, and a 1° angular increment.  Tune these in
 `config/lidar_to_scan.yaml` after checking the ground, chassis, plant stems,
-and row-end geometry.  `self_filter_enabled` and `voxel_size` are deliberately
-off in the baseline so that the first scan can be audited without hidden
-decimation.
+and row-end geometry. Self filtering is enabled for the stowed robot; voxel
+decimation remains disabled. The self box is expressed in the scan frame,
+whose origin in `base_footprint` is approximately `(-0.40144, 0.00344, 0.45904)`.
+It removes returns inside body x `[-0.50, 0.46]`, y `[-0.36, 0.36]`, with less
+than 1 cm rounding. The outer Collision Monitor stop band remains visible.
+Recalibrate the box after changing the mount or stowed geometry, and keep the
+arm stowed while the chassis navigates.
 
 The standard converter is lazy and only consumes the cloud while `/scan` has a
 subscriber.  RViz, SLAM Toolbox, Nav2, or `ros2 topic echo /scan` therefore

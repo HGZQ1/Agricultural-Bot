@@ -4,13 +4,16 @@ from argparse import Namespace
 from pathlib import Path
 
 from agri_task_manager.generate_single_corridor_mission import build_mission
+from agri_task_manager.route_validation import MapGrid
+from agri_task_manager.waypoint_schema import sha256_file
+
+import pytest
 
 import yaml
 
-
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
-FIELD_ID = 'rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42'
+FIELD_ID = 'rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42'
 FIELD_ROOT = (
     PROJECT_ROOT / 'sim_ws' / 'src' / 'agri_greenhouse_worlds' / 'worlds')
 MAP_FILE = (
@@ -43,6 +46,13 @@ def _arguments() -> Namespace:
         rear_m=0.535,
         half_width_m=0.395,
         lateral_search_m=0.40,
+        layout='independent_side_stops',
+        side_offset_m=0.40,
+        side_search_m=0.25,
+        min_obstacle_clearance_m=0.80,
+        arm_longitudinal_offset_m=-0.17998,
+        headland_forward_m=1.02,
+        headland_cross_forward_m=0.50,
         search_step_m=0.01,
         max_unknown_cells=8,
         goal_timeout_s=120.0,
@@ -66,9 +76,36 @@ def test_generator_records_world_to_map_alignment_and_version_hashes():
     assert route['alignment']['world_to_map'] == [
         6.0, 0.0, -1.570796326795,
     ]
-    assert route['field']['metadata_sha256'].startswith('c4190f9c')
-    assert route['field']['sdf_sha256'].startswith('c5b6227a')
-    assert route['map']['image_sha256'].startswith('0efabc59')
-    assert route['map']['occupancy_sha256'].startswith('92367b58')
-    assert route['map']['keepout_image_sha256'].startswith('b5c3dd2f')
-    assert route['map']['keepout_occupancy_sha256'].startswith('536673b7')
+    assert route['field']['metadata_sha256'].startswith('ab20a6cf')
+    assert route['field']['sdf_sha256'].startswith('7823a30c')
+    for source, image_key, occupancy_key in (
+            (MAP_FILE, 'image_sha256', 'occupancy_sha256'),
+            (KEEPOUT_FILE, 'keepout_image_sha256',
+             'keepout_occupancy_sha256')):
+        grid = MapGrid.from_yaml(source)
+        assert route['map'][image_key] == sha256_file(grid.image_path)
+        assert route['map'][occupancy_key] == grid.occupancy_sha256()
+
+
+def test_side_stop_search_preserves_work_side_and_clearance():
+    """Keep twenty distinct work stops aligned to their own plant."""
+    route = build_mission(_arguments())
+    points = route['route']['waypoints']
+    assert len({point['stop_id'] for point in points}) == 20
+    assert [p['work_side'] for p in points] == ['left'] * 10 + ['right'] * 10
+    for point in points:
+        pose = point['base_pose']
+        assert pose['x'] == pytest.approx(point['plant']['pose_map']['x'] + .18)
+        assert .15 <= abs(pose['y']) <= .40
+        assert (pose['y'] > 0) == (point['work_side'] == 'left')
+        assert point['validation'][
+            'base_origin_to_nearest_occupied_m'] >= .80
+    assert len(route['route']['transits']) == 3
+
+
+def test_generator_refuses_side_stops_without_required_clearance():
+    """Do not silently fall back to the middle when the request is unsafe."""
+    args = _arguments()
+    args.side_offset_m = 1.2
+    with pytest.raises(ValueError, match='no collision-free footprint'):
+        build_mission(args)

@@ -13,6 +13,7 @@ from tf2_ros import TransformBroadcaster
 
 from .kinematics import (
     apply_joint_signs,
+    calibrated_steering_limits,
     FourWheelSteeringKinematics,
     integrate_planar_pose,
     physical_steering_to_joint,
@@ -43,6 +44,7 @@ class FourWheelSteeringNode(Node):
         self.declare_parameter('wheel_radius', 0.127)
         self.declare_parameter('max_wheel_speed', 8.0)
         self.declare_parameter('steering_limits', [-pi, pi])
+        self.declare_parameter('steering_joint_limits', [-pi, pi])
         self.declare_parameter('steering_full_speed_error', 0.05)
         self.declare_parameter('steering_stop_error', 0.35)
         self.declare_parameter(
@@ -115,11 +117,17 @@ class FourWheelSteeringNode(Node):
         self._twist_covariance = self._covariance_from_diagonal(
             self.get_parameter('twist_covariance_diagonal').value,
             'twist_covariance_diagonal')
+        physical_limits = tuple(
+            float(v) for v in self.get_parameter('steering_limits').value)
+        wheel_limits = calibrated_steering_limits(
+            physical_limits, self.get_parameter('steering_joint_limits').value,
+            self._steering_signs, self._steering_offsets)
         self._kinematics = FourWheelSteeringKinematics(
             {names[i]: positions[2 * i:2 * i + 2] for i in range(4)},
             self._wheel_radius,
             float(self.get_parameter('max_wheel_speed').value),
-            tuple(float(v) for v in self.get_parameter('steering_limits').value),
+            physical_limits,
+            steering_limits_by_wheel=dict(zip(names, wheel_limits)),
         )
         self._steering: Dict[str, float] = {name: 0.0 for name in names}
         self._wheel_velocity: Dict[str, float] = {name: 0.0 for name in names}

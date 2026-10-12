@@ -127,7 +127,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -5.000000 0 0 0 0.033462</pose>
+      <pose>-7.500000 -5.000000 0 0 0 0.033462</pose>
     </model>
     <model name="tomato_1">
       <static>true</static>
@@ -216,7 +216,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -4.300000 0 0 0 -0.113997</pose>
+      <pose>-7.500000 -4.300000 0 0 0 -0.113997</pose>
     </model>
     <model name="tomato_2">
       <static>true</static>
@@ -305,7 +305,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -3.600000 0 0 0 -0.053993</pose>
+      <pose>-7.500000 -3.600000 0 0 0 -0.053993</pose>
     </model>
     <model name="tomato_3">
       <static>true</static>
@@ -394,7 +394,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -2.900000 0 0 0 -0.066429</pose>
+      <pose>-7.500000 -2.900000 0 0 0 -0.066429</pose>
     </model>
     <model name="tomato_4">
       <static>true</static>
@@ -483,7 +483,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -2.200000 0 0 0 0.056753</pose>
+      <pose>-7.500000 -2.200000 0 0 0 0.056753</pose>
     </model>
     <model name="tomato_5">
       <static>true</static>
@@ -572,7 +572,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -1.500000 0 0 0 0.042408</pose>
+      <pose>-7.500000 -1.500000 0 0 0 0.042408</pose>
     </model>
     <model name="tomato_6">
       <static>true</static>
@@ -661,7 +661,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -0.800000 0 0 0 0.094123</pose>
+      <pose>-7.500000 -0.800000 0 0 0 0.094123</pose>
     </model>
     <model name="tomato_7">
       <static>true</static>
@@ -750,7 +750,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 -0.100000 0 0 0 -0.099135</pose>
+      <pose>-7.500000 -0.100000 0 0 0 -0.099135</pose>
     </model>
     <model name="tomato_8">
       <static>true</static>
@@ -839,7 +839,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 0.600000 0 0 0 -0.018739</pose>
+      <pose>-7.500000 0.600000 0 0 0 -0.018739</pose>
     </model>
     <model name="tomato_9">
       <static>true</static>
@@ -928,7 +928,7 @@
           </material>
         </visual>
       </link>
-      <pose>-5.000000 1.300000 0 0 0 -0.112849</pose>
+      <pose>-7.500000 1.300000 0 0 0 -0.112849</pose>
     </model>
     <model name="tomato_10">
       <static>true</static>
@@ -1017,7 +1017,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -5.000000 0 0 0 -0.067527</pose>
+      <pose>-4.500000 -5.000000 0 0 0 -0.067527</pose>
     </model>
     <model name="tomato_11">
       <static>true</static>
@@ -1106,7 +1106,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -4.300000 0 0 0 0.001285</pose>
+      <pose>-4.500000 -4.300000 0 0 0 0.001285</pose>
     </model>
     <model name="tomato_12">
       <static>true</static>
@@ -1195,7 +1195,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -3.600000 0 0 0 -0.113631</pose>
+      <pose>-4.500000 -3.600000 0 0 0 -0.113631</pose>
     </model>
     <model name="tomato_13">
       <static>true</static>
@@ -1284,7 +1284,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -2.900000 0 0 0 -0.072279</pose>
+      <pose>-4.500000 -2.900000 0 0 0 -0.072279</pose>
     </model>
     <model name="tomato_14">
       <static>true</static>
@@ -1373,7 +1373,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -2.200000 0 0 0 0.035972</pose>
+      <pose>-4.500000 -2.200000 0 0 0 0.035972</pose>
     </model>
     <model name="tomato_15">
       <static>true</static>
@@ -1462,7 +1462,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -1.500000 0 0 0 0.010786</pose>
+      <pose>-4.500000 -1.500000 0 0 0 0.010786</pose>
     </model>
     <model name="tomato_16">
       <static>true</static>
@@ -1551,7 +1551,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -0.800000 0 0 0 -0.067094</pose>
+      <pose>-4.500000 -0.800000 0 0 0 -0.067094</pose>
     </model>
     <model name="tomato_17">
       <static>true</static>
@@ -1640,7 +1640,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 -0.100000 0 0 0 0.021424</pose>
+      <pose>-4.500000 -0.100000 0 0 0 0.021424</pose>
     </model>
     <model name="tomato_18">
       <static>true</static>
@@ -1729,7 +1729,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 0.600000 0 0 0 0.074263</pose>
+      <pose>-4.500000 0.600000 0 0 0 0.074263</pose>
     </model>
     <model name="tomato_19">
       <static>true</static>
@@ -1818,7 +1818,7 @@
           </material>
         </visual>
       </link>
-      <pose>-3.000000 1.300000 0 0 0 -0.118440</pose>
+      <pose>-4.500000 1.300000 0 0 0 -0.118440</pose>
     </model>
     <model name="tomato_20">
       <static>true</static>
@@ -1907,7 +1907,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -5.000000 0 0 0 0.073397</pose>
+      <pose>-1.500000 -5.000000 0 0 0 0.073397</pose>
     </model>
     <model name="tomato_21">
       <static>true</static>
@@ -1996,7 +1996,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -4.300000 0 0 0 0.047553</pose>
+      <pose>-1.500000 -4.300000 0 0 0 0.047553</pose>
     </model>
     <model name="tomato_22">
       <static>true</static>
@@ -2085,7 +2085,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -3.600000 0 0 0 -0.038340</pose>
+      <pose>-1.500000 -3.600000 0 0 0 -0.038340</pose>
     </model>
     <model name="tomato_23">
       <static>true</static>
@@ -2174,7 +2174,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -2.900000 0 0 0 -0.082685</pose>
+      <pose>-1.500000 -2.900000 0 0 0 -0.082685</pose>
     </model>
     <model name="tomato_24">
       <static>true</static>
@@ -2263,7 +2263,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -2.200000 0 0 0 0.109731</pose>
+      <pose>-1.500000 -2.200000 0 0 0 0.109731</pose>
     </model>
     <model name="tomato_25">
       <static>true</static>
@@ -2352,7 +2352,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -1.500000 0 0 0 -0.039217</pose>
+      <pose>-1.500000 -1.500000 0 0 0 -0.039217</pose>
     </model>
     <model name="tomato_26">
       <static>true</static>
@@ -2441,7 +2441,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -0.800000 0 0 0 -0.097741</pose>
+      <pose>-1.500000 -0.800000 0 0 0 -0.097741</pose>
     </model>
     <model name="tomato_27">
       <static>true</static>
@@ -2530,7 +2530,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 -0.100000 0 0 0 -0.096788</pose>
+      <pose>-1.500000 -0.100000 0 0 0 -0.096788</pose>
     </model>
     <model name="tomato_28">
       <static>true</static>
@@ -2619,7 +2619,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 0.600000 0 0 0 0.083399</pose>
+      <pose>-1.500000 0.600000 0 0 0 0.083399</pose>
     </model>
     <model name="tomato_29">
       <static>true</static>
@@ -2708,7 +2708,7 @@
           </material>
         </visual>
       </link>
-      <pose>-1.000000 1.300000 0 0 0 0.024894</pose>
+      <pose>-1.500000 1.300000 0 0 0 0.024894</pose>
     </model>
     <model name="tomato_30">
       <static>true</static>
@@ -2797,7 +2797,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -5.000000 0 0 0 0.073711</pose>
+      <pose>1.500000 -5.000000 0 0 0 0.073711</pose>
     </model>
     <model name="tomato_31">
       <static>true</static>
@@ -2886,7 +2886,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -4.300000 0 0 0 0.055136</pose>
+      <pose>1.500000 -4.300000 0 0 0 0.055136</pose>
     </model>
     <model name="tomato_32">
       <static>true</static>
@@ -2975,7 +2975,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -3.600000 0 0 0 0.008695</pose>
+      <pose>1.500000 -3.600000 0 0 0 0.008695</pose>
     </model>
     <model name="tomato_33">
       <static>true</static>
@@ -3064,7 +3064,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -2.900000 0 0 0 0.113548</pose>
+      <pose>1.500000 -2.900000 0 0 0 0.113548</pose>
     </model>
     <model name="tomato_34">
       <static>true</static>
@@ -3153,7 +3153,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -2.200000 0 0 0 -0.029152</pose>
+      <pose>1.500000 -2.200000 0 0 0 -0.029152</pose>
     </model>
     <model name="tomato_35">
       <static>true</static>
@@ -3242,7 +3242,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -1.500000 0 0 0 0.012490</pose>
+      <pose>1.500000 -1.500000 0 0 0 0.012490</pose>
     </model>
     <model name="tomato_36">
       <static>true</static>
@@ -3331,7 +3331,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -0.800000 0 0 0 0.079057</pose>
+      <pose>1.500000 -0.800000 0 0 0 0.079057</pose>
     </model>
     <model name="tomato_37">
       <static>true</static>
@@ -3420,7 +3420,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 -0.100000 0 0 0 0.028445</pose>
+      <pose>1.500000 -0.100000 0 0 0 0.028445</pose>
     </model>
     <model name="tomato_38">
       <static>true</static>
@@ -3509,7 +3509,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 0.600000 0 0 0 0.086810</pose>
+      <pose>1.500000 0.600000 0 0 0 0.086810</pose>
     </model>
     <model name="tomato_39">
       <static>true</static>
@@ -3598,7 +3598,7 @@
           </material>
         </visual>
       </link>
-      <pose>1.000000 1.300000 0 0 0 0.018565</pose>
+      <pose>1.500000 1.300000 0 0 0 0.018565</pose>
     </model>
     <model name="tomato_40">
       <static>true</static>
@@ -3687,7 +3687,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -5.000000 0 0 0 0.049097</pose>
+      <pose>4.500000 -5.000000 0 0 0 0.049097</pose>
     </model>
     <model name="tomato_41">
       <static>true</static>
@@ -3776,7 +3776,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -4.300000 0 0 0 -0.109002</pose>
+      <pose>4.500000 -4.300000 0 0 0 -0.109002</pose>
     </model>
     <model name="tomato_42">
       <static>true</static>
@@ -3865,7 +3865,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -3.600000 0 0 0 -0.065304</pose>
+      <pose>4.500000 -3.600000 0 0 0 -0.065304</pose>
     </model>
     <model name="tomato_43">
       <static>true</static>
@@ -3954,7 +3954,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -2.900000 0 0 0 -0.050547</pose>
+      <pose>4.500000 -2.900000 0 0 0 -0.050547</pose>
     </model>
     <model name="tomato_44">
       <static>true</static>
@@ -4043,7 +4043,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -2.200000 0 0 0 -0.100850</pose>
+      <pose>4.500000 -2.200000 0 0 0 -0.100850</pose>
     </model>
     <model name="tomato_45">
       <static>true</static>
@@ -4132,7 +4132,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -1.500000 0 0 0 -0.064130</pose>
+      <pose>4.500000 -1.500000 0 0 0 -0.064130</pose>
     </model>
     <model name="tomato_46">
       <static>true</static>
@@ -4221,7 +4221,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -0.800000 0 0 0 -0.095760</pose>
+      <pose>4.500000 -0.800000 0 0 0 -0.095760</pose>
     </model>
     <model name="tomato_47">
       <static>true</static>
@@ -4310,7 +4310,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 -0.100000 0 0 0 -0.053286</pose>
+      <pose>4.500000 -0.100000 0 0 0 -0.053286</pose>
     </model>
     <model name="tomato_48">
       <static>true</static>
@@ -4399,7 +4399,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 0.600000 0 0 0 0.032564</pose>
+      <pose>4.500000 0.600000 0 0 0 0.032564</pose>
     </model>
     <model name="tomato_49">
       <static>true</static>
@@ -4488,7 +4488,7 @@
           </material>
         </visual>
       </link>
-      <pose>3.000000 1.300000 0 0 0 -0.032440</pose>
+      <pose>4.500000 1.300000 0 0 0 -0.032440</pose>
     </model>
     <model name="tomato_50">
       <static>true</static>
@@ -4577,7 +4577,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -5.000000 0 0 0 -0.031157</pose>
+      <pose>7.500000 -5.000000 0 0 0 -0.031157</pose>
     </model>
     <model name="tomato_51">
       <static>true</static>
@@ -4666,7 +4666,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -4.300000 0 0 0 -0.069718</pose>
+      <pose>7.500000 -4.300000 0 0 0 -0.069718</pose>
     </model>
     <model name="tomato_52">
       <static>true</static>
@@ -4755,7 +4755,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -3.600000 0 0 0 -0.055925</pose>
+      <pose>7.500000 -3.600000 0 0 0 -0.055925</pose>
     </model>
     <model name="tomato_53">
       <static>true</static>
@@ -4844,7 +4844,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -2.900000 0 0 0 0.104797</pose>
+      <pose>7.500000 -2.900000 0 0 0 0.104797</pose>
     </model>
     <model name="tomato_54">
       <static>true</static>
@@ -4933,7 +4933,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -2.200000 0 0 0 0.035528</pose>
+      <pose>7.500000 -2.200000 0 0 0 0.035528</pose>
     </model>
     <model name="tomato_55">
       <static>true</static>
@@ -5022,7 +5022,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -1.500000 0 0 0 0.026191</pose>
+      <pose>7.500000 -1.500000 0 0 0 0.026191</pose>
     </model>
     <model name="tomato_56">
       <static>true</static>
@@ -5111,7 +5111,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -0.800000 0 0 0 -0.078927</pose>
+      <pose>7.500000 -0.800000 0 0 0 -0.078927</pose>
     </model>
     <model name="tomato_57">
       <static>true</static>
@@ -5200,7 +5200,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 -0.100000 0 0 0 0.054990</pose>
+      <pose>7.500000 -0.100000 0 0 0 0.054990</pose>
     </model>
     <model name="tomato_58">
       <static>true</static>
@@ -5289,7 +5289,7 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 0.600000 0 0 0 -0.080783</pose>
+      <pose>7.500000 0.600000 0 0 0 -0.080783</pose>
     </model>
     <model name="tomato_59">
       <static>true</static>
@@ -5378,11 +5378,11 @@
           </material>
         </visual>
       </link>
-      <pose>5.000000 1.300000 0 0 0 -0.028931</pose>
+      <pose>7.500000 1.300000 0 0 0 -0.028931</pose>
     </model>
     <model name="tomato_0_fruit_0">
       <static>true</static>
-      <pose>-4.9923227652214948 -4.8511804973645578 1.1925205228583835 0 0 0</pose>
+      <pose>-7.4923227652214948 -4.8511804973645578 1.1925205228583835 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030375161328340002</radius></sphere></geometry>
@@ -5406,7 +5406,7 @@
     </model>
     <model name="tomato_0_fruit_1">
       <static>true</static>
-      <pose>-5.1706093909267485 -5.0382740260796099 1.0608571828405913 0 0 0</pose>
+      <pose>-7.6706093909267485 -5.0382740260796099 1.0608571828405913 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043382693515572682</radius></sphere></geometry>
@@ -5430,7 +5430,7 @@
     </model>
     <model name="tomato_1_fruit_0">
       <static>true</static>
-      <pose>-4.9131462044349368 -4.105422017756287 1.3928715440570292 0 0 0</pose>
+      <pose>-7.4131462044349368 -4.105422017756287 1.3928715440570292 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.0390302809357497</radius></sphere></geometry>
@@ -5454,7 +5454,7 @@
     </model>
     <model name="tomato_1_fruit_1">
       <static>true</static>
-      <pose>-4.9863398340146672 -4.0673917168700964 1.1947334957614639 0 0 0</pose>
+      <pose>-7.4863398340146672 -4.0673917168700964 1.1947334957614639 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036738135694257802</radius></sphere></geometry>
@@ -5478,7 +5478,7 @@
     </model>
     <model name="tomato_1_fruit_2">
       <static>true</static>
-      <pose>-4.9956776725499976 -4.1520723449244326 1.1945099391701492 0 0 0</pose>
+      <pose>-7.4956776725499976 -4.1520723449244326 1.1945099391701492 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036339215972302538</radius></sphere></geometry>
@@ -5502,7 +5502,7 @@
     </model>
     <model name="tomato_1_fruit_3">
       <static>true</static>
-      <pose>-5.0037485232025567 -4.464671584448209 1.2512855663392399 0 0 0</pose>
+      <pose>-7.5037485232025567 -4.464671584448209 1.2512855663392399 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035698909509560062</radius></sphere></geometry>
@@ -5526,7 +5526,7 @@
     </model>
     <model name="tomato_1_fruit_4">
       <static>true</static>
-      <pose>-5.2226854249807886 -4.3892325223143178 1.0873783139972466 0 0 0</pose>
+      <pose>-7.7226854249807886 -4.3892325223143178 1.0873783139972466 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03689137319507764</radius></sphere></geometry>
@@ -5550,7 +5550,7 @@
     </model>
     <model name="tomato_1_fruit_5">
       <static>true</static>
-      <pose>-5.0766200595351263 -4.4483999982162787 1.6198162235557647 0 0 0</pose>
+      <pose>-7.5766200595351263 -4.4483999982162787 1.6198162235557647 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039429596992416646</radius></sphere></geometry>
@@ -5574,7 +5574,7 @@
     </model>
     <model name="tomato_2_fruit_0">
       <static>true</static>
-      <pose>-5.1449928289222289 -3.4199264081481773 1.6896550644625303 0 0 0</pose>
+      <pose>-7.6449928289222289 -3.4199264081481773 1.6896550644625303 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041596025111830373</radius></sphere></geometry>
@@ -5598,7 +5598,7 @@
     </model>
     <model name="tomato_2_fruit_1">
       <static>true</static>
-      <pose>-4.9194387642272552 -3.7158956751866703 1.5838772986485252 0 0 0</pose>
+      <pose>-7.4194387642272552 -3.7158956751866703 1.5838772986485252 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036801154535526528</radius></sphere></geometry>
@@ -5622,7 +5622,7 @@
     </model>
     <model name="tomato_2_fruit_2">
       <static>true</static>
-      <pose>-4.909382587202856 -3.5077915167822113 1.4784833658756671 0 0 0</pose>
+      <pose>-7.409382587202856 -3.5077915167822113 1.4784833658756671 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040527304701878271</radius></sphere></geometry>
@@ -5646,7 +5646,7 @@
     </model>
     <model name="tomato_3_fruit_0">
       <static>true</static>
-      <pose>-4.8291444018805469 -2.7193643519963557 1.2656188092303533 0 0 0</pose>
+      <pose>-7.3291444018805469 -2.7193643519963557 1.2656188092303533 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032451037406428927</radius></sphere></geometry>
@@ -5670,7 +5670,7 @@
     </model>
     <model name="tomato_3_fruit_1">
       <static>true</static>
-      <pose>-5.0434650302201645 -3.1165612164450671 1.5899963441328668 0 0 0</pose>
+      <pose>-7.5434650302201645 -3.1165612164450671 1.5899963441328668 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040269213764848114</radius></sphere></geometry>
@@ -5694,7 +5694,7 @@
     </model>
     <model name="tomato_3_fruit_2">
       <static>true</static>
-      <pose>-5.1343040280017975 -2.8391939531687087 1.187418613182992 0 0 0</pose>
+      <pose>-7.6343040280017975 -2.8391939531687087 1.187418613182992 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034731795720886229</radius></sphere></geometry>
@@ -5718,7 +5718,7 @@
     </model>
     <model name="tomato_4_fruit_0">
       <static>true</static>
-      <pose>-4.8641260055081057 -2.0082517316873232 1.349461881644594 0 0 0</pose>
+      <pose>-7.3641260055081057 -2.0082517316873232 1.349461881644594 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033189398160812109</radius></sphere></geometry>
@@ -5742,7 +5742,7 @@
     </model>
     <model name="tomato_4_fruit_1">
       <static>true</static>
-      <pose>-5.0072189531927478 -2.0100700936667599 1.5214922874641246 0 0 0</pose>
+      <pose>-7.5072189531927478 -2.0100700936667599 1.5214922874641246 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032094454792882594</radius></sphere></geometry>
@@ -5766,7 +5766,7 @@
     </model>
     <model name="tomato_4_fruit_2">
       <static>true</static>
-      <pose>-5.1500665312151206 -2.3995152441245717 1.2533975105995276 0 0 0</pose>
+      <pose>-7.6500665312151206 -2.3995152441245717 1.2533975105995276 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038752993874184842</radius></sphere></geometry>
@@ -5790,7 +5790,7 @@
     </model>
     <model name="tomato_4_fruit_3">
       <static>true</static>
-      <pose>-5.068140223576032 -2.3221488887345529 1.602772036766666 0 0 0</pose>
+      <pose>-7.568140223576032 -2.3221488887345529 1.602772036766666 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041336732363006064</radius></sphere></geometry>
@@ -5814,7 +5814,7 @@
     </model>
     <model name="tomato_5_fruit_0">
       <static>true</static>
-      <pose>-4.7568118588389163 -1.4442535027772587 1.2671335005545756 0 0 0</pose>
+      <pose>-7.2568118588389163 -1.4442535027772587 1.2671335005545756 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030952915592279355</radius></sphere></geometry>
@@ -5838,7 +5838,7 @@
     </model>
     <model name="tomato_5_fruit_1">
       <static>true</static>
-      <pose>-4.9194150094224538 -1.3020830602022744 1.0080367153599736 0 0 0</pose>
+      <pose>-7.4194150094224538 -1.3020830602022744 1.0080367153599736 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042911695533517466</radius></sphere></geometry>
@@ -5862,7 +5862,7 @@
     </model>
     <model name="tomato_5_fruit_2">
       <static>true</static>
-      <pose>-4.8744778517855876 -1.5483210080758307 1.4486732590058655 0 0 0</pose>
+      <pose>-7.3744778517855876 -1.5483210080758307 1.4486732590058655 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03400237784928814</radius></sphere></geometry>
@@ -5886,7 +5886,7 @@
     </model>
     <model name="tomato_5_fruit_3">
       <static>true</static>
-      <pose>-4.8459232247823198 -1.4928934672523417 1.6130970582647359 0 0 0</pose>
+      <pose>-7.3459232247823198 -1.4928934672523417 1.6130970582647359 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044307238912816196</radius></sphere></geometry>
@@ -5910,7 +5910,7 @@
     </model>
     <model name="tomato_5_fruit_4">
       <static>true</static>
-      <pose>-4.9032236609100766 -1.3740988929896836 1.6093629988857368 0 0 0</pose>
+      <pose>-7.4032236609100766 -1.3740988929896836 1.6093629988857368 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043689417590172308</radius></sphere></geometry>
@@ -5934,7 +5934,7 @@
     </model>
     <model name="tomato_5_fruit_5">
       <static>true</static>
-      <pose>-5.0419113624961724 -1.3145578904135016 1.5337575600526059 0 0 0</pose>
+      <pose>-7.5419113624961724 -1.3145578904135016 1.5337575600526059 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032292589028244521</radius></sphere></geometry>
@@ -5958,7 +5958,7 @@
     </model>
     <model name="tomato_6_fruit_0">
       <static>true</static>
-      <pose>-4.9031105297827473 -0.89334986206577494 1.3420239956202635 0 0 0</pose>
+      <pose>-7.4031105297827473 -0.89334986206577494 1.3420239956202635 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038984168766903436</radius></sphere></geometry>
@@ -5982,7 +5982,7 @@
     </model>
     <model name="tomato_6_fruit_1">
       <static>true</static>
-      <pose>-4.8684878209060454 -0.72516509082837299 1.1676166172366411 0 0 0</pose>
+      <pose>-7.3684878209060454 -0.72516509082837299 1.1676166172366411 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042101622071956932</radius></sphere></geometry>
@@ -6006,7 +6006,7 @@
     </model>
     <model name="tomato_7_fruit_0">
       <static>true</static>
-      <pose>-5.1458341420277272 -0.22061777478458078 1.684589145574134 0 0 0</pose>
+      <pose>-7.6458341420277272 -0.22061777478458078 1.684589145574134 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042240348801301328</radius></sphere></geometry>
@@ -6030,7 +6030,7 @@
     </model>
     <model name="tomato_7_fruit_1">
       <static>true</static>
-      <pose>-4.841282056055471 0.0018708305436815065 1.1155888712818893 0 0 0</pose>
+      <pose>-7.341282056055471 0.0018708305436815065 1.1155888712818893 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044202730195574857</radius></sphere></geometry>
@@ -6054,7 +6054,7 @@
     </model>
     <model name="tomato_7_fruit_2">
       <static>true</static>
-      <pose>-4.9316703402184432 0.098237057402448258 1.5286856376450637 0 0 0</pose>
+      <pose>-7.4316703402184432 0.098237057402448258 1.5286856376450637 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043933702395032651</radius></sphere></geometry>
@@ -6078,7 +6078,7 @@
     </model>
     <model name="tomato_7_fruit_3">
       <static>true</static>
-      <pose>-4.7821215428731083 -0.19313538711269645 1.2613943517705057 0 0 0</pose>
+      <pose>-7.2821215428731083 -0.19313538711269645 1.2613943517705057 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04007530439457424</radius></sphere></geometry>
@@ -6102,7 +6102,7 @@
     </model>
     <model name="tomato_7_fruit_4">
       <static>true</static>
-      <pose>-4.8276561324068199 -0.015351587147463708 1.0147239820049412 0 0 0</pose>
+      <pose>-7.3276561324068199 -0.015351587147463708 1.0147239820049412 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030960388444895171</radius></sphere></geometry>
@@ -6126,7 +6126,7 @@
     </model>
     <model name="tomato_8_fruit_0">
       <static>true</static>
-      <pose>-5.2109948184963049 0.50413313858912778 1.6337940091042895 0 0 0</pose>
+      <pose>-7.7109948184963049 0.50413313858912778 1.6337940091042895 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033434126757167316</radius></sphere></geometry>
@@ -6150,7 +6150,7 @@
     </model>
     <model name="tomato_8_fruit_1">
       <static>true</static>
-      <pose>-5.125056313327474 0.65643497820458185 1.1499657651593069 0 0 0</pose>
+      <pose>-7.625056313327474 0.65643497820458185 1.1499657651593069 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040034666674444205</radius></sphere></geometry>
@@ -6174,7 +6174,7 @@
     </model>
     <model name="tomato_9_fruit_0">
       <static>true</static>
-      <pose>-5.1533917795622202 1.2201781622108596 1.3310810600612155 0 0 0</pose>
+      <pose>-7.6533917795622202 1.2201781622108596 1.3310810600612155 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033644958635935869</radius></sphere></geometry>
@@ -6198,7 +6198,7 @@
     </model>
     <model name="tomato_9_fruit_1">
       <static>true</static>
-      <pose>-5.2263122283842547 1.2476025075669157 1.2877715932348166 0 0 0</pose>
+      <pose>-7.7263122283842547 1.2476025075669157 1.2877715932348166 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035314463498843304</radius></sphere></geometry>
@@ -6222,7 +6222,7 @@
     </model>
     <model name="tomato_9_fruit_2">
       <static>true</static>
-      <pose>-5.0437062686383483 1.5101713873358478 1.0424288718539096 0 0 0</pose>
+      <pose>-7.5437062686383483 1.5101713873358478 1.0424288718539096 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039692696269424767</radius></sphere></geometry>
@@ -6246,7 +6246,7 @@
     </model>
     <model name="tomato_9_fruit_3">
       <static>true</static>
-      <pose>-5.0699668286299291 1.1807924761086608 1.3754000277372411 0 0 0</pose>
+      <pose>-7.5699668286299291 1.1807924761086608 1.3754000277372411 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032873851082124809</radius></sphere></geometry>
@@ -6270,7 +6270,7 @@
     </model>
     <model name="tomato_9_fruit_4">
       <static>true</static>
-      <pose>-5.1902379097761839 1.3038286082024917 1.4565014257989655 0 0 0</pose>
+      <pose>-7.6902379097761839 1.3038286082024917 1.4565014257989655 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031468630923024002</radius></sphere></geometry>
@@ -6294,7 +6294,7 @@
     </model>
     <model name="tomato_10_fruit_0">
       <static>true</static>
-      <pose>-2.8859547907057963 -5.093993253033493 1.339948787815503 0 0 0</pose>
+      <pose>-4.3859547907057959 -5.093993253033493 1.339948787815503 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032494666659058709</radius></sphere></geometry>
@@ -6318,7 +6318,7 @@
     </model>
     <model name="tomato_10_fruit_1">
       <static>true</static>
-      <pose>-3.0225567903023252 -4.8471793580202354 1.6897161906458082 0 0 0</pose>
+      <pose>-4.5225567903023247 -4.8471793580202354 1.6897161906458082 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035684596784653744</radius></sphere></geometry>
@@ -6342,7 +6342,7 @@
     </model>
     <model name="tomato_10_fruit_2">
       <static>true</static>
-      <pose>-2.7605072144238232 -4.9303865346435929 1.6701223486017711 0 0 0</pose>
+      <pose>-4.2605072144238232 -4.9303865346435929 1.6701223486017711 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03634511228985244</radius></sphere></geometry>
@@ -6366,7 +6366,7 @@
     </model>
     <model name="tomato_11_fruit_0">
       <static>true</static>
-      <pose>-2.9887433725253825 -4.1728946498312158 1.1523906288899224 0 0 0</pose>
+      <pose>-4.4887433725253825 -4.1728946498312158 1.1523906288899224 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032848468009014559</radius></sphere></geometry>
@@ -6390,7 +6390,7 @@
     </model>
     <model name="tomato_11_fruit_1">
       <static>true</static>
-      <pose>-3.1592470190541548 -4.211920377737199 1.0350996360847675 0 0 0</pose>
+      <pose>-4.6592470190541544 -4.211920377737199 1.0350996360847675 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034704072146545938</radius></sphere></geometry>
@@ -6414,7 +6414,7 @@
     </model>
     <model name="tomato_11_fruit_2">
       <static>true</static>
-      <pose>-3.2095001541892771 -4.3965423461397926 1.3554799478953929 0 0 0</pose>
+      <pose>-4.7095001541892767 -4.3965423461397926 1.3554799478953929 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030853193695930266</radius></sphere></geometry>
@@ -6438,7 +6438,7 @@
     </model>
     <model name="tomato_12_fruit_0">
       <static>true</static>
-      <pose>-2.8199464934818756 -3.5276179178309901 1.6591172890603625 0 0 0</pose>
+      <pose>-4.3199464934818756 -3.5276179178309901 1.6591172890603625 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036056633269774159</radius></sphere></geometry>
@@ -6462,7 +6462,7 @@
     </model>
     <model name="tomato_12_fruit_1">
       <static>true</static>
-      <pose>-2.9421979118968844 -3.7846435364960329 1.4601612151307657 0 0 0</pose>
+      <pose>-4.4421979118968844 -3.7846435364960329 1.4601612151307657 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031229751082423131</radius></sphere></geometry>
@@ -6486,7 +6486,7 @@
     </model>
     <model name="tomato_12_fruit_2">
       <static>true</static>
-      <pose>-3.1173202710049353 -3.7005755431152307 1.2199287039569033 0 0 0</pose>
+      <pose>-4.6173202710049353 -3.7005755431152307 1.2199287039569033 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04004588962154744</radius></sphere></geometry>
@@ -6510,7 +6510,7 @@
     </model>
     <model name="tomato_13_fruit_0">
       <static>true</static>
-      <pose>-2.8777379917909851 -2.9424768505113721 1.5263051446900815 0 0 0</pose>
+      <pose>-4.3777379917909851 -2.9424768505113721 1.5263051446900815 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034742657944077812</radius></sphere></geometry>
@@ -6534,7 +6534,7 @@
     </model>
     <model name="tomato_13_fruit_1">
       <static>true</static>
-      <pose>-2.9965692958912582 -3.0476702145668271 1.0512825047697432 0 0 0</pose>
+      <pose>-4.4965692958912582 -3.0476702145668271 1.0512825047697432 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044941446717826412</radius></sphere></geometry>
@@ -6558,7 +6558,7 @@
     </model>
     <model name="tomato_13_fruit_2">
       <static>true</static>
-      <pose>-3.1019516519414045 -3.0335769642806794 1.6154891697391798 0 0 0</pose>
+      <pose>-4.6019516519414045 -3.0335769642806794 1.6154891697391798 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043212962605296591</radius></sphere></geometry>
@@ -6582,7 +6582,7 @@
     </model>
     <model name="tomato_13_fruit_3">
       <static>true</static>
-      <pose>-2.8446938798121821 -2.7062142606431512 1.428174436008165 0 0 0</pose>
+      <pose>-4.3446938798121826 -2.7062142606431512 1.428174436008165 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040553098876310562</radius></sphere></geometry>
@@ -6606,7 +6606,7 @@
     </model>
     <model name="tomato_13_fruit_4">
       <static>true</static>
-      <pose>-3.1851677320900524 -2.8091811229847696 1.2095651265399845 0 0 0</pose>
+      <pose>-4.6851677320900524 -2.8091811229847696 1.2095651265399845 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04225656202673192</radius></sphere></geometry>
@@ -6630,7 +6630,7 @@
     </model>
     <model name="tomato_14_fruit_0">
       <static>true</static>
-      <pose>-2.9672849783050803 -2.336338089433303 1.5196916787866992 0 0 0</pose>
+      <pose>-4.4672849783050808 -2.336338089433303 1.5196916787866992 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043345690605085634</radius></sphere></geometry>
@@ -6654,7 +6654,7 @@
     </model>
     <model name="tomato_14_fruit_1">
       <static>true</static>
-      <pose>-2.7696860796134035 -2.1838613355405978 1.4812479901609312 0 0 0</pose>
+      <pose>-4.269686079613404 -2.1838613355405978 1.4812479901609312 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035143204316898879</radius></sphere></geometry>
@@ -6678,7 +6678,7 @@
     </model>
     <model name="tomato_15_fruit_0">
       <static>true</static>
-      <pose>-3.1558831812061263 -1.5051560351136457 1.2965030407946085 0 0 0</pose>
+      <pose>-4.6558831812061268 -1.5051560351136457 1.2965030407946085 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031384477015690998</radius></sphere></geometry>
@@ -6702,7 +6702,7 @@
     </model>
     <model name="tomato_15_fruit_1">
       <static>true</static>
-      <pose>-2.7957032210317339 -1.4287645907639126 1.1833686837040438 0 0 0</pose>
+      <pose>-4.2957032210317339 -1.4287645907639126 1.1833686837040438 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039556700659520695</radius></sphere></geometry>
@@ -6726,7 +6726,7 @@
     </model>
     <model name="tomato_16_fruit_0">
       <static>true</static>
-      <pose>-3.1353951196503518 -0.96030552414397885 1.6615356573326472 0 0 0</pose>
+      <pose>-4.6353951196503518 -0.96030552414397885 1.6615356573326472 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031678108208840025</radius></sphere></geometry>
@@ -6750,7 +6750,7 @@
     </model>
     <model name="tomato_16_fruit_1">
       <static>true</static>
-      <pose>-3.1725143494639729 -0.83420315080100016 1.3867675677214983 0 0 0</pose>
+      <pose>-4.6725143494639729 -0.83420315080100016 1.3867675677214983 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035538239767682875</radius></sphere></geometry>
@@ -6774,7 +6774,7 @@
     </model>
     <model name="tomato_17_fruit_0">
       <static>true</static>
-      <pose>-3.119740475090647 -0.19433889188775189 1.1470535768378278 0 0 0</pose>
+      <pose>-4.619740475090647 -0.19433889188775189 1.1470535768378278 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043483869547897118</radius></sphere></geometry>
@@ -6798,7 +6798,7 @@
     </model>
     <model name="tomato_17_fruit_1">
       <static>true</static>
-      <pose>-3.1096926878453632 -0.26805470345112997 1.2844641728824817 0 0 0</pose>
+      <pose>-4.6096926878453637 -0.26805470345112997 1.2844641728824817 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043262020521765129</radius></sphere></geometry>
@@ -6822,7 +6822,7 @@
     </model>
     <model name="tomato_18_fruit_0">
       <static>true</static>
-      <pose>-3.2284066450989664 0.54652002667466215 1.5675402039582778 0 0 0</pose>
+      <pose>-4.7284066450989668 0.54652002667466215 1.5675402039582778 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044643090493964442</radius></sphere></geometry>
@@ -6846,7 +6846,7 @@
     </model>
     <model name="tomato_18_fruit_1">
       <static>true</static>
-      <pose>-3.1594751915903747 0.75771468602736647 1.6515711202338279 0 0 0</pose>
+      <pose>-4.6594751915903743 0.75771468602736647 1.6515711202338279 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034982782019196426</radius></sphere></geometry>
@@ -6870,7 +6870,7 @@
     </model>
     <model name="tomato_18_fruit_2">
       <static>true</static>
-      <pose>-3.0999874300566934 0.68928923901339922 1.5511621563948297 0 0 0</pose>
+      <pose>-4.5999874300566939 0.68928923901339922 1.5511621563948297 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034002085643917081</radius></sphere></geometry>
@@ -6894,7 +6894,7 @@
     </model>
     <model name="tomato_19_fruit_0">
       <static>true</static>
-      <pose>-3.0527927193716264 1.456807151485654 1.6429163308606465 0 0 0</pose>
+      <pose>-4.5527927193716264 1.456807151485654 1.6429163308606465 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032993592450386279</radius></sphere></geometry>
@@ -6918,7 +6918,7 @@
     </model>
     <model name="tomato_19_fruit_1">
       <static>true</static>
-      <pose>-2.9894789344401289 1.1285218803743469 1.4620232279240404 0 0 0</pose>
+      <pose>-4.4894789344401289 1.1285218803743469 1.4620232279240404 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033343853208087131</radius></sphere></geometry>
@@ -6942,7 +6942,7 @@
     </model>
     <model name="tomato_19_fruit_2">
       <static>true</static>
-      <pose>-2.9008774864554963 1.4576503580373079 1.2458022903579264 0 0 0</pose>
+      <pose>-4.4008774864554958 1.4576503580373079 1.2458022903579264 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041599899561605411</radius></sphere></geometry>
@@ -6966,7 +6966,7 @@
     </model>
     <model name="tomato_20_fruit_0">
       <static>true</static>
-      <pose>-1.0902560006051676 -5.2290080796912974 1.0807392262959994 0 0 0</pose>
+      <pose>-1.5902560006051676 -5.2290080796912974 1.0807392262959994 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044088557104870738</radius></sphere></geometry>
@@ -6990,7 +6990,7 @@
     </model>
     <model name="tomato_20_fruit_1">
       <static>true</static>
-      <pose>-0.98916864713018327 -4.8238393837414737 1.0758817830502978 0 0 0</pose>
+      <pose>-1.4891686471301833 -4.8238393837414737 1.0758817830502978 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033981995437844525</radius></sphere></geometry>
@@ -7014,7 +7014,7 @@
     </model>
     <model name="tomato_20_fruit_2">
       <static>true</static>
-      <pose>-0.85541824301041536 -4.910435724835418 1.3579961417686346 0 0 0</pose>
+      <pose>-1.3554182430104154 -4.910435724835418 1.3579961417686346 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039093132799592145</radius></sphere></geometry>
@@ -7038,7 +7038,7 @@
     </model>
     <model name="tomato_20_fruit_3">
       <static>true</static>
-      <pose>-0.77149993029240238 -4.9255438790474368 1.0011838947530407 0 0 0</pose>
+      <pose>-1.2714999302924024 -4.9255438790474368 1.0011838947530407 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04063177925751256</radius></sphere></geometry>
@@ -7062,7 +7062,7 @@
     </model>
     <model name="tomato_21_fruit_0">
       <static>true</static>
-      <pose>-0.89188546941895419 -4.4757610361007893 1.0489816677884172 0 0 0</pose>
+      <pose>-1.3918854694189542 -4.4757610361007893 1.0489816677884172 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035463322076718963</radius></sphere></geometry>
@@ -7086,7 +7086,7 @@
     </model>
     <model name="tomato_21_fruit_1">
       <static>true</static>
-      <pose>-0.93514181392184814 -4.4452161837457709 1.503827984109765 0 0 0</pose>
+      <pose>-1.4351418139218481 -4.4452161837457709 1.503827984109765 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042720229192595029</radius></sphere></geometry>
@@ -7110,7 +7110,7 @@
     </model>
     <model name="tomato_21_fruit_2">
       <static>true</static>
-      <pose>-0.87718305323556844 -4.3596757389912177 1.2069586417681628 0 0 0</pose>
+      <pose>-1.3771830532355684 -4.3596757389912177 1.2069586417681628 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03603600580586587</radius></sphere></geometry>
@@ -7134,7 +7134,7 @@
     </model>
     <model name="tomato_22_fruit_0">
       <static>true</static>
-      <pose>-1.1911093781127791 -3.5931573871665639 1.2106649121958957 0 0 0</pose>
+      <pose>-1.6911093781127791 -3.5931573871665639 1.2106649121958957 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039232723739270704</radius></sphere></geometry>
@@ -7158,7 +7158,7 @@
     </model>
     <model name="tomato_22_fruit_1">
       <static>true</static>
-      <pose>-0.80169406972424961 -3.6523982847493839 1.4059893468369773 0 0 0</pose>
+      <pose>-1.3016940697242496 -3.6523982847493839 1.4059893468369773 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036448322249847516</radius></sphere></geometry>
@@ -7182,7 +7182,7 @@
     </model>
     <model name="tomato_22_fruit_2">
       <static>true</static>
-      <pose>-1.0588661936254564 -3.3702685104299017 1.3312303301365285 0 0 0</pose>
+      <pose>-1.5588661936254564 -3.3702685104299017 1.3312303301365285 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033205521014836502</radius></sphere></geometry>
@@ -7206,7 +7206,7 @@
     </model>
     <model name="tomato_23_fruit_0">
       <static>true</static>
-      <pose>-1.1755646745453352 -2.9968445189495916 1.464697685413499 0 0 0</pose>
+      <pose>-1.6755646745453352 -2.9968445189495916 1.464697685413499 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034256796074895408</radius></sphere></geometry>
@@ -7230,7 +7230,7 @@
     </model>
     <model name="tomato_23_fruit_1">
       <static>true</static>
-      <pose>-1.1495500748008829 -3.0679098746856845 1.2172936250064408 0 0 0</pose>
+      <pose>-1.6495500748008829 -3.0679098746856845 1.2172936250064408 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033523028977900257</radius></sphere></geometry>
@@ -7254,7 +7254,7 @@
     </model>
     <model name="tomato_24_fruit_0">
       <static>true</static>
-      <pose>-1.1473251928651602 -2.0979735442091911 1.5379425373001379 0 0 0</pose>
+      <pose>-1.6473251928651602 -2.0979735442091911 1.5379425373001379 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039169109595910204</radius></sphere></geometry>
@@ -7278,7 +7278,7 @@
     </model>
     <model name="tomato_24_fruit_1">
       <static>true</static>
-      <pose>-1.0874990647563163 -2.3480283477281612 1.2687849271749259 0 0 0</pose>
+      <pose>-1.5874990647563163 -2.3480283477281612 1.2687849271749259 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040775188732484827</radius></sphere></geometry>
@@ -7302,7 +7302,7 @@
     </model>
     <model name="tomato_24_fruit_2">
       <static>true</static>
-      <pose>-1.0668476477879796 -1.9745929720550581 1.6023083957957649 0 0 0</pose>
+      <pose>-1.5668476477879796 -1.9745929720550581 1.6023083957957649 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043389897393170493</radius></sphere></geometry>
@@ -7326,7 +7326,7 @@
     </model>
     <model name="tomato_24_fruit_3">
       <static>true</static>
-      <pose>-0.83920318265588922 -2.1182352680516794 1.4871382434857667 0 0 0</pose>
+      <pose>-1.3392031826558892 -2.1182352680516794 1.4871382434857667 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042061647842597145</radius></sphere></geometry>
@@ -7350,7 +7350,7 @@
     </model>
     <model name="tomato_24_fruit_4">
       <static>true</static>
-      <pose>-0.82794089874488708 -2.14576779462339 1.0933373738899201 0 0 0</pose>
+      <pose>-1.3279408987448871 -2.14576779462339 1.0933373738899201 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031820378987840764</radius></sphere></geometry>
@@ -7374,7 +7374,7 @@
     </model>
     <model name="tomato_25_fruit_0">
       <static>true</static>
-      <pose>-0.95404347674352163 -1.3057165860927991 1.6239981480673058 0 0 0</pose>
+      <pose>-1.4540434767435215 -1.3057165860927991 1.6239981480673058 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044250594126647336</radius></sphere></geometry>
@@ -7398,7 +7398,7 @@
     </model>
     <model name="tomato_25_fruit_1">
       <static>true</static>
-      <pose>-0.98130599647913053 -1.26410250259103 1.3835103654275798 0 0 0</pose>
+      <pose>-1.4813059964791306 -1.26410250259103 1.3835103654275798 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042458537545821226</radius></sphere></geometry>
@@ -7422,7 +7422,7 @@
     </model>
     <model name="tomato_25_fruit_2">
       <static>true</static>
-      <pose>-1.0121954806045723 -1.2974708620849367 1.1730678162567616 0 0 0</pose>
+      <pose>-1.5121954806045723 -1.2974708620849367 1.1730678162567616 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033887873226975292</radius></sphere></geometry>
@@ -7446,7 +7446,7 @@
     </model>
     <model name="tomato_25_fruit_3">
       <static>true</static>
-      <pose>-0.97603908528160899 -1.6278468506908532 1.1922182128422767 0 0 0</pose>
+      <pose>-1.476039085281609 -1.6278468506908532 1.1922182128422767 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03940122655472672</radius></sphere></geometry>
@@ -7470,7 +7470,7 @@
     </model>
     <model name="tomato_26_fruit_0">
       <static>true</static>
-      <pose>-0.90605549062042945 -0.90327060949003668 1.0564043603603679 0 0 0</pose>
+      <pose>-1.4060554906204294 -0.90327060949003668 1.0564043603603679 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043395402491854751</radius></sphere></geometry>
@@ -7494,7 +7494,7 @@
     </model>
     <model name="tomato_26_fruit_1">
       <static>true</static>
-      <pose>-0.84484775230569298 -0.85001533365078275 1.2904075271287527 0 0 0</pose>
+      <pose>-1.344847752305693 -0.85001533365078275 1.2904075271287527 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033209293156589811</radius></sphere></geometry>
@@ -7518,7 +7518,7 @@
     </model>
     <model name="tomato_26_fruit_2">
       <static>true</static>
-      <pose>-1.1994253539535378 -0.70693093010099284 1.272633768866859 0 0 0</pose>
+      <pose>-1.6994253539535378 -0.70693093010099284 1.272633768866859 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04249336754010731</radius></sphere></geometry>
@@ -7542,7 +7542,7 @@
     </model>
     <model name="tomato_26_fruit_3">
       <static>true</static>
-      <pose>-1.1632891844712809 -0.71960520393977745 1.4029832427670561 0 0 0</pose>
+      <pose>-1.6632891844712809 -0.71960520393977745 1.4029832427670561 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043209850091367352</radius></sphere></geometry>
@@ -7566,7 +7566,7 @@
     </model>
     <model name="tomato_27_fruit_0">
       <static>true</static>
-      <pose>-0.98043095915550227 0.073371851737794341 1.6674012369290745 0 0 0</pose>
+      <pose>-1.4804309591555023 0.073371851737794341 1.6674012369290745 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042801719258536569</radius></sphere></geometry>
@@ -7590,7 +7590,7 @@
     </model>
     <model name="tomato_27_fruit_1">
       <static>true</static>
-      <pose>-0.86965311699976189 -0.17119908721687438 1.1543770860266731 0 0 0</pose>
+      <pose>-1.3696531169997619 -0.17119908721687438 1.1543770860266731 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039048788834118622</radius></sphere></geometry>
@@ -7614,7 +7614,7 @@
     </model>
     <model name="tomato_27_fruit_2">
       <static>true</static>
-      <pose>-1.1017440406421002 -0.23937541585962027 1.4753993195198447 0 0 0</pose>
+      <pose>-1.6017440406421002 -0.23937541585962027 1.4753993195198447 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035041943155475735</radius></sphere></geometry>
@@ -7638,7 +7638,7 @@
     </model>
     <model name="tomato_27_fruit_3">
       <static>true</static>
-      <pose>-0.91070687712120513 -0.18532514874889988 1.4355798726818452 0 0 0</pose>
+      <pose>-1.4107068771212052 -0.18532514874889988 1.4355798726818452 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031914416959217408</radius></sphere></geometry>
@@ -7662,7 +7662,7 @@
     </model>
     <model name="tomato_27_fruit_4">
       <static>true</static>
-      <pose>-0.94445577112812851 -0.23665928724147653 1.2653727049316976 0 0 0</pose>
+      <pose>-1.4444557711281285 -0.23665928724147653 1.2653727049316976 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030754269502329411</radius></sphere></geometry>
@@ -7686,7 +7686,7 @@
     </model>
     <model name="tomato_28_fruit_0">
       <static>true</static>
-      <pose>-1.1011268447964293 0.74258190460152251 1.6658428839023931 0 0 0</pose>
+      <pose>-1.6011268447964293 0.74258190460152251 1.6658428839023931 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034173849234582089</radius></sphere></geometry>
@@ -7710,7 +7710,7 @@
     </model>
     <model name="tomato_28_fruit_1">
       <static>true</static>
-      <pose>-1.019131196665604 0.35700237589836437 1.0364599257702789 0 0 0</pose>
+      <pose>-1.519131196665604 0.35700237589836437 1.0364599257702789 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041235363916242759</radius></sphere></geometry>
@@ -7734,7 +7734,7 @@
     </model>
     <model name="tomato_28_fruit_2">
       <static>true</static>
-      <pose>-0.99177892553038949 0.47623885000663813 1.0281806962785367 0 0 0</pose>
+      <pose>-1.4917789255303895 0.47623885000663813 1.0281806962785367 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044359284041645519</radius></sphere></geometry>
@@ -7758,7 +7758,7 @@
     </model>
     <model name="tomato_28_fruit_3">
       <static>true</static>
-      <pose>-1.12621852698219 0.46948569475465107 1.1669814593222341 0 0 0</pose>
+      <pose>-1.62621852698219 0.46948569475465107 1.1669814593222341 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039320034848792366</radius></sphere></geometry>
@@ -7782,7 +7782,7 @@
     </model>
     <model name="tomato_28_fruit_4">
       <static>true</static>
-      <pose>-0.87696431297467103 0.71433093560351901 1.1793705875935305 0 0 0</pose>
+      <pose>-1.3769643129746711 0.71433093560351901 1.1793705875935305 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036975509751528308</radius></sphere></geometry>
@@ -7806,7 +7806,7 @@
     </model>
     <model name="tomato_29_fruit_0">
       <static>true</static>
-      <pose>-0.86071439668381167 1.3796173915734327 1.1146360671170394 0 0 0</pose>
+      <pose>-1.3607143966838116 1.3796173915734327 1.1146360671170394 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041666878292631486</radius></sphere></geometry>
@@ -7830,7 +7830,7 @@
     </model>
     <model name="tomato_29_fruit_1">
       <static>true</static>
-      <pose>-1.1589659982861626 1.3567436633119212 1.6356183057332112 0 0 0</pose>
+      <pose>-1.6589659982861626 1.3567436633119212 1.6356183057332112 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038636950926186214</radius></sphere></geometry>
@@ -7854,7 +7854,7 @@
     </model>
     <model name="tomato_30_fruit_0">
       <static>true</static>
-      <pose>0.97157693216541974 -4.8698195965206086 1.439069676920731 0 0 0</pose>
+      <pose>1.4715769321654197 -4.8698195965206086 1.439069676920731 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040359216238994702</radius></sphere></geometry>
@@ -7878,7 +7878,7 @@
     </model>
     <model name="tomato_30_fruit_1">
       <static>true</static>
-      <pose>0.93178580171471626 -4.7616701508730443 1.0847385455471206 0 0 0</pose>
+      <pose>1.4317858017147163 -4.7616701508730443 1.0847385455471206 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039006174222252658</radius></sphere></geometry>
@@ -7902,7 +7902,7 @@
     </model>
     <model name="tomato_30_fruit_2">
       <static>true</static>
-      <pose>1.1119743875390766 -5.1482364698474887 1.2593996133526393 0 0 0</pose>
+      <pose>1.6119743875390766 -5.1482364698474887 1.2593996133526393 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036425670198521165</radius></sphere></geometry>
@@ -7926,7 +7926,7 @@
     </model>
     <model name="tomato_30_fruit_3">
       <static>true</static>
-      <pose>1.147269955028515 -4.8043249175127238 1.0738772094507989 0 0 0</pose>
+      <pose>1.647269955028515 -4.8043249175127238 1.0738772094507989 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042334963771350868</radius></sphere></geometry>
@@ -7950,7 +7950,7 @@
     </model>
     <model name="tomato_30_fruit_4">
       <static>true</static>
-      <pose>0.78681202949713902 -4.9692558707630914 1.304841001505374 0 0 0</pose>
+      <pose>1.286812029497139 -4.9692558707630914 1.304841001505374 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040609629655591152</radius></sphere></geometry>
@@ -7974,7 +7974,7 @@
     </model>
     <model name="tomato_30_fruit_5">
       <static>true</static>
-      <pose>1.1729237915046253 -5.0594406820757989 1.376721034513779 0 0 0</pose>
+      <pose>1.6729237915046253 -5.0594406820757989 1.376721034513779 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042122988282101335</radius></sphere></geometry>
@@ -7998,7 +7998,7 @@
     </model>
     <model name="tomato_31_fruit_0">
       <static>true</static>
-      <pose>1.0566773404864809 -4.5347559090507952 1.1718466183655836 0 0 0</pose>
+      <pose>1.5566773404864809 -4.5347559090507952 1.1718466183655836 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034834568744716771</radius></sphere></geometry>
@@ -8022,7 +8022,7 @@
     </model>
     <model name="tomato_31_fruit_1">
       <static>true</static>
-      <pose>1.1164597028555676 -4.4709680070952036 1.3988947512748255 0 0 0</pose>
+      <pose>1.6164597028555676 -4.4709680070952036 1.3988947512748255 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04125714422740509</radius></sphere></geometry>
@@ -8046,7 +8046,7 @@
     </model>
     <model name="tomato_31_fruit_2">
       <static>true</static>
-      <pose>1.0178434174487081 -4.4651662017040863 1.341284952673941 0 0 0</pose>
+      <pose>1.5178434174487081 -4.4651662017040863 1.341284952673941 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034875212518331394</radius></sphere></geometry>
@@ -8070,7 +8070,7 @@
     </model>
     <model name="tomato_31_fruit_3">
       <static>true</static>
-      <pose>1.1898092316304498 -4.2694450065218774 1.6160751416786612 0 0 0</pose>
+      <pose>1.6898092316304498 -4.2694450065218774 1.6160751416786612 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038942325119061441</radius></sphere></geometry>
@@ -8094,7 +8094,7 @@
     </model>
     <model name="tomato_32_fruit_0">
       <static>true</static>
-      <pose>1.0779066164936864 -3.3957950861477304 1.342004492794151 0 0 0</pose>
+      <pose>1.5779066164936864 -3.3957950861477304 1.342004492794151 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040801119961562909</radius></sphere></geometry>
@@ -8118,7 +8118,7 @@
     </model>
     <model name="tomato_32_fruit_1">
       <static>true</static>
-      <pose>0.97768146473899042 -3.7301978623916097 1.5550530076926221 0 0 0</pose>
+      <pose>1.4776814647389904 -3.7301978623916097 1.5550530076926221 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.037362320026178793</radius></sphere></geometry>
@@ -8142,7 +8142,7 @@
     </model>
     <model name="tomato_32_fruit_2">
       <static>true</static>
-      <pose>1.1777970955925621 -3.5634062049948381 1.4070889097326571 0 0 0</pose>
+      <pose>1.6777970955925621 -3.5634062049948381 1.4070889097326571 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034593090451951324</radius></sphere></geometry>
@@ -8166,7 +8166,7 @@
     </model>
     <model name="tomato_33_fruit_0">
       <static>true</static>
-      <pose>1.0189464204064955 -3.0540584732537988 1.4919984595300382 0 0 0</pose>
+      <pose>1.5189464204064955 -3.0540584732537988 1.4919984595300382 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03496186945793895</radius></sphere></geometry>
@@ -8190,7 +8190,7 @@
     </model>
     <model name="tomato_33_fruit_1">
       <static>true</static>
-      <pose>0.96415496174252147 -2.7137557325631234 1.0836883188785369 0 0 0</pose>
+      <pose>1.4641549617425214 -2.7137557325631234 1.0836883188785369 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032888764401772762</radius></sphere></geometry>
@@ -8214,7 +8214,7 @@
     </model>
     <model name="tomato_33_fruit_2">
       <static>true</static>
-      <pose>0.78592365928044838 -2.8928398156027906 1.3389390110488961 0 0 0</pose>
+      <pose>1.2859236592804484 -2.8928398156027906 1.3389390110488961 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033245769598179084</radius></sphere></geometry>
@@ -8238,7 +8238,7 @@
     </model>
     <model name="tomato_33_fruit_3">
       <static>true</static>
-      <pose>0.99594418478071556 -3.0451786431126946 1.0703682756635535 0 0 0</pose>
+      <pose>1.4959441847807156 -3.0451786431126946 1.0703682756635535 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034244980549124324</radius></sphere></geometry>
@@ -8262,7 +8262,7 @@
     </model>
     <model name="tomato_33_fruit_4">
       <static>true</static>
-      <pose>0.89680845144180643 -2.8107760093290972 1.4881921750371361 0 0 0</pose>
+      <pose>1.3968084514418064 -2.8107760093290972 1.4881921750371361 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038300384501979125</radius></sphere></geometry>
@@ -8286,7 +8286,7 @@
     </model>
     <model name="tomato_33_fruit_5">
       <static>true</static>
-      <pose>1.1749142855417771 -2.9466241719339035 1.4018449537384325 0 0 0</pose>
+      <pose>1.6749142855417771 -2.9466241719339035 1.4018449537384325 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04309079602497802</radius></sphere></geometry>
@@ -8310,7 +8310,7 @@
     </model>
     <model name="tomato_34_fruit_0">
       <static>true</static>
-      <pose>0.8748577007063133 -2.250188564604684 1.6032060752392592 0 0 0</pose>
+      <pose>1.3748577007063134 -2.250188564604684 1.6032060752392592 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033787175857394589</radius></sphere></geometry>
@@ -8334,7 +8334,7 @@
     </model>
     <model name="tomato_34_fruit_1">
       <static>true</static>
-      <pose>0.9514311416606398 -2.0689885312391767 1.4805157127792117 0 0 0</pose>
+      <pose>1.4514311416606398 -2.0689885312391767 1.4805157127792117 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038655317347062269</radius></sphere></geometry>
@@ -8358,7 +8358,7 @@
     </model>
     <model name="tomato_35_fruit_0">
       <static>true</static>
-      <pose>1.1705125975397506 -1.3619709940807685 1.0829160935480231 0 0 0</pose>
+      <pose>1.6705125975397506 -1.3619709940807685 1.0829160935480231 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044908771840653297</radius></sphere></geometry>
@@ -8382,7 +8382,7 @@
     </model>
     <model name="tomato_35_fruit_1">
       <static>true</static>
-      <pose>1.1678992098870049 -1.5607946223592117 1.3658007745911525 0 0 0</pose>
+      <pose>1.6678992098870049 -1.5607946223592117 1.3658007745911525 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033385307055975519</radius></sphere></geometry>
@@ -8406,7 +8406,7 @@
     </model>
     <model name="tomato_36_fruit_0">
       <static>true</static>
-      <pose>0.9966554589257629 -0.60077605325178296 1.434719124750504 0 0 0</pose>
+      <pose>1.4966554589257628 -0.60077605325178296 1.434719124750504 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034580703664790408</radius></sphere></geometry>
@@ -8430,7 +8430,7 @@
     </model>
     <model name="tomato_36_fruit_1">
       <static>true</static>
-      <pose>0.90041982316040592 -0.98016753382133326 1.1477176367137751 0 0 0</pose>
+      <pose>1.4004198231604059 -0.98016753382133326 1.1477176367137751 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033116818587353269</radius></sphere></geometry>
@@ -8454,7 +8454,7 @@
     </model>
     <model name="tomato_36_fruit_2">
       <static>true</static>
-      <pose>1.1401307588935738 -0.68932479215714748 1.00187300582202 0 0 0</pose>
+      <pose>1.6401307588935738 -0.68932479215714748 1.00187300582202 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031125973033517516</radius></sphere></geometry>
@@ -8478,7 +8478,7 @@
     </model>
     <model name="tomato_36_fruit_3">
       <static>true</static>
-      <pose>1.2067543842524429 -0.84401900578638067 1.4948690809153233 0 0 0</pose>
+      <pose>1.7067543842524429 -0.84401900578638067 1.4948690809153233 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033472143518340387</radius></sphere></geometry>
@@ -8502,7 +8502,7 @@
     </model>
     <model name="tomato_36_fruit_4">
       <static>true</static>
-      <pose>1.0927573375112825 -0.62139240184261035 1.5514796186527118 0 0 0</pose>
+      <pose>1.5927573375112825 -0.62139240184261035 1.5514796186527118 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043858665667238228</radius></sphere></geometry>
@@ -8526,7 +8526,7 @@
     </model>
     <model name="tomato_37_fruit_0">
       <static>true</static>
-      <pose>1.0176061971088703 -0.23825206928110676 1.1573666151862168 0 0 0</pose>
+      <pose>1.5176061971088703 -0.23825206928110676 1.1573666151862168 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031721644536915686</radius></sphere></geometry>
@@ -8550,7 +8550,7 @@
     </model>
     <model name="tomato_37_fruit_1">
       <static>true</static>
-      <pose>0.90626531545946987 0.073675245921107579 1.5548399963626882 0 0 0</pose>
+      <pose>1.4062653154594698 0.073675245921107579 1.5548399963626882 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030894570592707706</radius></sphere></geometry>
@@ -8574,7 +8574,7 @@
     </model>
     <model name="tomato_37_fruit_2">
       <static>true</static>
-      <pose>1.1330818063718235 -0.18797525504043952 1.3280885791933132 0 0 0</pose>
+      <pose>1.6330818063718235 -0.18797525504043952 1.3280885791933132 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036587301730106062</radius></sphere></geometry>
@@ -8598,7 +8598,7 @@
     </model>
     <model name="tomato_37_fruit_3">
       <static>true</static>
-      <pose>0.8445539294437292 0.022227295048415099 1.3064312045001185 0 0 0</pose>
+      <pose>1.3445539294437292 0.022227295048415099 1.3064312045001185 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038099723438970209</radius></sphere></geometry>
@@ -8622,7 +8622,7 @@
     </model>
     <model name="tomato_37_fruit_4">
       <static>true</static>
-      <pose>1.0647629984517903 0.035032824754479219 1.0181054246718348 0 0 0</pose>
+      <pose>1.5647629984517903 0.035032824754479219 1.0181054246718348 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039055704614188655</radius></sphere></geometry>
@@ -8646,7 +8646,7 @@
     </model>
     <model name="tomato_38_fruit_0">
       <static>true</static>
-      <pose>1.043112446082221 0.39713386394892081 1.6997006918142159 0 0 0</pose>
+      <pose>1.543112446082221 0.39713386394892081 1.6997006918142159 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044261794167095282</radius></sphere></geometry>
@@ -8670,7 +8670,7 @@
     </model>
     <model name="tomato_38_fruit_1">
       <static>true</static>
-      <pose>0.81484612478109764 0.68728453787612298 1.3293505762761435 0 0 0</pose>
+      <pose>1.3148461247810976 0.68728453787612298 1.3293505762761435 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041344032456188354</radius></sphere></geometry>
@@ -8694,7 +8694,7 @@
     </model>
     <model name="tomato_38_fruit_2">
       <static>true</static>
-      <pose>0.85471279869536787 0.48721792147615117 1.4443493036178607 0 0 0</pose>
+      <pose>1.3547127986953678 0.48721792147615117 1.4443493036178607 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038779944379167812</radius></sphere></geometry>
@@ -8718,7 +8718,7 @@
     </model>
     <model name="tomato_38_fruit_3">
       <static>true</static>
-      <pose>1.1284600676612926 0.40740530641648653 1.4690934566648297 0 0 0</pose>
+      <pose>1.6284600676612926 0.40740530641648653 1.4690934566648297 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034999625904976378</radius></sphere></geometry>
@@ -8742,7 +8742,7 @@
     </model>
     <model name="tomato_38_fruit_4">
       <static>true</static>
-      <pose>1.2078031925251462 0.68824414581059379 1.6616354776942472 0 0 0</pose>
+      <pose>1.7078031925251462 0.68824414581059379 1.6616354776942472 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034323266930421835</radius></sphere></geometry>
@@ -8766,7 +8766,7 @@
     </model>
     <model name="tomato_38_fruit_5">
       <static>true</static>
-      <pose>1.2141664877187197 0.47871625811966162 1.2262916503931962 0 0 0</pose>
+      <pose>1.7141664877187197 0.47871625811966162 1.2262916503931962 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034717757357552517</radius></sphere></geometry>
@@ -8790,7 +8790,7 @@
     </model>
     <model name="tomato_39_fruit_0">
       <static>true</static>
-      <pose>0.93659420797679704 1.1382622405791147 1.3798155160500365 0 0 0</pose>
+      <pose>1.436594207976797 1.1382622405791147 1.3798155160500365 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039864905797246934</radius></sphere></geometry>
@@ -8814,7 +8814,7 @@
     </model>
     <model name="tomato_39_fruit_1">
       <static>true</static>
-      <pose>1.0534066543900571 1.4687033905373217 1.6493709325911134 0 0 0</pose>
+      <pose>1.5534066543900571 1.4687033905373217 1.6493709325911134 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038238294586279975</radius></sphere></geometry>
@@ -8838,7 +8838,7 @@
     </model>
     <model name="tomato_40_fruit_0">
       <static>true</static>
-      <pose>2.8410622355214912 -5.0215905257066646 1.4968479775701813 0 0 0</pose>
+      <pose>4.3410622355214912 -5.0215905257066646 1.4968479775701813 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041989705999117055</radius></sphere></geometry>
@@ -8862,7 +8862,7 @@
     </model>
     <model name="tomato_40_fruit_1">
       <static>true</static>
-      <pose>2.8706300984101851 -4.9623041603300866 1.588983977131925 0 0 0</pose>
+      <pose>4.3706300984101851 -4.9623041603300866 1.588983977131925 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033370509891836771</radius></sphere></geometry>
@@ -8886,7 +8886,7 @@
     </model>
     <model name="tomato_40_fruit_2">
       <static>true</static>
-      <pose>3.0361702149257996 -4.8462554332295058 1.6528571419538731 0 0 0</pose>
+      <pose>4.5361702149257992 -4.8462554332295058 1.6528571419538731 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032309566866424923</radius></sphere></geometry>
@@ -8910,7 +8910,7 @@
     </model>
     <model name="tomato_40_fruit_3">
       <static>true</static>
-      <pose>2.8968136980930286 -5.1467330080392797 1.3305538473323855 0 0 0</pose>
+      <pose>4.3968136980930286 -5.1467330080392797 1.3305538473323855 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.037237493654367841</radius></sphere></geometry>
@@ -8934,7 +8934,7 @@
     </model>
     <model name="tomato_40_fruit_4">
       <static>true</static>
-      <pose>2.9536679817668468 -4.8424891805985553 1.5980886659805453 0 0 0</pose>
+      <pose>4.4536679817668468 -4.8424891805985553 1.5980886659805453 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041590126990155074</radius></sphere></geometry>
@@ -8958,7 +8958,7 @@
     </model>
     <model name="tomato_40_fruit_5">
       <static>true</static>
-      <pose>3.1949667444427576 -4.8801238079905298 1.5082356878294727 0 0 0</pose>
+      <pose>4.6949667444427581 -4.8801238079905298 1.5082356878294727 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030038478890378657</radius></sphere></geometry>
@@ -8982,7 +8982,7 @@
     </model>
     <model name="tomato_41_fruit_0">
       <static>true</static>
-      <pose>3.0045891574683266 -4.136847334897368 1.3390389698862042 0 0 0</pose>
+      <pose>4.5045891574683266 -4.136847334897368 1.3390389698862042 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036698210895647912</radius></sphere></geometry>
@@ -9006,7 +9006,7 @@
     </model>
     <model name="tomato_41_fruit_1">
       <static>true</static>
-      <pose>2.9558510582421618 -4.543531247416853 1.6087211782638478 0 0 0</pose>
+      <pose>4.4558510582421613 -4.543531247416853 1.6087211782638478 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04399278383572891</radius></sphere></geometry>
@@ -9030,7 +9030,7 @@
     </model>
     <model name="tomato_41_fruit_2">
       <static>true</static>
-      <pose>3.1551322379677127 -4.3444069984789122 1.2875425668847047 0 0 0</pose>
+      <pose>4.6551322379677131 -4.3444069984789122 1.2875425668847047 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042840194639810675</radius></sphere></geometry>
@@ -9054,7 +9054,7 @@
     </model>
     <model name="tomato_42_fruit_0">
       <static>true</static>
-      <pose>2.7772056923283439 -3.5581155318773812 1.4645821806391743 0 0 0</pose>
+      <pose>4.2772056923283435 -3.5581155318773812 1.4645821806391743 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035791181287364734</radius></sphere></geometry>
@@ -9078,7 +9078,7 @@
     </model>
     <model name="tomato_42_fruit_1">
       <static>true</static>
-      <pose>2.8752650796020545 -3.4478772939392575 1.3516038050930761 0 0 0</pose>
+      <pose>4.3752650796020545 -3.4478772939392575 1.3516038050930761 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030555294170183642</radius></sphere></geometry>
@@ -9102,7 +9102,7 @@
     </model>
     <model name="tomato_42_fruit_2">
       <static>true</static>
-      <pose>3.0423729013569401 -3.4256752159422144 1.3681657607652928 0 0 0</pose>
+      <pose>4.5423729013569405 -3.4256752159422144 1.3681657607652928 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036604593146560158</radius></sphere></geometry>
@@ -9126,7 +9126,7 @@
     </model>
     <model name="tomato_42_fruit_3">
       <static>true</static>
-      <pose>2.8249952014743007 -3.5536691321440785 1.1080528531400842 0 0 0</pose>
+      <pose>4.3249952014743007 -3.5536691321440785 1.1080528531400842 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039821719896416002</radius></sphere></geometry>
@@ -9150,7 +9150,7 @@
     </model>
     <model name="tomato_42_fruit_4">
       <static>true</static>
-      <pose>2.8739939992144308 -3.4067163110830387 1.4548856568054909 0 0 0</pose>
+      <pose>4.3739939992144308 -3.4067163110830387 1.4548856568054909 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040390568978803228</radius></sphere></geometry>
@@ -9174,7 +9174,7 @@
     </model>
     <model name="tomato_43_fruit_0">
       <static>true</static>
-      <pose>3.2334930076640762 -2.9296420918267798 1.4387594253055913 0 0 0</pose>
+      <pose>4.7334930076640767 -2.9296420918267798 1.4387594253055913 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04431209388934014</radius></sphere></geometry>
@@ -9198,7 +9198,7 @@
     </model>
     <model name="tomato_43_fruit_1">
       <static>true</static>
-      <pose>3.0382983792782285 -3.1054324896528778 1.1643391701714152 0 0 0</pose>
+      <pose>4.5382983792782285 -3.1054324896528778 1.1643391701714152 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039261891924040844</radius></sphere></geometry>
@@ -9222,7 +9222,7 @@
     </model>
     <model name="tomato_43_fruit_2">
       <static>true</static>
-      <pose>3.0730365332779686 -2.6936989136927143 1.6848364097543818 0 0 0</pose>
+      <pose>4.5730365332779686 -2.6936989136927143 1.6848364097543818 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031355689961534532</radius></sphere></geometry>
@@ -9246,7 +9246,7 @@
     </model>
     <model name="tomato_43_fruit_3">
       <static>true</static>
-      <pose>3.0500996272990184 -3.0131695310876094 1.2096262561708453 0 0 0</pose>
+      <pose>4.5500996272990184 -3.0131695310876094 1.2096262561708453 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032495471800938376</radius></sphere></geometry>
@@ -9270,7 +9270,7 @@
     </model>
     <model name="tomato_43_fruit_4">
       <static>true</static>
-      <pose>3.124971258303193 -2.9860751520690907 1.3014807514987801 0 0 0</pose>
+      <pose>4.6249712583031926 -2.9860751520690907 1.3014807514987801 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035376950134505453</radius></sphere></geometry>
@@ -9294,7 +9294,7 @@
     </model>
     <model name="tomato_44_fruit_0">
       <static>true</static>
-      <pose>3.1854686347835277 -2.0586214579921975 1.0552778454619962 0 0 0</pose>
+      <pose>4.6854686347835273 -2.0586214579921975 1.0552778454619962 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032549754736021459</radius></sphere></geometry>
@@ -9318,7 +9318,7 @@
     </model>
     <model name="tomato_44_fruit_1">
       <static>true</static>
-      <pose>2.9863621856757452 -2.3794319606894461 1.1001824040899568 0 0 0</pose>
+      <pose>4.4863621856757456 -2.3794319606894461 1.1001824040899568 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043692435240353322</radius></sphere></geometry>
@@ -9342,7 +9342,7 @@
     </model>
     <model name="tomato_44_fruit_2">
       <static>true</static>
-      <pose>3.1251062928589963 -1.9985255229837682 1.5632431538826024 0 0 0</pose>
+      <pose>4.6251062928589963 -1.9985255229837682 1.5632431538826024 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030140961471823064</radius></sphere></geometry>
@@ -9366,7 +9366,7 @@
     </model>
     <model name="tomato_45_fruit_0">
       <static>true</static>
-      <pose>2.8483342639579852 -1.4526338384699751 1.6913561866529299 0 0 0</pose>
+      <pose>4.3483342639579847 -1.4526338384699751 1.6913561866529299 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044178534524019687</radius></sphere></geometry>
@@ -9390,7 +9390,7 @@
     </model>
     <model name="tomato_45_fruit_1">
       <static>true</static>
-      <pose>2.8619647387451073 -1.291660001344662 1.2114851693768196 0 0 0</pose>
+      <pose>4.3619647387451073 -1.291660001344662 1.2114851693768196 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036852537190016799</radius></sphere></geometry>
@@ -9414,7 +9414,7 @@
     </model>
     <model name="tomato_45_fruit_2">
       <static>true</static>
-      <pose>3.0591919223436528 -1.3530069087717715 1.2512714103040721 0 0 0</pose>
+      <pose>4.5591919223436523 -1.3530069087717715 1.2512714103040721 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035720464464864432</radius></sphere></geometry>
@@ -9438,7 +9438,7 @@
     </model>
     <model name="tomato_45_fruit_3">
       <static>true</static>
-      <pose>2.925889615896792 -1.4042847151601712 1.2770640186379572 0 0 0</pose>
+      <pose>4.425889615896792 -1.4042847151601712 1.2770640186379572 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042450563422392659</radius></sphere></geometry>
@@ -9462,7 +9462,7 @@
     </model>
     <model name="tomato_45_fruit_4">
       <static>true</static>
-      <pose>2.9044274914233092 -1.3053219970632228 1.6374318676030972 0 0 0</pose>
+      <pose>4.4044274914233092 -1.3053219970632228 1.6374318676030972 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044604042252418874</radius></sphere></geometry>
@@ -9486,7 +9486,7 @@
     </model>
     <model name="tomato_46_fruit_0">
       <static>true</static>
-      <pose>3.1597028297591985 -0.67507300046598029 1.2466246690847216 0 0 0</pose>
+      <pose>4.6597028297591985 -0.67507300046598029 1.2466246690847216 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039105974972463986</radius></sphere></geometry>
@@ -9510,7 +9510,7 @@
     </model>
     <model name="tomato_46_fruit_1">
       <static>true</static>
-      <pose>3.1736456474645909 -0.65073251753253425 1.4614270782217276 0 0 0</pose>
+      <pose>4.6736456474645909 -0.65073251753253425 1.4614270782217276 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040813925650060631</radius></sphere></geometry>
@@ -9534,7 +9534,7 @@
     </model>
     <model name="tomato_46_fruit_2">
       <static>true</static>
-      <pose>3.0176349411334464 -0.64262058914388953 1.0630933630223534 0 0 0</pose>
+      <pose>4.517634941133446 -0.64262058914388953 1.0630933630223534 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040985396519088571</radius></sphere></geometry>
@@ -9558,7 +9558,7 @@
     </model>
     <model name="tomato_47_fruit_0">
       <static>true</static>
-      <pose>3.1674136469135692 -0.1070370494564454 1.6135224176946483 0 0 0</pose>
+      <pose>4.6674136469135687 -0.1070370494564454 1.6135224176946483 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041797692165457576</radius></sphere></geometry>
@@ -9582,7 +9582,7 @@
     </model>
     <model name="tomato_47_fruit_1">
       <static>true</static>
-      <pose>2.7653033894822601 -0.038013287265423711 1.6398342674768185 0 0 0</pose>
+      <pose>4.2653033894822601 -0.038013287265423711 1.6398342674768185 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.032468166305531197</radius></sphere></geometry>
@@ -9606,7 +9606,7 @@
     </model>
     <model name="tomato_47_fruit_2">
       <static>true</static>
-      <pose>2.8348254063409626 -0.17372952216810678 1.5629627770231573 0 0 0</pose>
+      <pose>4.334825406340963 -0.17372952216810678 1.5629627770231573 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043055954389875598</radius></sphere></geometry>
@@ -9630,7 +9630,7 @@
     </model>
     <model name="tomato_48_fruit_0">
       <static>true</static>
-      <pose>2.7563040628485198 0.64260674942942353 1.5069516984528626 0 0 0</pose>
+      <pose>4.2563040628485203 0.64260674942942353 1.5069516984528626 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042902108953482329</radius></sphere></geometry>
@@ -9654,7 +9654,7 @@
     </model>
     <model name="tomato_48_fruit_1">
       <static>true</static>
-      <pose>3.1176413478811091 0.63159191870217568 1.5534773780122562 0 0 0</pose>
+      <pose>4.6176413478811096 0.63159191870217568 1.5534773780122562 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035486625741083494</radius></sphere></geometry>
@@ -9678,7 +9678,7 @@
     </model>
     <model name="tomato_48_fruit_2">
       <static>true</static>
-      <pose>2.9081802811082444 0.7731540399323733 1.4706385581457091 0 0 0</pose>
+      <pose>4.408180281108244 0.7731540399323733 1.4706385581457091 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040092425728106298</radius></sphere></geometry>
@@ -9702,7 +9702,7 @@
     </model>
     <model name="tomato_49_fruit_0">
       <static>true</static>
-      <pose>2.8144810633808373 1.3761541464618818 1.3300338075870071 0 0 0</pose>
+      <pose>4.3144810633808373 1.3761541464618818 1.3300338075870071 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04012254833062983</radius></sphere></geometry>
@@ -9726,7 +9726,7 @@
     </model>
     <model name="tomato_49_fruit_1">
       <static>true</static>
-      <pose>3.1959507939159519 1.2485115218210117 1.453356666447609 0 0 0</pose>
+      <pose>4.6959507939159515 1.2485115218210117 1.453356666447609 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039151232937876194</radius></sphere></geometry>
@@ -9750,7 +9750,7 @@
     </model>
     <model name="tomato_50_fruit_0">
       <static>true</static>
-      <pose>4.875363365091351 -4.9929197607886859 1.0317427677093676 0 0 0</pose>
+      <pose>7.375363365091351 -4.9929197607886859 1.0317427677093676 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031750139050905818</radius></sphere></geometry>
@@ -9774,7 +9774,7 @@
     </model>
     <model name="tomato_50_fruit_1">
       <static>true</static>
-      <pose>5.1136131126634696 -5.127163205762483 1.3762826241177679 0 0 0</pose>
+      <pose>7.6136131126634696 -5.127163205762483 1.3762826241177679 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033522000486469937</radius></sphere></geometry>
@@ -9798,7 +9798,7 @@
     </model>
     <model name="tomato_50_fruit_2">
       <static>true</static>
-      <pose>5.0348032823930469 -4.8067547645262856 1.3781347468002791 0 0 0</pose>
+      <pose>7.5348032823930469 -4.8067547645262856 1.3781347468002791 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04044725987456449</radius></sphere></geometry>
@@ -9822,7 +9822,7 @@
     </model>
     <model name="tomato_50_fruit_3">
       <static>true</static>
-      <pose>4.8168722178598182 -4.9195131579121707 1.5835851583074252 0 0 0</pose>
+      <pose>7.3168722178598182 -4.9195131579121707 1.5835851583074252 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.039823828462401956</radius></sphere></geometry>
@@ -9846,7 +9846,7 @@
     </model>
     <model name="tomato_50_fruit_4">
       <static>true</static>
-      <pose>4.9789939465794859 -5.176565302466285 1.152088779288293 0 0 0</pose>
+      <pose>7.4789939465794859 -5.176565302466285 1.152088779288293 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040354209956213451</radius></sphere></geometry>
@@ -9870,7 +9870,7 @@
     </model>
     <model name="tomato_51_fruit_0">
       <static>true</static>
-      <pose>5.126393828474189 -4.4085788054424739 1.6844897706164326 0 0 0</pose>
+      <pose>7.626393828474189 -4.4085788054424739 1.6844897706164326 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038166987922232172</radius></sphere></geometry>
@@ -9894,7 +9894,7 @@
     </model>
     <model name="tomato_51_fruit_1">
       <static>true</static>
-      <pose>5.1037513356497035 -4.1539958236503844 1.5936232319245767 0 0 0</pose>
+      <pose>7.6037513356497035 -4.1539958236503844 1.5936232319245767 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031832395786308955</radius></sphere></geometry>
@@ -9918,7 +9918,7 @@
     </model>
     <model name="tomato_51_fruit_2">
       <static>true</static>
-      <pose>4.9755703209420901 -4.5209367665175302 1.0149502183154595 0 0 0</pose>
+      <pose>7.4755703209420901 -4.5209367665175302 1.0149502183154595 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038957189392793176</radius></sphere></geometry>
@@ -9942,7 +9942,7 @@
     </model>
     <model name="tomato_51_fruit_3">
       <static>true</static>
-      <pose>4.8935189092755129 -4.4230333845335119 1.6087867987386812 0 0 0</pose>
+      <pose>7.3935189092755129 -4.4230333845335119 1.6087867987386812 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.033239270278780118</radius></sphere></geometry>
@@ -9966,7 +9966,7 @@
     </model>
     <model name="tomato_52_fruit_0">
       <static>true</static>
-      <pose>5.2435863016327318 -3.5514446960446793 1.6888196922934173 0 0 0</pose>
+      <pose>7.7435863016327318 -3.5514446960446793 1.6888196922934173 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034159122689635245</radius></sphere></geometry>
@@ -9990,7 +9990,7 @@
     </model>
     <model name="tomato_52_fruit_1">
       <static>true</static>
-      <pose>5.0801458996067135 -3.7112766097700667 1.6065135219547606 0 0 0</pose>
+      <pose>7.5801458996067135 -3.7112766097700667 1.6065135219547606 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031648895218341536</radius></sphere></geometry>
@@ -10014,7 +10014,7 @@
     </model>
     <model name="tomato_53_fruit_0">
       <static>true</static>
-      <pose>4.9933125070232274 -2.7733645847344239 1.1219723409843241 0 0 0</pose>
+      <pose>7.4933125070232274 -2.7733645847344239 1.1219723409843241 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034856571929430334</radius></sphere></geometry>
@@ -10038,7 +10038,7 @@
     </model>
     <model name="tomato_53_fruit_1">
       <static>true</static>
-      <pose>5.2172467802620091 -2.8586754822179108 1.3333721757962751 0 0 0</pose>
+      <pose>7.7172467802620091 -2.8586754822179108 1.3333721757962751 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.041184979125509932</radius></sphere></geometry>
@@ -10062,7 +10062,7 @@
     </model>
     <model name="tomato_53_fruit_2">
       <static>true</static>
-      <pose>4.9612465028532462 -2.7804887599146517 1.6617909500790744 0 0 0</pose>
+      <pose>7.4612465028532462 -2.7804887599146517 1.6617909500790744 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.037557580346787321</radius></sphere></geometry>
@@ -10086,7 +10086,7 @@
     </model>
     <model name="tomato_53_fruit_3">
       <static>true</static>
-      <pose>4.7831947581087375 -3.0148000851191585 1.3206297654683774 0 0 0</pose>
+      <pose>7.2831947581087375 -3.0148000851191585 1.3206297654683774 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.037821768220696259</radius></sphere></geometry>
@@ -10110,7 +10110,7 @@
     </model>
     <model name="tomato_53_fruit_4">
       <static>true</static>
-      <pose>4.8355739662373809 -2.8180084659595539 1.4802682472435629 0 0 0</pose>
+      <pose>7.3355739662373809 -2.8180084659595539 1.4802682472435629 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036024258817688407</radius></sphere></geometry>
@@ -10134,7 +10134,7 @@
     </model>
     <model name="tomato_53_fruit_5">
       <static>true</static>
-      <pose>5.0332903326625473 -3.0241529245059642 1.425808196543408 0 0 0</pose>
+      <pose>7.5332903326625473 -3.0241529245059642 1.425808196543408 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031211857161161878</radius></sphere></geometry>
@@ -10158,7 +10158,7 @@
     </model>
     <model name="tomato_54_fruit_0">
       <static>true</static>
-      <pose>5.0617324582940251 -2.3877736703042345 1.2666330791729645 0 0 0</pose>
+      <pose>7.5617324582940251 -2.3877736703042345 1.2666330791729645 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040682291946394604</radius></sphere></geometry>
@@ -10182,7 +10182,7 @@
     </model>
     <model name="tomato_54_fruit_1">
       <static>true</static>
-      <pose>5.0720059289508761 -2.0859557276438956 1.5551672651711521 0 0 0</pose>
+      <pose>7.5720059289508761 -2.0859557276438956 1.5551672651711521 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.036452989887354348</radius></sphere></geometry>
@@ -10206,7 +10206,7 @@
     </model>
     <model name="tomato_54_fruit_2">
       <static>true</static>
-      <pose>4.8618587051822271 -2.0910918209641185 1.6058446209916184 0 0 0</pose>
+      <pose>7.3618587051822271 -2.0910918209641185 1.6058446209916184 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03827002842584698</radius></sphere></geometry>
@@ -10230,7 +10230,7 @@
     </model>
     <model name="tomato_54_fruit_3">
       <static>true</static>
-      <pose>5.0862713482533861 -1.9717957825203491 1.1784228575379454 0 0 0</pose>
+      <pose>7.5862713482533861 -1.9717957825203491 1.1784228575379454 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034687853567128016</radius></sphere></geometry>
@@ -10254,7 +10254,7 @@
     </model>
     <model name="tomato_54_fruit_4">
       <static>true</static>
-      <pose>4.9997305895703787 -2.0238562586186912 1.0597550501321336 0 0 0</pose>
+      <pose>7.4997305895703787 -2.0238562586186912 1.0597550501321336 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03136837182549073</radius></sphere></geometry>
@@ -10278,7 +10278,7 @@
     </model>
     <model name="tomato_54_fruit_5">
       <static>true</static>
-      <pose>5.2228139415775248 -2.0996688281650724 1.0419866845795926 0 0 0</pose>
+      <pose>7.7228139415775248 -2.0996688281650724 1.0419866845795926 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03195173180360765</radius></sphere></geometry>
@@ -10302,7 +10302,7 @@
     </model>
     <model name="tomato_55_fruit_0">
       <static>true</static>
-      <pose>4.8488484295637226 -1.343553432534115 1.4657383640020407 0 0 0</pose>
+      <pose>7.3488484295637226 -1.343553432534115 1.4657383640020407 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035303971194506512</radius></sphere></geometry>
@@ -10326,7 +10326,7 @@
     </model>
     <model name="tomato_55_fruit_1">
       <static>true</static>
-      <pose>5.144157006850385 -1.4182694148798252 1.4202870638572738 0 0 0</pose>
+      <pose>7.644157006850385 -1.4182694148798252 1.4202870638572738 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044525979379672113</radius></sphere></geometry>
@@ -10350,7 +10350,7 @@
     </model>
     <model name="tomato_55_fruit_2">
       <static>true</static>
-      <pose>4.9215091345843494 -1.3913099951707035 1.1569714083752958 0 0 0</pose>
+      <pose>7.4215091345843494 -1.3913099951707035 1.1569714083752958 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.03985104454482228</radius></sphere></geometry>
@@ -10374,7 +10374,7 @@
     </model>
     <model name="tomato_55_fruit_3">
       <static>true</static>
-      <pose>5.1205764815205965 -1.3407292301150622 1.5728988016784688 0 0 0</pose>
+      <pose>7.6205764815205965 -1.3407292301150622 1.5728988016784688 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044618199031885623</radius></sphere></geometry>
@@ -10398,7 +10398,7 @@
     </model>
     <model name="tomato_55_fruit_4">
       <static>true</static>
-      <pose>4.9381635265492605 -1.6418782844699886 1.5806225529717639 0 0 0</pose>
+      <pose>7.4381635265492605 -1.6418782844699886 1.5806225529717639 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043936264364924045</radius></sphere></geometry>
@@ -10422,7 +10422,7 @@
     </model>
     <model name="tomato_56_fruit_0">
       <static>true</static>
-      <pose>4.9021654724133592 -0.90509235667655852 1.2457163945158873 0 0 0</pose>
+      <pose>7.4021654724133592 -0.90509235667655852 1.2457163945158873 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.043823062815497589</radius></sphere></geometry>
@@ -10446,7 +10446,7 @@
     </model>
     <model name="tomato_56_fruit_1">
       <static>true</static>
-      <pose>4.7835379987443583 -0.91758104632144555 1.5186783413828939 0 0 0</pose>
+      <pose>7.2835379987443583 -0.91758104632144555 1.5186783413828939 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.031043781318725046</radius></sphere></geometry>
@@ -10470,7 +10470,7 @@
     </model>
     <model name="tomato_56_fruit_2">
       <static>true</static>
-      <pose>5.0426290086856911 -0.93383825992183667 1.317552053471112 0 0 0</pose>
+      <pose>7.5426290086856911 -0.93383825992183667 1.317552053471112 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035642916085552326</radius></sphere></geometry>
@@ -10494,7 +10494,7 @@
     </model>
     <model name="tomato_56_fruit_3">
       <static>true</static>
-      <pose>4.8537690581754633 -0.98374914019589388 1.4173566405435647 0 0 0</pose>
+      <pose>7.3537690581754633 -0.98374914019589388 1.4173566405435647 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.044121111359550824</radius></sphere></geometry>
@@ -10518,7 +10518,7 @@
     </model>
     <model name="tomato_57_fruit_0">
       <static>true</static>
-      <pose>5.2059251128209931 -0.107230975286882 1.1904719904823533 0 0 0</pose>
+      <pose>7.7059251128209931 -0.107230975286882 1.1904719904823533 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040109530659196695</radius></sphere></geometry>
@@ -10542,7 +10542,7 @@
     </model>
     <model name="tomato_57_fruit_1">
       <static>true</static>
-      <pose>5.1249099527385269 -0.15067089642954043 1.5284602005678596 0 0 0</pose>
+      <pose>7.6249099527385269 -0.15067089642954043 1.5284602005678596 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034097502665471541</radius></sphere></geometry>
@@ -10566,7 +10566,7 @@
     </model>
     <model name="tomato_58_fruit_0">
       <static>true</static>
-      <pose>5.0930728447926681 0.51521009772492699 1.4669927911154446 0 0 0</pose>
+      <pose>7.5930728447926681 0.51521009772492699 1.4669927911154446 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.037299491300463762</radius></sphere></geometry>
@@ -10590,7 +10590,7 @@
     </model>
     <model name="tomato_58_fruit_1">
       <static>true</static>
-      <pose>4.895322897317401 0.49613817427049645 1.2109935534129057 0 0 0</pose>
+      <pose>7.395322897317401 0.49613817427049645 1.2109935534129057 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.030115306288498241</radius></sphere></geometry>
@@ -10614,7 +10614,7 @@
     </model>
     <model name="tomato_58_fruit_2">
       <static>true</static>
-      <pose>4.8869525247800265 0.41464138083812191 1.0054109345985183 0 0 0</pose>
+      <pose>7.3869525247800265 0.41464138083812191 1.0054109345985183 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.034921835339067613</radius></sphere></geometry>
@@ -10638,7 +10638,7 @@
     </model>
     <model name="tomato_58_fruit_3">
       <static>true</static>
-      <pose>4.9385823150548136 0.8199209358441113 1.3501836425893492 0 0 0</pose>
+      <pose>7.4385823150548136 0.8199209358441113 1.3501836425893492 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.040555068950739952</radius></sphere></geometry>
@@ -10662,7 +10662,7 @@
     </model>
     <model name="tomato_58_fruit_4">
       <static>true</static>
-      <pose>4.897327891637703 0.66670165027706962 1.0296115830939541 0 0 0</pose>
+      <pose>7.397327891637703 0.66670165027706962 1.0296115830939541 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.042926465430338824</radius></sphere></geometry>
@@ -10686,7 +10686,7 @@
     </model>
     <model name="tomato_58_fruit_5">
       <static>true</static>
-      <pose>5.1754130257801396 0.48052653721471927 1.4013797766200902 0 0 0</pose>
+      <pose>7.6754130257801396 0.48052653721471927 1.4013797766200902 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.038636387411052464</radius></sphere></geometry>
@@ -10710,7 +10710,7 @@
     </model>
     <model name="tomato_59_fruit_0">
       <static>true</static>
-      <pose>5.2337424753485324 1.2328750171090916 1.1203112264046482 0 0 0</pose>
+      <pose>7.7337424753485324 1.2328750171090916 1.1203112264046482 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.04449299536549689</radius></sphere></geometry>
@@ -10734,7 +10734,7 @@
     </model>
     <model name="tomato_59_fruit_1">
       <static>true</static>
-      <pose>5.1214125332009433 1.2438633373401977 1.3056982456977595 0 0 0</pose>
+      <pose>7.6214125332009433 1.2438633373401977 1.3056982456977595 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
           <geometry><sphere><radius>0.035427790368511888</radius></sphere></geometry>

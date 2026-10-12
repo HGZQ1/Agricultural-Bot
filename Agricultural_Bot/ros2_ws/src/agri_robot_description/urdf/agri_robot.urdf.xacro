@@ -6,6 +6,7 @@
   <!-- Simulation sets this true when both gripper fingers are commanded
        explicitly. Standalone/RViz descriptions retain the mimic relation. -->
   <xacro:arg name="use_ros2_control" default="false" />
+  <xacro:arg name="steering_effort_limit" default="10.0" />
 
   <xacro:include filename="$(find agri_robot_description)/urdf/xacro/parameters.xacro" />
   <xacro:include filename="$(find agri_robot_description)/urdf/xacro/materials.xacro" />

@@ -19,6 +19,9 @@ four_wheel_steering_node:
     wheel_radius: 0.127
     max_wheel_speed: 8.0
     steering_limits: [-3.14159265, 3.14159265]
+    # Bounded joint coordinates, matching wheel_modules.xacro. The node maps
+    # these through each module's sign/offset and intersects physical limits.
+    steering_joint_limits: [-3.1416, 3.1416]
     # Hold drive at zero while a steering module is farther than 20 deg from
     # its target; ramp to full speed by 2.9 deg to avoid wheel scrub.
     steering_full_speed_error: 0.05

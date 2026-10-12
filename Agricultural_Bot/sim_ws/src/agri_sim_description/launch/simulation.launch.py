@@ -60,6 +60,7 @@ def _make_robot(context, model_xacro, controller_config, sensor_mappings):
             "use_ros2_control": "true" if control_enabled else "false",
             "use_control": "true" if control_enabled else "false",
             "controller_config": str(controller_config),
+            "steering_effort_limit": LaunchConfiguration("steering_effort_limit").perform(context),
         },
     ).toxml()
 
@@ -356,6 +357,8 @@ def generate_launch_description():
         DeclareLaunchArgument("paused", default_value="false"),
         DeclareLaunchArgument("spawn_z", default_value="0.40"),
         DeclareLaunchArgument("use_control", default_value="true"),
+        DeclareLaunchArgument("steering_effort_limit", default_value="40.0",
+                             description="Gazebo steering joint effort limit in N m; not a hardware motor rating."),
         DeclareLaunchArgument("use_kinematics", default_value=LaunchConfiguration("use_control")),
         DeclareLaunchArgument("use_lidar", default_value="true"),
         DeclareLaunchArgument("use_scan", default_value="false",

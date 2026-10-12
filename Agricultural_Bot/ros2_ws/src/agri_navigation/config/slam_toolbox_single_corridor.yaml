@@ -1,7 +1,7 @@
 # SLAM Toolbox profile for the fixed-start, single-corridor demonstration.
 #
-# The tomato rows are highly repetitive.  With 2 m row spacing, the normal
-# 3 m loop search can associate a scan in a neighbouring aisle with an aisle
+# The tomato rows are highly repetitive.  With repeated rows, the normal
+# loop search can associate a scan in a neighbouring aisle with an aisle
 # that was mapped earlier and make map -> odom jump.  This profile therefore
 # keeps sequential scan matching but disables non-local loop closure.  Use it
 # only for the central corridor from the fixed spawn pose; it is not intended
@@ -30,8 +30,8 @@ slam_toolbox:
     restamp_tf: false
     min_laser_range: 0.10
     # Observe the two rows bordering the aisle, while excluding the next
-    # repeated rows whose centerlines are about 3 m from the aisle center.
-    max_laser_range: 1.8
+    # repeated rows whose centerlines are about 4.5 m from the aisle center.
+    max_laser_range: 3.0
     minimum_time_interval: 0.10
     throttle_scans: 1
     stack_size_to_use: 40000000
@@ -42,7 +42,7 @@ slam_toolbox:
     # closure prevents a later scan from snapping to a visually identical row.
     use_scan_matching: true
     use_scan_barycenter: true
-    minimum_travel_distance: 0.15
+    minimum_travel_distance: 0.05
     minimum_travel_heading: 0.15
     check_min_dist_and_heading_precisely: false
     scan_buffer_size: 10

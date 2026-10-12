@@ -108,25 +108,25 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 改为 `lidar_mode:=rgl`。这些组合参数已核对启动入口，尚未对完整 150 株新网格场景
 重新执行底盘与两种传感器联合验收。
 
-## 导航建图默认场景（2 m 行距）
+## 导航建图默认场景（3 m 行距）
 
-当前导航建图默认使用 22×14 m 地面、6 行×10 株、行距 2 m、株距 0.7 m。6 行的
-世界 X 坐标为 `-5、-3、-1、1、3、5`，因此机器人从世界坐标
-`(0,-6,1.5708)` 出生时位于 `x=-1` 与 `x=1` 两行之间，并沿世界 `+Y` 进入中央通道。
+当前导航建图默认使用 22×14 m 地面、6 行×10 株、行距 3 m、株距 0.7 m。6 行的
+世界 X 坐标为 `-7.5、-4.5、-1.5、1.5、4.5、7.5`，因此机器人从世界坐标
+`(0,-6,1.5708)` 出生时位于 `x=-1.5` 与 `x=1.5` 两行之间，并沿世界 `+Y` 进入中央通道。
 株高为 2.4 m、视觉冠幅为 1 m，简化茎杆碰撞盒 X/Y 为 0.06 m；果实中心高度为
 1.00–1.70 m。该 profile 共生成 60 株；它与地图、pose graph、keepout mask 和停车点
 共同使用同一个 `FIELD_ID`：
 ```bash
 cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
-FIELD_ID="rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
 mkdir -p "$FIELD_DIR" "$MAP_DIR"
 
 python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --rows 6 --plants-per-row 10 \
-  --row-spacing 2.0 --plant-spacing 0.7 \
-  --origin-x -5.0 --origin-y -5.0 \
+  --row-spacing 3.0 --plant-spacing 0.7 \
+  --origin-x -7.5 --origin-y -5.0 \
   --ground-x 22.0 --ground-y 14.0 \
   --plant-height 2.4 --plant-width 1.0 \
   --plant-collision-width 0.06 \
@@ -144,7 +144,7 @@ gz sdf -k "$FIELD_DIR/tomato_field.sdf"
 ```
 
 最后一条命令应输出 `Valid.`。完整的仿真启动、SLAM、地图保存和导航测试流程见
-[阶段四导航文档](navigation_stage4.md#当前默认-2-m-番茄田从参数修改到导航测试的完整流程)。
+[阶段四导航文档](navigation_stage4.md#当前默认-3-m-番茄田从参数修改到导航测试的完整流程)。
 当前默认地图已经保存到 `artifacts/maps/$FIELD_ID/`，并同步安装为
 `agri_navigation/maps/tomato_field_default.yaml/.pgm`；修改布局或株高后必须换用新的
 `FIELD_ID` 重新建图。

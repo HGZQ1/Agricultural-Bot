@@ -22,6 +22,15 @@ feedback values must be present and finite in one `JointState` message before
 odometry is updated. The configured steering offsets account for the CAD
 module zero headings; change them only after a new calibration.
 
+Steering uses bounded revolute joint coordinates. Equivalent wheel headings
+are selected by their direct travel within the limits; a heading shifted by
+pi also reverses that wheel's speed. Calibration and alignment checks preserve
+these coordinates across the +/-pi boundary. `steering_joint_limits` must match
+the URDF hard limits (currently `[-3.1416, 3.1416]`); the node transforms them
+through each module's sign and offset and intersects them with
+`steering_limits`. If any wheel cannot realize its requested rolling direction,
+all wheel drive stops instead of moving with a clipped steering angle.
+
 `/wheel/odom` is the source-specific odometry stream. In the integrated
 simulation `agri_base_adapter/odom_adapter` validates it and publishes the
 navigation-facing `/odom`; the four-wheel node remains the sole baseline TF

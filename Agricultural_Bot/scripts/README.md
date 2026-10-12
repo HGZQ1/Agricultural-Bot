@@ -2,6 +2,19 @@
 
 在 `Agricultural_Bot` 根目录执行；先加载 ROS 2 Jazzy 和已构建的工作空间。
 
+## view_harvest_waypoints.py
+
+读取已安装的默认阶段五任务，在 `/harvest_waypoint_markers` 发布采摘停车位、中转点
+和 home 的箭头、序号与作业侧。脚本只显示静态目标位姿，不发送导航或底盘控制命令。
+
+```bash
+python3 scripts/view_harvest_waypoints.py
+```
+
+在 RViz 中使用 `map` 为 Fixed Frame，添加 MarkerArray 并选择上述话题；QoS 使用
+`Reliable` 和 `Transient Local`。蓝色为左侧、橙色为右侧，箭头表示停车车头方向。
+完整启动与逐点确认流程见 [navigation_stage5.md](../docs/navigation_stage5.md#10-rviz-航点可视测试)。
+
 ## setup_mid360_rgl.py
 
 下载校验固定版本输入，编译 RGLGazeboPlugin，并把插件、RobotecGPULidar 核心库、

@@ -5,6 +5,9 @@
   <xacro:arg name="use_control" default="false" />
   <xacro:arg name="use_ros2_control" default="$(arg use_control)" />
   <xacro:arg name="controller_config" default="" />
+  <!-- Simulation steering authority for loaded tire contact. The canonical
+       description keeps its original limit; this is not a motor rating. -->
+  <xacro:arg name="steering_effort_limit" default="40.0" />
   <xacro:arg name="use_lidar" default="true" />
   <xacro:arg name="lidar_mode" default="gpu_lidar" />
   <xacro:arg name="mid360_frame" default="mid360_sensor_frame" />

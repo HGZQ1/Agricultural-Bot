@@ -11,7 +11,7 @@ def generate_launch_description():
     sim_share = Path(get_package_share_directory("agri_sim_description"))
     worlds_share = Path(get_package_share_directory("agri_greenhouse_worlds"))
     simulation = sim_share / "launch" / "simulation.launch.py"
-    # Project default: compact 6 x 10 field, 2.0 m row spacing, 2.0 m plant height.
+    # Project default: compact 6 x 10 field, 3.0 m row spacing, 2.4 m plant height.
     # The legacy 10 x 15 reference remains available as tomato_field_22x14.sdf.
     world = worlds_share / "worlds" / "tomato_field_default.sdf"
 
@@ -50,6 +50,7 @@ def generate_launch_description():
             DeclareLaunchArgument("spawn_z", default_value="0.40"),
             DeclareLaunchArgument("spawn_yaw", default_value="1.5708"),
             DeclareLaunchArgument("use_control", default_value="false"),
+            DeclareLaunchArgument("steering_effort_limit", default_value="40.0"),
             DeclareLaunchArgument(
                 "use_kinematics",
                 default_value=LaunchConfiguration("use_control"),
@@ -89,6 +90,7 @@ def generate_launch_description():
                     "spawn_z": LaunchConfiguration("spawn_z"),
                     "spawn_yaw": LaunchConfiguration("spawn_yaw"),
                     "use_control": LaunchConfiguration("use_control"),
+                    "steering_effort_limit": LaunchConfiguration("steering_effort_limit"),
                     "use_kinematics": LaunchConfiguration("use_kinematics"),
                 }.items(),
             ),

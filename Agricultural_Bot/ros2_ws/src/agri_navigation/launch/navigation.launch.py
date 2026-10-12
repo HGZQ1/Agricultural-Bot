@@ -76,7 +76,10 @@ def generate_launch_description() -> LaunchDescription:
         parameters=[{
             'use_sim_time': use_clock,
             'yaml_filename': keepout_mask,
-            'topic_name': 'keepout_filter_mask',
+            # Costmaps live in /global_costmap and /local_costmap namespaces;
+            # publish the shared mask at the root so both filters consume the
+            # same map rather than resolving separate relative topic names.
+            'topic_name': '/keepout_filter_mask',
             'frame_id': 'map',
         }],
         remappings=nav_remappings,
@@ -87,8 +90,8 @@ def generate_launch_description() -> LaunchDescription:
         parameters=[{
             'use_sim_time': use_clock,
             'type': 0,
-            'filter_info_topic': 'costmap_filter_info',
-            'mask_topic': 'keepout_filter_mask',
+            'filter_info_topic': '/costmap_filter_info',
+            'mask_topic': '/keepout_filter_mask',
             'base': 0.0,
             'multiplier': 1.0,
         }],

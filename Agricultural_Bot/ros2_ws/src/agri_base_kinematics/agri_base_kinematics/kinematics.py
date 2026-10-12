@@ -32,12 +32,13 @@ def steering_feedback_to_physical(
 
     The offsets describe the physical wheel heading at joint position zero.
     This accounts for the small yaw offsets present in the imported CAD wheel
-    modules while keeping the kinematic model in the base frame.
+    modules while keeping the kinematic model in the base frame. Preserve the
+    bounded joint coordinate; wrapping would jump to the opposite hard limit.
     """
     if not (len(values) == len(signs) == len(offsets)):
         raise ValueError('values, signs and offsets must have the same length')
     return [
-        normalize_angle(float(value) * float(sign) + float(offset))
+        float(value) * float(sign) + float(offset)
         for value, sign, offset in zip(values, signs, offsets)
     ]
 
@@ -47,13 +48,48 @@ def physical_steering_to_joint(
     signs: Sequence[float],
     offsets: Sequence[float],
 ) -> List[float]:
-    """Convert requested physical wheel headings to joint positions."""
+    """Convert bounded physical wheel headings to bounded joint positions."""
     if not (len(values) == len(signs) == len(offsets)):
         raise ValueError('values, signs and offsets must have the same length')
     return [
-        normalize_angle(float(value) - float(offset)) * float(sign)
+        (float(value) - float(offset)) * float(sign)
         for value, sign, offset in zip(values, signs, offsets)
     ]
+
+
+def calibrated_steering_limits(
+    physical_limits: Sequence[float],
+    joint_limits: Sequence[float],
+    signs: Sequence[float],
+    offsets: Sequence[float],
+) -> List[Tuple[float, float]]:
+    """Intersect physical limits with calibrated bounded joint hard limits."""
+    physical_lower, physical_upper = _validated_limits(physical_limits)
+    joint_lower, joint_upper = _validated_limits(joint_limits)
+    if len(signs) != len(offsets):
+        raise ValueError('signs and offsets must have the same length')
+    result = []
+    for sign, offset in zip(signs, offsets):
+        sign, offset = float(sign), float(offset)
+        if (not isfinite(sign) or abs(abs(sign) - 1.0) > 1e-9 or
+                not isfinite(offset)):
+            raise ValueError('joint signs must be +/-1 and steering offsets finite')
+        endpoints = (joint_lower * sign + offset, joint_upper * sign + offset)
+        result.append(_validated_limits((
+            max(physical_lower, min(endpoints)),
+            min(physical_upper, max(endpoints)),
+        )))
+    return result
+
+
+def _validated_limits(limits: Sequence[float]) -> Tuple[float, float]:
+    """Return a finite, ordered pair of inclusive limits."""
+    if len(limits) != 2:
+        raise ValueError('steering limits must contain two values')
+    lower, upper = (float(value) for value in limits)
+    if not isfinite(lower) or not isfinite(upper) or lower > upper:
+        raise ValueError('steering limits must be finite and ordered')
+    return lower, upper
 
 
 def steering_alignment_scale(
@@ -73,10 +109,10 @@ def steering_alignment_scale(
             full_speed_error < 0.0 or stop_error <= full_speed_error):
         raise ValueError(
             'steering thresholds must satisfy 0 <= full_speed_error < stop_error')
-    normalized_errors = [normalize_angle(float(error)) for error in errors]
-    if not all(isfinite(error) for error in normalized_errors):
+    bounded_errors = [float(error) for error in errors]
+    if not all(isfinite(error) for error in bounded_errors):
         raise ValueError('steering errors must be finite')
-    maximum_error = max((abs(error) for error in normalized_errors), default=0.0)
+    maximum_error = max((abs(error) for error in bounded_errors), default=0.0)
     if maximum_error <= full_speed_error:
         return 1.0
     if maximum_error >= stop_error:
@@ -128,6 +164,7 @@ class FourWheelSteeringKinematics:
         wheel_radius: float,
         max_wheel_speed: float = 2.0,
         steering_limits: Tuple[float, float] = (-pi, pi),
+        steering_limits_by_wheel: Mapping[str, Sequence[float]] | None = None,
     ) -> None:
         if wheel_radius <= 0.0:
             raise ValueError('wheel_radius must be positive')
@@ -139,7 +176,17 @@ class FourWheelSteeringKinematics:
         }
         self.wheel_radius = float(wheel_radius)
         self.max_wheel_speed = abs(float(max_wheel_speed))
-        self.steering_limits = steering_limits
+        self.steering_limits = _validated_limits(steering_limits)
+        per_wheel = steering_limits_by_wheel or {}
+        if set(per_wheel) - set(self.wheel_positions):
+            raise ValueError('per-wheel steering limits contain unknown wheel names')
+        self.steering_limits_by_wheel = {}
+        for name in self.wheel_positions:
+            lower, upper = _validated_limits(per_wheel.get(name, self.steering_limits))
+            self.steering_limits_by_wheel[name] = _validated_limits((
+                max(lower, self.steering_limits[0]),
+                min(upper, self.steering_limits[1]),
+            ))
 
     def inverse(
         self,
@@ -151,10 +198,13 @@ class FourWheelSteeringKinematics:
         """
         Compute wheel commands for a body twist.
 
-        For a wheel whose desired direction differs by more than 90 degrees
-        from its current direction, the steering angle is flipped by pi and
-        the wheel velocity sign is inverted.  This avoids unnecessary full
-        steering rotations while preserving the commanded velocity vector.
+        Select the nearest feasible steering angle by direct joint travel.
+        The same rolling vector can use an angle shifted by pi with reversed
+        wheel velocity. Steering joints are bounded revolute joints, so the
+        distance across their two limits must not be reduced modulo 2*pi.
+        If any nonzero rolling vector has no feasible equivalent angle, hold
+        all steering angles within their limits and stop all wheel drive;
+        clipping an active angle would command a different body velocity.
         """
         current_steering = current_steering or {}
         result: Dict[str, WheelCommand] = {}
@@ -163,15 +213,35 @@ class FourWheelSteeringKinematics:
             local_x = vx - wz * y
             local_y = vy + wz * x
             speed = hypot(local_x, local_y) / self.wheel_radius
-            angle = atan2(local_y, local_x) if speed > 1e-12 else current_steering.get(name, 0.0)
-            if not is_zero and name in current_steering:
-                delta = normalize_angle(angle - current_steering[name])
-                if abs(delta) > pi / 2.0:
-                    angle = normalize_angle(angle + pi)
-                    speed = -speed
-            angle = max(self.steering_limits[0], min(self.steering_limits[1], angle))
-            if is_zero:
-                speed = 0.0
+            lower, upper = self.steering_limits_by_wheel[name]
+            held_angle = max(lower, min(upper, current_steering.get(name, 0.0)))
+            if is_zero or speed <= 1e-12:
+                angle, speed = held_angle, 0.0
+            else:
+                angle = atan2(local_y, local_x)
+                candidates = (
+                    (angle, speed),
+                    (angle - pi, -speed),
+                    (angle + pi, -speed),
+                    # Both bounded endpoints can represent the same heading.
+                    # Keep the feasible endpoint, including atan2's signed-zero
+                    # choice of -pi versus +pi, without wrapping joint travel.
+                    (angle - 2.0 * pi, speed),
+                    (angle + 2.0 * pi, speed),
+                )
+                feasible = [
+                    candidate for candidate in candidates
+                    if lower <= candidate[0] <= upper
+                ]
+                if not feasible:
+                    return {
+                        wheel: WheelCommand(max(bounds[0], min(
+                            bounds[1], current_steering.get(wheel, 0.0))), 0.0)
+                        for wheel, bounds in self.steering_limits_by_wheel.items()
+                    }
+                reference = current_steering.get(name, angle)
+                angle, speed = min(
+                    feasible, key=lambda candidate: abs(candidate[0] - reference))
             result[name] = WheelCommand(angle, speed)
 
         peak_speed = max(abs(command.velocity) for command in result.values())

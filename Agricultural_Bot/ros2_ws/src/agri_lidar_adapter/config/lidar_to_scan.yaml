@@ -11,13 +11,16 @@ mid360_navigation_cloud_filter:
     # sensor frame. Ground is approximately -0.46 m at the optical centre.
     min_height: -0.40
     max_height: 0.40
-    # Remove points on the robot / sensor mount before projection.  Without
-    # this, the collision monitor sees the gripper as a permanent obstacle.
+    # Remove the stowed robot's footprint before projection. Bounds are in
+    # mid360_scan_frame: its origin is (-0.40144, 0.00344, 0.45904) in
+    # base_footprint. This box covers body x=[-0.50,0.46], y=[-0.36,0.36]
+    # with <1 cm rounding, while leaving the outer collision-stop band visible.
+    # Recheck these bounds if the lidar mount or stowed robot geometry changes.
     self_filter_enabled: true
-    self_filter_x_min: -0.75
-    self_filter_x_max: 0.55
-    self_filter_y_min: -0.55
-    self_filter_y_max: 0.55
+    self_filter_x_min: -0.10
+    self_filter_x_max: 0.87
+    self_filter_y_min: -0.37
+    self_filter_y_max: 0.36
     self_filter_z_min: -0.55
     self_filter_z_max: 0.45
     voxel_size: 0.0

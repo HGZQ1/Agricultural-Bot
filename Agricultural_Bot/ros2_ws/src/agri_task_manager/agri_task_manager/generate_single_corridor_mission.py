@@ -46,6 +46,18 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--rear-m', type=float, default=0.535)
     parser.add_argument('--half-width-m', type=float, default=0.395)
     parser.add_argument('--lateral-search-m', type=float, default=0.40)
+    parser.add_argument(
+        '--layout', choices=('shared_pairs', 'independent_side_stops'),
+        default='independent_side_stops')
+    parser.add_argument('--side-offset-m', type=float, default=0.40)
+    parser.add_argument('--side-search-m', type=float, default=0.25)
+    parser.add_argument(
+        '--min-obstacle-clearance-m', type=float, default=0.80,
+        help='Minimum base-origin distance to occupied cell centres, in metres')
+    parser.add_argument(
+        '--arm-longitudinal-offset-m', type=float, default=-0.17998)
+    parser.add_argument('--headland-forward-m', type=float, default=1.02)
+    parser.add_argument('--headland-cross-forward-m', type=float, default=0.50)
     parser.add_argument('--search-step-m', type=float, default=0.01)
     parser.add_argument('--max-unknown-cells', type=int, default=8)
     parser.add_argument('--goal-timeout-s', type=float, default=120.0)
@@ -168,6 +180,8 @@ def _best_stop_pose(
     lateral_search_m: float,
     search_step_m: float,
     max_unknown_cells: int,
+    prefer_nominal: bool = False,
+    min_clearance_m: float = 0.0,
 ) -> tuple[Pose2D, Any]:
     if lateral_search_m <= 0.0 or search_step_m <= 0.0:
         raise ValueError('lateral search and step must be positive')
@@ -186,6 +200,7 @@ def _best_stop_pose(
         if (not report.clear or
                 report.unknown_cells > max_unknown_cells or
                 report.nearest_occupied_m is None or
+                report.nearest_occupied_m < min_clearance_m or
                 not keepout_report.clear or
                 keepout_report.unknown_cells):
             continue
@@ -197,6 +212,9 @@ def _best_stop_pose(
             -abs(y - nominal_y),
             -abs(y),
         )
+        if prefer_nominal:
+            # Approach the work side only as far as the actual map permits.
+            score = (-round(abs(y - nominal_y), 9), *score)
         candidates.append((score, pose, report))
     if not candidates:
         raise ValueError(
@@ -237,70 +255,112 @@ def build_mission(args: argparse.Namespace) -> dict:
         for row, plants in rows.items()
     }
     footprint = (args.front_m, args.rear_m, args.half_width_m)
+    layout = getattr(args, 'layout', 'shared_pairs')
+    if layout not in ('shared_pairs', 'independent_side_stops'):
+        raise ValueError('unknown route layout')
+    independent = layout == 'independent_side_stops'
+    side_offset = getattr(args, 'side_offset_m', 0.40)
+    side_search = getattr(args, 'side_search_m', 0.25)
+    # The padded base has a 0.665 m swept radius. Include map-cell extent and
+    # parking error rather than validating only the narrow yaw=0 rectangle.
+    # Live lidar/collision monitoring still checks localization and motion.
+    clearance = getattr(args, 'min_obstacle_clearance_m', 0.80)
+    arm_offset = getattr(args, 'arm_longitudinal_offset_m', -0.17998)
+    forward = getattr(args, 'headland_forward_m', 1.02)
+    cross_forward = getattr(args, 'headland_cross_forward_m', 0.50)
+    if independent and (
+            not all(math.isfinite(value) for value in (
+                side_offset, side_search, clearance, arm_offset,
+                forward, cross_forward)) or
+            side_offset <= side_search or side_search <= 0.0 or
+            clearance <= 0.0 or forward <= 0.0 or cross_forward <= 0.0):
+        raise ValueError('side offset, clearance and headland bounds are invalid')
+    shared_stops = []
+    if not independent:
+        for column in range(count):
+            first = mapped[first_row][column]
+            second = mapped[second_row][column]
+            shared_stops.append(_best_stop_pose(
+                grid, keepout_grid, (first.x + second.x) / 2.0,
+                (first.y + second.y) / 2.0, footprint,
+                args.lateral_search_m, args.search_step_m,
+                args.max_unknown_cells))
+    centre_y = (mapped[first_row][0].y + mapped[second_row][0].y) / 2.0
+    left_row = max(selected, key=lambda row: mapped[row][0].y)
+    right_row = min(selected, key=lambda row: mapped[row][0].y)
+    order = (
+        [(left_row, column) for column in range(count)] +
+        [(right_row, column) for column in reversed(range(count))]
+        if independent else
+        [(row, column) for column in range(count) for row in selected]
+    )
     stops = []
-    for column in range(count):
-        first = mapped[first_row][column]
-        second = mapped[second_row][column]
-        longitudinal_x = (first.x + second.x) / 2.0
-        nominal_y = (first.y + second.y) / 2.0
-        stops.append(_best_stop_pose(
-            grid, keepout_grid, longitudinal_x, nominal_y, footprint,
-            args.lateral_search_m, args.search_step_m,
-            args.max_unknown_cells))
 
     waypoints = []
     sequence = 1
-    for column, (stop_pose, report) in enumerate(stops):
-        for row in selected:
-            plant = rows[row][column]
-            plant_map = mapped[row][column]
-            side = 'left' if plant_map.y > stop_pose.y else 'right'
-            waypoint_id = f'harvest_{plant["id"]}'
-            waypoints.append({
-                'id': waypoint_id,
-                'sequence': sequence,
-                'stop_id': f'stop_{column:02d}',
-                'base_pose': {
-                    'x': stop_pose.x, 'y': stop_pose.y,
-                    'yaw': stop_pose.yaw,
+    for row, column in order:
+        if independent:
+            plant_pose = mapped[row][column]
+            direction = 1.0 if row == left_row else -1.0
+            stop_pose, report = _best_stop_pose(
+                grid, keepout_grid, plant_pose.x - arm_offset,
+                centre_y + direction * side_offset, footprint,
+                side_search, args.search_step_m, args.max_unknown_cells,
+                prefer_nominal=True, min_clearance_m=clearance)
+        else:
+            stop_pose, report = shared_stops[column]
+        stops.append((stop_pose, report))
+        plant = rows[row][column]
+        plant_map = mapped[row][column]
+        side = 'left' if plant_map.y > stop_pose.y else 'right'
+        waypoint_id = f'harvest_{plant["id"]}'
+        waypoints.append({
+            'id': waypoint_id,
+            'sequence': sequence,
+            'stop_id': (
+                f'stop_{column:02d}_{side}' if independent
+                else f'stop_{column:02d}'),
+            'base_pose': {
+                'x': stop_pose.x, 'y': stop_pose.y,
+                'yaw': stop_pose.yaw,
+            },
+            'plant': {
+                'id': plant['id'],
+                'row_id': row,
+                'index_in_row': column,
+                'pose_world': {
+                    'x': plant['x'], 'y': plant['y'],
+                    'yaw': plant['yaw'],
                 },
-                'plant': {
-                    'id': plant['id'],
-                    'row_id': row,
-                    'index_in_row': column,
-                    'pose_world': {
-                        'x': plant['x'], 'y': plant['y'],
-                        'yaw': plant['yaw'],
-                    },
-                    'pose_map': {
-                        'x': round(plant_map.x, 6),
-                        'y': round(plant_map.y, 6),
-                        'yaw': round(plant_map.yaw, 6),
-                    },
+                'pose_map': {
+                    'x': round(plant_map.x, 6),
+                    'y': round(plant_map.y, 6),
+                    'yaw': round(plant_map.yaw, 6),
                 },
-                'work_side': side,
-                'task': 'harvest',
-                'scan_pose_id': f'd405_{side}_scan',
-                'arm_pose_id': f'cr5_{side}_harvest',
-                'micro_adjust': {
-                    'longitudinal_m': args.micro_longitudinal_m,
-                    'lateral_m': args.micro_lateral_m,
-                    'yaw_rad': args.micro_yaw_rad,
-                },
-                'goal_timeout_s': args.goal_timeout_s,
-                'station_dwell_s': args.station_dwell_s,
-                'enabled': True,
-                'validation': {
-                    'map_status': 'offline_footprint_clear',
-                    'navigation_status': 'pending_runtime',
-                    'ik_status': 'pending_stage7',
-                    'fov_status': 'pending_stage7',
-                    'unknown_cells': report.unknown_cells,
-                    'base_origin_to_nearest_occupied_m': round(
-                        report.nearest_occupied_m, 6),
-                },
-            })
-            sequence += 1
+            },
+            'work_side': side,
+            'task': 'harvest',
+            'scan_pose_id': f'd405_{side}_scan',
+            'arm_pose_id': f'cr5_{side}_harvest',
+            'micro_adjust': {
+                'longitudinal_m': args.micro_longitudinal_m,
+                'lateral_m': args.micro_lateral_m,
+                'yaw_rad': args.micro_yaw_rad,
+            },
+            'goal_timeout_s': args.goal_timeout_s,
+            'station_dwell_s': args.station_dwell_s,
+            'enabled': True,
+            'validation': {
+                'map_status': 'offline_footprint_clear',
+                'navigation_status': 'pending_runtime',
+                'ik_status': 'pending_stage7',
+                'fov_status': 'pending_stage7',
+                'unknown_cells': report.unknown_cells,
+                'base_origin_to_nearest_occupied_m': round(
+                    report.nearest_occupied_m, 6),
+            },
+        })
+        sequence += 1
 
     home = Pose2D(args.home_x, args.home_y, 0.0)
     home_report = grid.footprint_report(
@@ -310,14 +370,32 @@ def build_mission(args: argparse.Namespace) -> dict:
         raise ValueError('home pose is not footprint-clear in the saved map')
     all_y = [pose.y for pose, _ in stops] + [home.y]
     all_x = [pose.x for pose, _ in stops] + [home.x]
+    transits = []
+    if independent:
+        headland_x = round(max(all_x) + forward, 3)
+        before = waypoints[count]['id']
+        for name, x, y in (
+                ('headland_out', headland_x, centre_y + side_offset),
+                ('headland_cross', headland_x + cross_forward, centre_y),
+                ('headland_in', headland_x, centre_y - side_offset)):
+            transits.append({
+                'id': name, 'before_waypoint_id': before,
+                'pose': {'x': round(x, 3), 'y': round(y, 3), 'yaw': 0.0},
+                'goal_timeout_s': args.goal_timeout_s,
+            })
+            all_x.append(x)
+            all_y.append(y)
     geometry = metadata.get('plant_geometry', {})
     return {
         'schema_version': 1,
         'mission_id': f'{args.field_id}_single_corridor_harvest',
         'description': (
+            'Single-corridor mission with independent work-side stops; '
+            'left-row outbound, headland side change, right-row reverse '
+            'return, with the arm base aligned longitudinally to each plant.'
+            if independent else
             'Central single-corridor mission; one logical harvest waypoint '
-            'per adjacent plant and one shared base stop per left/right '
-            'pair.'),
+            'per adjacent plant and one shared base stop per left/right pair.'),
         'work_side_reference': 'base_footprint_at_goal',
         'field': {
             'id': args.field_id,
@@ -363,13 +441,23 @@ def build_mission(args: argparse.Namespace) -> dict:
         },
         'robot': {
             'base_frame': 'base_footprint',
-            'arm_base_longitudinal_offset_m': -0.17998,
+            'arm_base_longitudinal_offset_m': arm_offset,
             'note': (
                 'Arm/scan pose IDs are stage-7 integration contracts; '
                 'their IK and camera FOV remain to be validated.'),
         },
         'route': {
             'profile': 'single_corridor_forward_reverse',
+            'layout': layout,
+            'transits': transits,
+            'generation': {
+                'side_offset_m': side_offset if independent else 0.0,
+                'side_search_m': side_search if independent else 0.0,
+                'min_obstacle_clearance_m': clearance if independent else 0.0,
+                'headland_forward_m': forward if independent else 0.0,
+                'headland_cross_forward_m': (
+                    cross_forward if independent else 0.0),
+            },
             'home': {
                 'id': 'home',
                 'pose': {'x': home.x, 'y': home.y, 'yaw': home.yaw},
@@ -426,6 +514,7 @@ def main(argv=None) -> int:
         'unique_stop_count': len({
             point['stop_id'] for point in mission['route']['waypoints']
         }),
+        'transit_count': len(mission['route']['transits']),
         'selected_rows': mission['field']['selected_rows'],
     }, ensure_ascii=False))
     return 0

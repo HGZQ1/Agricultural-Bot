@@ -75,7 +75,9 @@ def validate(
         'keepout_occupancy_sha256': (
             mission.map_binding.keepout_occupancy_sha256),
         'waypoint_count': len(mission.enabled_waypoints),
-        'unique_stop_count': len(reports),
+        'unique_stop_count': len({
+            point.stop_id for point in mission.enabled_waypoints}),
+        'transit_count': len(mission.route_transits),
         'selected_rows': list(mission.field.selected_rows),
         'excluded_plant_count': mission.field.excluded_plant_count,
         'field_assets_verified': field_metadata is not None,

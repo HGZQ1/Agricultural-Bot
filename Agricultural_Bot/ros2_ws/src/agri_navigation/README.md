@@ -68,19 +68,61 @@ ros2 launch agri_navigation navigation.launch.py \
 ```
 
 Omit `map:=...` to load the packaged `tomato_field_default.yaml`, which is the
-validated 192 x 213 central-corridor map for the default tomato field. Pass an
+validated 206 x 76 central-corridor map for the default tomato field. Pass an
 absolute map path only when using another field or map version.
 
-One lifecycle manager activates map server and AMCL before the controller,
-planner, behaviors, BT navigator, and collision monitor. The default planner is
-NavFn in Dijkstra mode and the controller is Regulated Pure Pursuit. Commands
-flow through `/cmd_vel_nav_raw`, the collision monitor, `/cmd_vel_nav`, and the
-base velocity gate before reaching `/cmd_vel_safe`.
+One lifecycle manager activates nine managed nodes: map server, AMCL, both
+keepout publishers, controller, planner, behaviors, BT navigator, and collision
+monitor. The default planner is NavFn in Dijkstra mode. `FollowPath` is a
+Rotation Shim controller wrapping Regulated Pure Pursuit (RPP): RPP tracks the
+path in forward or reverse, while the shim closes the small remaining goal-yaw
+error after RPP reaches the station position. Commands flow through
+`/cmd_vel_nav_raw`, the collision monitor, `/cmd_vel_nav`, and the base velocity
+gate before reaching `/cmd_vel_safe`.
+
+The default launch also activates `filter_mask_server` and
+`costmap_filter_info_server`. Both global and local costmaps consume the
+transient-local `/keepout_filter_mask` through `KeepoutFilter`; the mask is
+version-bound to the packaged map and is generated from the plant collision
+bands. The default profile uses a 0.40 m inflation radius and 0.035 m costmap
+footprint padding, while the hard collision-monitor polygon retains its own
+0.04 m safety padding. Verify the filter publishers before starting a route:
+
+```bash
+ros2 lifecycle get /filter_mask_server
+ros2 lifecycle get /costmap_filter_info_server
+ros2 topic echo /costmap_filter_info --once \
+  --qos-reliability reliable --qos-durability transient_local
+ros2 topic echo /keepout_filter_mask --once \
+  --qos-reliability reliable --qos-durability transient_local
+```
+
+The filter-info message should report `type: 0`, `base: 0.0`, and
+`multiplier: 1.0`; the mask should be in `map` at 0.05 m resolution and match
+the map dimensions. A route executor must reject a different map or mask.
 
 The default controller profile is specialized for the validated central
-corridor: `allow_reversing` is enabled and `use_rotate_to_heading` is disabled.
-Use the same yaw for outbound and return goals so the robot reverses along the
-route instead of turning in place beside the plants.
+corridor. NavFn keeps the requested goal yaw with
+`use_final_approach_orientation: false`; the shim consumes path orientations
+with `use_path_orientations: true`; and RPP uses `allow_reversing: true` with
+`use_rotate_to_heading: false`. Use yaw 0 for outbound, harvest, and return
+goals. This coupling lets RPP reverse along the return path instead of turning
+the robot around beside the plants, while the shim may make a small terminal
+yaw correction. Do not change one of these parameters in isolation. After a
+planner or controller change, repeat the outbound/return and full-route tests.
+The accepted final absolute yaw error is at most 0.0873 rad.
+
+The shim uses `closed_loop: false` because the four-wheel-steering joints need
+time to settle. With closed-loop shim acceleration, the initially near-zero
+measured yaw rate repeatedly held the command at 0.025 rad/s, below the useful
+steering range. Open-loop acceleration uses the previous command to ramp toward
+0.20 rad/s; the collision monitor still checks the live footprint and stops
+unsafe motion. This setting changes only the shim's angular acceleration
+feedback and does not disable odometry, TF, AMCL, or collision feedback.
+
+`rotate_to_heading_once: true` keeps repeated plans for the same goal from
+interrupting RPP's curved reverse approach with another heading alignment.
+Terminal heading correction remains enabled through `rotate_to_goal_heading`.
 
 `localization.launch.py` starts map server and AMCL without the navigation
 servers. The packaged `stage3_baseline.yaml` remains an explicit legacy test

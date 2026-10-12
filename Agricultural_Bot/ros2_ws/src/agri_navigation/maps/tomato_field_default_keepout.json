@@ -6,29 +6,29 @@
   "keepout_margin_m": 0.15,
   "keepout_radius_m": 0.18,
   "row_band": true,
-  "paint_operations_new_cells": 7164,
-  "keepout_cells": 7164,
-  "free_cells": 33732,
+  "paint_operations_new_cells": 2128,
+  "keepout_cells": 2128,
+  "free_cells": 13528,
   "schema_version": 1,
-  "metadata": "artifacts/fields/rows6_n10_row2p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42/tomato_field.json",
-  "source_map": "ros2_ws/src/agri_navigation/maps/tomato_field_default.yaml",
+  "metadata": "/home/hgzq/Agricultural Bot/Agricultural_Bot/sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_default.json",
+  "source_map": "/home/hgzq/Agricultural Bot/Agricultural_Bot/ros2_ws/src/agri_navigation/maps/tomato_field_default.yaml",
   "world_to_map": [
     6.0,
-    0.0,
+    -6.204693213306434e-13,
     -1.570796326795
   ],
   "map": {
-    "width": 192,
-    "height": 213,
+    "width": 206,
+    "height": 76,
     "resolution_m": 0.05,
     "origin": [
-      -0.622,
-      -5.431,
+      -0.401,
+      -2.058,
       0.0
     ]
   },
   "outputs": {
-    "mask_yaml": "tomato_field_default_keepout.yaml",
-    "mask_pgm": "tomato_field_default_keepout.pgm"
+    "mask_yaml": "/home/hgzq/Agricultural Bot/Agricultural_Bot/ros2_ws/src/agri_navigation/maps/tomato_field_default_keepout.yaml",
+    "mask_pgm": "/home/hgzq/Agricultural Bot/Agricultural_Bot/ros2_ws/src/agri_navigation/maps/tomato_field_default_keepout.pgm"
   }
 }

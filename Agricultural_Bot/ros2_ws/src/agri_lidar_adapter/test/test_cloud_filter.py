@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 import struct
 
 from agri_lidar_adapter.cloud_filter import filter_cloud
@@ -6,6 +7,7 @@ from builtin_interfaces.msg import Time
 import pytest
 from sensor_msgs.msg import PointCloud2, PointField
 from std_msgs.msg import Header
+import yaml
 
 
 def make_cloud(points, *, frame='mid360_sensor_frame', bigendian=False,
@@ -115,3 +117,31 @@ def test_invalid_filter_bounds_are_rejected(kwargs):
     cloud = make_cloud([(1.0, 0.0, 0.0, 1.0)])
     with pytest.raises(ValueError):
         filter_cloud(cloud, target_frame='mid360_scan_frame', **kwargs)
+
+
+def test_navigation_self_box_covers_front_body_but_keeps_external_stop_band():
+    params = yaml.safe_load((Path(__file__).parents[1] / 'config' /
+                             'lidar_to_scan.yaml').read_text())[
+                                 'mid360_navigation_cloud_filter']['ros__parameters']
+    # Scan optical origin in base_footprint. The old scan-frame x_max=0.55
+    # failed to remove these front chassis/storage-box returns.
+    origin = (-0.401439121, 0.003437759, 0.459044571)
+    body_points = [
+        (0.34, 0.26, 0.40), (0.32, 0.27, 0.40),
+        (-0.49, -0.35, 0.40),
+        (0.50, 0.25, 0.40),  # front stop band, outside the chassis
+        (0.30, 0.39, 0.40),  # side stop band
+        (-0.53, 0.20, 0.40),  # rear stop band
+    ]
+    scan_points = [tuple(p[i] - origin[i] for i in range(3)) + (1.0,)
+                   for p in body_points]
+    result = filter_cloud(
+        make_cloud(scan_points, frame=params['target_frame']),
+        **{key: value for key, value in params.items()
+           if key in ('target_frame', 'min_range', 'max_range',
+                      'min_height', 'max_height', 'voxel_size') or
+           key.startswith('self_filter_')})
+    retained = read_xyz(result)
+    assert len(retained) == 3
+    for point, expected in zip(retained, scan_points[3:]):
+        assert point == pytest.approx(expected[:3], abs=2e-6)

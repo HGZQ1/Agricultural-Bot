@@ -26,11 +26,37 @@ controller_server:
       movement_time_allowance: 20.0
     general_goal_checker:
       plugin: nav2_controller::SimpleGoalChecker
-      stateful: true
-      xy_goal_tolerance: 0.10
-      yaw_goal_tolerance: 0.0873
+      # Recheck XY while heading is corrected; four-wheel steering can shift
+      # the base during a steering transition after first entering XY tolerance.
+      stateful: false
+      # Leave room for residual motion during cancellation/lock transitions;
+      # the harvest route still accepts a final parked error of 0.10 m / 5 deg.
+      xy_goal_tolerance: 0.07
+      yaw_goal_tolerance: 0.05236
     FollowPath:
-      plugin: nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
+      # The shim closes the final yaw error after RPP reaches the station XY.
+      # Path orientations stay at yaw 0 so a return path is handed to RPP for
+      # reversing instead of triggering a 180 degree turn in the crop aisle.
+      plugin: nav2_rotation_shim_controller::RotationShimController
+      primary_controller: nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
+      angular_dist_threshold: 0.1745
+      angular_disengage_threshold: 0.05236
+      forward_sampling_distance: 0.50
+      rotate_to_heading_angular_vel: 0.20
+      max_angular_accel: 0.50
+      max_cost_threshold: 254.0
+      simulate_ahead_time: 1.0
+      rotate_to_goal_heading: true
+      # Replanning the same goal must not repeatedly interrupt RPP's curved
+      # reverse approach to align to NavFn's identity path orientations.
+      rotate_to_heading_once: true
+      # Four-wheel steering has a steering-settle delay.  Closed-loop shim
+      # acceleration repeatedly sees near-zero measured yaw rate during that
+      # delay and clamps every command to 0.025 rad/s, below the useful
+      # actuation range.  Open-loop acceleration ramps the command history to
+      # 0.20 rad/s while the collision monitor still guards the footprint.
+      closed_loop: false
+      use_path_orientations: true
       desired_linear_vel: 0.15
       max_linear_vel: 0.25
       max_angular_vel: 0.45
@@ -49,11 +75,15 @@ controller_server:
       # heading at yaw 0 and reverse along the same path for return goals so it
       # does not attempt an unsafe in-place turn beside the plants.
       use_rotate_to_heading: false
-      rotate_to_heading_angular_vel: 0.30
       rotate_to_heading_min_angle: 0.785
       allow_reversing: true
       transform_tolerance: 0.20
       stateful: true
+    # Jazzy initializes the shim's position checker before assigning its
+    # plugin name, so this private parameter starts with a dot. Keep its
+    # position check live too, allowing RPP to correct any XY drift.
+    .position_checker:
+      stateful: false
 
 planner_server:
   ros__parameters:
@@ -65,6 +95,9 @@ planner_server:
       plugin: nav2_navfn_planner::NavfnPlanner
       tolerance: 0.20
       use_astar: false
+      # Preserve the requested yaw=0 at every harvest and home goal.  Letting
+      # NavFn replace it with the path tangent would turn return goals to pi.
+      use_final_approach_orientation: false
       # The lidar leaves a small blind/unknown patch under the robot.  Allow
       # NavFn to leave that patch; demo clients must restrict goals to the
       # validated central corridor.

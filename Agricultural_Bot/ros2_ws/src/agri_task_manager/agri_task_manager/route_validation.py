@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass
+import hashlib
 import math
 from pathlib import Path
 from typing import BinaryIO
@@ -387,6 +387,12 @@ def verify_mission_map(
     enabled = sorted(
         mission.enabled_waypoints, key=lambda point: point.sequence)
     for point in enabled:
+        for transit in mission.route_transits:
+            if transit.before_waypoint_id != point.waypoint_id:
+                continue
+            label = f'transit:{transit.transit_id}'
+            reports[label] = check_pose(transit.pose, label)
+            ordered_poses.append(transit.pose)
         if point.stop_id not in reports:
             report = check_pose(point.pose, point.stop_id)
             reports[point.stop_id] = report
@@ -411,10 +417,16 @@ def verify_mission_map(
                     check_pose(adjusted, (
                         f'{point.waypoint_id} micro-adjust envelope'))
 
-    # The Stage 5 profile deliberately uses straight segments between dense
-    # stops.  Verify those segments at half-cell spacing in both the saved map
-    # and keepout mask.  The reverse return traverses the same geometry.
-    for first, second in zip(ordered_poses, ordered_poses[1:]):
+    # Check the actual preset order, including side-change transit goals.
+    # Return-home sends a direct Nav2 goal rather than replaying the outbound
+    # stops. Check that direct connection from every anchor, because the
+    # operator can also request it after canceling navigation at a work stop.
+    segments = [(first, second, 'preset route segment')
+                for first, second in
+                zip(ordered_poses, ordered_poses[1:])]
+    segments.extend((pose, mission.home, 'return-home route segment')
+                    for pose in ordered_poses[1:])
+    for first, second, label in segments:
         distance = math.hypot(second.x - first.x, second.y - first.y)
         sample_count = max(
             1, math.ceil(distance / (grid.resolution * 0.5)))
@@ -426,5 +438,5 @@ def verify_mission_map(
                 first.y + (second.y - first.y) * ratio,
                 normalized_angle(first.yaw + yaw_delta * ratio),
             )
-            check_pose(pose, 'preset route segment')
+            check_pose(pose, label)
     return grid, reports

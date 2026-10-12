@@ -28,6 +28,7 @@ ros2 launch agri_sim_bringup simulation.launch.py gui:=false world:=mid360_valid
 | `paused` | `false` | 是否先暂停物理与传感器时间 |
 | `spawn_z` | `0.40` | 初始实体高度，单位 m |
 | `use_control` | `true` | 加载控制器 |
+| `steering_effort_limit` | `40.0` | Gazebo 四个转向关节的 effort 上限（N·m），用于当前载荷/轮胎接触模型 |
 | `use_kinematics` | 跟随 `use_control` | 启动四舵轮命令/里程计节点 |
 | `use_lidar` | `true` | 启动 MID-360 和公开点云输出 |
 | `use_scan` | `false` | 将 MID-360 点云过滤并转换为 `/scan`；要求 `use_lidar:=true` |
@@ -43,6 +44,12 @@ ros2 launch agri_sim_bringup simulation.launch.py gui:=false world:=mid360_valid
 | `rgl_install_prefix`、`rgl_patterns_dir` | 雷达 YAML 中配置 | 覆盖 RGL 本地缓存路径 |
 
 仅加载模型使用 `use_control:=false use_lidar:=false use_camera:=false`。
+
+当前导航场景在 10 N·m 仿真限力下曾出现右后舵轮无法达到目标角度、驱动轮因换舵
+互锁保持零速的情况。Gazebo overlay 默认使用 40 N·m；canonical 模型仍使用原来的
+10 N·m，转角和速度限位保持原值。该调整是接触模型参数，不代表实体电机额定能力。
+可通过启动参数 `steering_effort_limit:=10.0` 复现旧配置；修改后必须重新启动仿真。
+
 MID-360 光心与双后端契约、安装及验收见
 [mid360_simulation.md](../../../docs/mid360_simulation.md)。
 D405 光学 frame、848×480/30 Hz、87°×58° 投影、0.07–0.50 m 深度及正式

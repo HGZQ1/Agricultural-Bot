@@ -12,9 +12,9 @@ resource load manageable.
 `agri_sim_bringup/tomato_field.launch.py` uses
 `worlds/tomato_field_default.sdf` by default. Its checked-in metadata is
 `worlds/tomato_field_default.json`. The navigation development profile has 6
-rows, 10 plants per row, 2.0 m row spacing, 0.7 m plant spacing, a 2.0 m plant
+rows, 10 plants per row, 3.0 m row spacing, 0.7 m plant spacing, a 2.4 m plant
 height, a 1.0 m visual crown width, and a 0.06 m simplified stem collision
-width. The rows are centered at world X = `-5, -3, -1, 1, 3, 5`, so the robot
+width. The rows are centered at world X = `-7.5, -4.5, -1.5, 1.5, 4.5, 7.5`, so the robot
 spawn line at X = 0 lies in the central aisle.
 
 Regenerate the project default from this package directory with:
@@ -22,14 +22,14 @@ Regenerate the project default from this package directory with:
 ```bash
 python3 scripts/generate_tomato_field.py \
   --rows 6 --plants-per-row 10 \
-  --row-spacing 2.0 --plant-spacing 0.7 \
-  --origin-x -5.0 --origin-y -5.0 \
+  --row-spacing 3.0 --plant-spacing 0.7 \
+  --origin-x -7.5 --origin-y -5.0 \
   --ground-x 22.0 --ground-y 14.0 \
-  --plant-height 2.0 --plant-width 1.0 \
+  --plant-height 2.4 --plant-width 1.0 \
   --plant-collision-width 0.06 \
   --randomize-fruits --fruit-visual mesh \
   --fruit-count-min 2 --fruit-count-max 6 \
-  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-height-min 1.00 --fruit-height-max 1.70 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --ripe-ratio 0.7 --seed 42 \
   --output worlds/tomato_field_default.sdf \
@@ -97,9 +97,9 @@ Example values, pending real greenhouse measurements:
 
 ```bash
 python3 scripts/generate_tomato_field.py \
-  --randomize-fruits --plant-height 2.0 --plant-width 1.0 \
+  --randomize-fruits --plant-height 2.4 --plant-width 1.0 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
-  --fruit-height-min 0.80 --fruit-height-max 1.60 \
+  --fruit-height-min 1.00 --fruit-height-max 1.70 \
   --output /tmp/tomato_dimensions.sdf --metadata /tmp/tomato_dimensions.json
 ```
 

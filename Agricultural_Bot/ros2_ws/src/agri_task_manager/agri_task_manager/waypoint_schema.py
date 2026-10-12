@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import hashlib
 import math
-from dataclasses import dataclass
-import re
 from pathlib import Path
+import re
 from typing import Any, Mapping, Sequence
 
 import yaml
@@ -15,6 +15,7 @@ import yaml
 SHA256_PATTERN = re.compile(r'^[0-9a-f]{64}$')
 VALID_WORK_SIDES = frozenset({'left', 'right'})
 VALID_TASKS = frozenset({'harvest', 'scan'})
+VALID_ROUTE_LAYOUTS = frozenset({'shared_pairs', 'independent_side_stops'})
 
 
 class MissionConfigError(ValueError):
@@ -421,6 +422,30 @@ class FieldBinding:
 
 
 @dataclass(frozen=True)
+class TransitWaypoint:
+    """Navigation-only pose visited before an enabled harvest station."""
+
+    transit_id: str
+    before_waypoint_id: str
+    pose: Pose2D
+    goal_timeout_s: float = 120.0
+
+    @classmethod
+    def from_mapping(cls, value: Any, index: int) -> 'TransitWaypoint':
+        """Parse one transit while preserving the file's execution order."""
+        name = f'route.transits[{index}]'
+        data = _mapping(value, name)
+        return cls(
+            transit_id=_string(data.get('id'), f'{name}.id'),
+            before_waypoint_id=_string(
+                data.get('before_waypoint_id'), f'{name}.before_waypoint_id'),
+            pose=Pose2D.from_mapping(data.get('pose'), f'{name}.pose'),
+            goal_timeout_s=_positive(
+                data.get('goal_timeout_s', 120.0), f'{name}.goal_timeout_s'),
+        )
+
+
+@dataclass(frozen=True)
 class Mission:
     """Validated single-corridor mission."""
 
@@ -436,6 +461,8 @@ class Mission:
     footprint: tuple[float, float, float]
     max_unknown_cells: int
     waypoints: tuple[HarvestWaypoint, ...]
+    route_layout: str = 'shared_pairs'
+    route_transits: tuple[TransitWaypoint, ...] = ()
 
     @property
     def enabled_waypoints(self) -> tuple[HarvestWaypoint, ...]:
@@ -470,6 +497,11 @@ def load_mission(path: str | Path) -> Mission:
         for index, item in enumerate(transform)
     )
     route = _mapping(data.get('route'), 'route')
+    route_layout = _string(
+        route.get('layout', 'shared_pairs'), 'route.layout')
+    if route_layout not in VALID_ROUTE_LAYOUTS:
+        raise MissionConfigError(
+            'route.layout must be shared_pairs or independent_side_stops')
     corridor = CorridorBounds.from_mapping(route.get('corridor'))
     home_data = _mapping(route.get('home'), 'route.home')
     home = Pose2D.from_mapping(home_data.get('pose'), 'route.home.pose')
@@ -490,6 +522,11 @@ def load_mission(path: str | Path) -> Mission:
     )
     if not waypoints:
         raise MissionConfigError('route.waypoints cannot be empty')
+    transit_raw = _sequence(route.get('transits', []), 'route.transits')
+    route_transits = tuple(
+        TransitWaypoint.from_mapping(value, index)
+        for index, value in enumerate(transit_raw)
+    )
     result = Mission(
         schema_version=schema_version,
         mission_id=_string(data.get('mission_id'), 'mission_id'),
@@ -507,6 +544,8 @@ def load_mission(path: str | Path) -> Mission:
             route.get('max_unknown_cells'),
             'route.max_unknown_cells'),
         waypoints=waypoints,
+        route_layout=route_layout,
+        route_transits=route_transits,
     )
     _validate_cross_references(result)
     return result
@@ -532,6 +571,21 @@ def _validate_cross_references(mission: Mission) -> None:
     sequences = [point.sequence for point in mission.waypoints]
     if len(set(ids)) != len(ids):
         raise MissionConfigError('waypoint IDs must be unique')
+    transit_ids = [point.transit_id for point in mission.route_transits]
+    if len(set(transit_ids)) != len(transit_ids):
+        raise MissionConfigError('transit IDs must be unique')
+    if set(transit_ids) & set(ids):
+        raise MissionConfigError('transit IDs must differ from waypoint IDs')
+    enabled_ids = {point.waypoint_id for point in mission.enabled_waypoints}
+    for transit in mission.route_transits:
+        if transit.before_waypoint_id not in enabled_ids:
+            raise MissionConfigError(
+                f'transit {transit.transit_id} must precede an enabled '
+                'harvest waypoint')
+        mission.corridor.validate_pose(
+            transit.pose, f'transit {transit.transit_id}.pose')
+        if abs(normalized_angle(transit.pose.yaw)) > 1e-8:
+            raise MissionConfigError('transit poses require yaw=0')
     if len(set(plants)) != len(plants):
         raise MissionConfigError('each plant must appear exactly once')
     if len(set(sequences)) != len(sequences):
@@ -547,6 +601,16 @@ def _validate_cross_references(mission: Mission) -> None:
         raise MissionConfigError(
             f'expected {expected} plant waypoints for selected rows, '
             f'found {len(mission.waypoints)}')
+    if mission.route_layout == 'independent_side_stops':
+        stops = [point.stop_id for point in mission.waypoints]
+        if len(set(stops)) != len(stops):
+            raise MissionConfigError(
+                'independent side stops require unique stop IDs')
+        poses = [mission.home] + [point.pose for point in mission.waypoints]
+        if (abs(normalized_angle(mission.corridor.required_yaw)) > 1e-8 or
+                any(abs(normalized_angle(pose.yaw)) > 1e-8 for pose in poses)):
+            raise MissionConfigError(
+                'independent side stops require home and station yaw=0')
     stop_poses: dict[str, Pose2D] = {}
     stop_sides: dict[str, set[str]] = {}
     stop_members: dict[str, list[HarvestWaypoint]] = {}
@@ -609,6 +673,22 @@ def _validate_cross_references(mission: Mission) -> None:
     if plant_slots != expected_slots:
         raise MissionConfigError(
             'mission does not cover every selected row/index slot')
+    if mission.route_layout == 'independent_side_stops':
+        count = mission.field.plants_per_row
+        left_leg = mission.waypoints[:count]
+        right_leg = mission.waypoints[count:]
+        if (any(point.work_side != 'left' for point in left_leg) or
+                any(point.work_side != 'right' for point in right_leg) or
+                [point.plant.index_in_row for point in left_leg] !=
+                list(range(count)) or
+                [point.plant.index_in_row for point in right_leg] !=
+                list(reversed(range(count))) or
+                len({point.plant.row_id for point in left_leg}) != 1 or
+                len({point.plant.row_id for point in right_leg}) != 1):
+            raise MissionConfigError(
+                'independent side stops require ascending left-side '
+                'outbound and descending right-side return plant columns')
+        return
     for stop_id, members in stop_members.items():
         if len(members) != 2 or stop_sides[stop_id] != {'left', 'right'}:
             raise MissionConfigError(
