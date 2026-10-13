@@ -13,7 +13,7 @@ import yaml
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
-FIELD_ID = 'rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42'
+FIELD_ID = 'rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42'
 FIELD_ROOT = (
     PROJECT_ROOT / 'sim_ws' / 'src' / 'agri_greenhouse_worlds' / 'worlds')
 MAP_FILE = (
@@ -76,8 +76,10 @@ def test_generator_records_world_to_map_alignment_and_version_hashes():
     assert route['alignment']['world_to_map'] == [
         6.0, 0.0, -1.570796326795,
     ]
-    assert route['field']['metadata_sha256'].startswith('ab20a6cf')
-    assert route['field']['sdf_sha256'].startswith('7823a30c')
+    assert route['field']['metadata_sha256'] == sha256_file(
+        FIELD_ROOT / 'tomato_field_default.json')
+    assert route['field']['sdf_sha256'] == sha256_file(
+        FIELD_ROOT / 'tomato_field_default.sdf')
     for source, image_key, occupancy_key in (
             (MAP_FILE, 'image_sha256', 'occupancy_sha256'),
             (KEEPOUT_FILE, 'keepout_image_sha256',

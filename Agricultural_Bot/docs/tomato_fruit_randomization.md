@@ -110,44 +110,21 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
 
 ## 导航建图默认场景（3 m 行距）
 
-当前导航建图默认使用 22×14 m 地面、6 行×10 株、行距 3 m、株距 0.7 m。6 行的
-世界 X 坐标为 `-7.5、-4.5、-1.5、1.5、4.5、7.5`，因此机器人从世界坐标
-`(0,-6,1.5708)` 出生时位于 `x=-1.5` 与 `x=1.5` 两行之间，并沿世界 `+Y` 进入中央通道。
-株高为 2.4 m、视觉冠幅为 1 m，简化茎杆碰撞盒 X/Y 为 0.06 m；果实中心高度为
-1.00–1.70 m。该 profile 共生成 60 株；它与地图、pose graph、keepout mask 和停车点
-共同使用同一个 `FIELD_ID`：
-```bash
-cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
-FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
-MAP_DIR="$PWD/artifacts/maps/$FIELD_ID"
-mkdir -p "$FIELD_DIR" "$MAP_DIR"
+当前默认使用 22×14 m 地面、6 行×10 株、行距 3 m、株距 0.7 m、株高 2.4 m、冠幅
+1 m 和 0.06 m 简化茎杆碰撞宽度。六行世界 X 为 `-7.5、-4.5、-1.5、1.5、4.5、7.5`；
+机器人从 `(0,-6,π/2)` 出生，沿 world `+Y` 进入中央通道。
 
-python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
-  --rows 6 --plants-per-row 10 \
-  --row-spacing 3.0 --plant-spacing 0.7 \
-  --origin-x -7.5 --origin-y -5.0 \
-  --ground-x 22.0 --ground-y 14.0 \
-  --plant-height 2.4 --plant-width 1.0 \
-  --plant-collision-width 0.06 \
-  --randomize-fruits --fruit-visual mesh \
-  --fruit-count-min 2 --fruit-count-max 6 \
-  --fruit-height-min 1.00 --fruit-height-max 1.70 \
-  --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
-  --ripe-ratio 0.7 --seed 42 \
-  --output "$FIELD_DIR/tomato_field.sdf" \
-  --metadata "$FIELD_DIR/tomato_field.json"
+默认果实已采用 `harvest_demo_v1`：中央两行 20 株的候选果放在通道侧，中心高度
+1.33–1.42 m、直径 5–6.5 cm，并保留原扫描高度内的背景果实球几何。当前版本为
+`rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42`。
+完整生成、检查、构建和查看命令见 [近侧果实演示场景](harvest_demo_fruit_profile.md)。
 
-test -s "$FIELD_DIR/tomato_field.sdf"
-test -s "$FIELD_DIR/tomato_field.json"
-gz sdf -k "$FIELD_DIR/tomato_field.sdf"
-```
+本例有 66 个近侧距离候选、56 个成熟候选，每株至少一个。距离条件已经计入肩偏置和
+停车误差，但 IK、完整机械臂碰撞、相机视场和夹取尚未验证。未选 40 株保留原随机分布。
 
-最后一条命令应输出 `Valid.`。完整的仿真启动、SLAM、地图保存和导航测试流程见
-[阶段四导航文档](navigation_stage4.md#当前默认-3-m-番茄田从参数修改到导航测试的完整流程)。
-当前默认地图已经保存到 `artifacts/maps/$FIELD_ID/`，并同步安装为
-`agri_navigation/maps/tomato_field_default.yaml/.pgm`；修改布局或株高后必须换用新的
-`FIELD_ID` 重新建图。
+默认地图仍为 `agri_navigation/maps/tomato_field_default.yaml/.pgm`，停车点和 keepout
+保持原几何；新场景/任务的版本绑定已更新。布局、冠幅、扫描可见结构发生变化时，按
+[阶段四流程](navigation_stage4.md)重新建图，再按[阶段五流程](navigation_stage5.md)生成航点。
 
 ## 3 m 行距的宽通道备选场景
 
@@ -215,7 +192,7 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 | `--randomize-fruits` | 关闭 | 移除旧模型中的固定果实，生成独立随机果实 |
 | `--fruit-visual` | `mesh` | 原单果网格与贴图；`sphere` 可回退纯色球体 |
 | `--fruit-count-min / --fruit-count-max` | 2 / 6 | 每株整数数量范围，包含两个端点；允许 0 |
-| `--fruit-height-min / --fruit-height-max` | 0.60 / 1.10 | 果实中心的世界 Z 坐标，单位 m，地面 Z=0 |
+| `--fruit-height-min / --fruit-height-max` | 1.00 / 1.70 | 果实中心的世界 Z 坐标，单位 m，地面 Z=0 |
 | `--fruit-diameter-min / --fruit-diameter-max` | 0.06 / 0.09 | 果实包围球直径范围，单位 m；网格等比例缩放 |
 | `--fruit-radius-min / --fruit-radius-max` | 0.12 / 0.25 | 茎杆中心到果实中心的水平距离，单位 m |
 | `--ripe-ratio` | 0.7 | 每个果实取红色的概率；其余为绿色，不保证总数恰好 70% |
@@ -311,7 +288,8 @@ fruit-radius-min >= collision-width / 2 + fruit-diameter-max / 2 + fruit-min-cle
 
 原植株最高约 1.298 m，冠幅约 0.815 × 0.867 m，原果实中心约在 0.761–1.020 m。
 **果实高度参数不会同步长高枝叶**；高位果实需要配合 `--plant-height` 调整株高。
-这些参数只缩放原枝叶结构，不会生成更真实的枝条、果柄或连接关系；果实仍可能
+普通随机模式只缩放原枝叶结构，不会生成真实果柄；近侧演示模式另加可视支梗，
+其余普通随机果实仍可能
 位于没有枝条的位置。待实测株高、冠幅和结果区间确定后，可直接替换测试参数，
 需要更真实的植株拓扑时再重建模型。
 机械臂零位相机高度约 1.878 m，低位目标还需要通过机械臂俯视或侧向观测及可达性检查，

@@ -3,9 +3,11 @@
 维护者：fsy；更新日期：2026-10-07。
 
 目标：在 Ubuntu 24.04、ROS 2 Jazzy、Gazebo Harmonic 中加载 22×14 m 番茄田，
-并可选择在入口生成 agri_robot。当前启动默认是 6 行×10 株，共 60 株；行距 2 m，
+并可选择在入口生成 agri_robot。当前启动默认是 6 行×10 株，共 60 株；行距 3 m，
 株距 0.7 m，六行以 `x=0` 对称排列。原 10 行×15 株世界仍作为兼容基线保留。
 本功能已与远端 10.6.2 的 MID-360/D405 启动框架集成。
+当前默认果实采用近侧演示分布，生成与参数修改见
+[近侧果实演示场景](harvest_demo_fruit_profile.md)；旧普通随机命令不会生成同一默认场景。
 
 ## 1. 文件与下载来源
 
@@ -13,7 +15,7 @@
 | --- | --- | --- |
 | 场地包 | `sim_ws/src/agri_greenhouse_worlds` | 随本次代码一起提供 |
 | 番茄网格、纹理、材质 | 上述包的 `models/tomato_0` | 已内置，无需联网下载模型 |
-| 场地生成器 | `scripts/generate_tomato_field.py`（位于场地包内） | 已内置；仅用 Python 标准库，无额外 pip 依赖 |
+| 场地生成器 | `scripts/generate_tomato_field.py`（位于场地包内） | 已内置；普通模式仅标准库，航点模式另用 PyYAML（包依赖已声明） |
 | 生成后的默认世界 | 场地包内 `worlds/tomato_field_default.sdf` 及同名 JSON | 已内置；可直接运行 |
 | 兼容基线世界 | 场地包内 `worlds/tomato_field_22x14.sdf` | 旧 10 行×15 株回归使用 |
 | 一键入口 | `sim_ws/src/agri_sim_bringup/launch/tomato_field.launch.py` | 已内置 |

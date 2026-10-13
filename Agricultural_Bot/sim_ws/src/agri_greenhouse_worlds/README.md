@@ -17,10 +17,13 @@ height, a 1.0 m visual crown width, and a 0.06 m simplified stem collision
 width. The rows are centered at world X = `-7.5, -4.5, -1.5, 1.5, 4.5, 7.5`, so the robot
 spawn line at X = 0 lies in the central aisle.
 
-Regenerate the project default from this package directory with:
+The current `harvest_demo_v1` profile biases the central aisle's twenty work
+plants toward their existing side-stop poses. Each has at least one mature
+distance candidate; IK, full-arm collisions and camera visibility remain pending.
+Reproduce the project default from the Agricultural_Bot project root with:
 
 ```bash
-python3 scripts/generate_tomato_field.py \
+python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --rows 6 --plants-per-row 10 \
   --row-spacing 3.0 --plant-spacing 0.7 \
   --origin-x -7.5 --origin-y -5.0 \
@@ -32,16 +35,28 @@ python3 scripts/generate_tomato_field.py \
   --fruit-height-min 1.00 --fruit-height-max 1.70 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --ripe-ratio 0.7 --seed 42 \
-  --output worlds/tomato_field_default.sdf \
-  --metadata worlds/tomato_field_default.json
+  --harvest-mission sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_harvest_stations.yaml \
+  --harvest-height-min 1.33 --harvest-height-max 1.42 \
+  --harvest-radius-min 0.68 --harvest-radius-max 0.74 \
+  --harvest-diameter-min 0.05 --harvest-diameter-max 0.065 \
+  --harvest-preserve-scan-max-z 1.22 \
+  --output sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_default.sdf \
+  --metadata sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_default.json
 ```
+
+Use the canonical relative reference path above for byte-identical metadata
+and mission hashes. Full generation, validation and handoff instructions are
+in the [demo fruit guide](../../../docs/harvest_demo_fruit_profile.md). New near-side fruit centers are 1.33–1.42 m above ground,
+with 50–65 mm diameter and visual-only support branches. Original low fruit
+spheres are preserved for scan compatibility; the snapshot contains geometry
+only, avoiding circular field/mission hash dependencies.
 
 The generic generator's no-argument defaults remain the original 10-row,
 15-plants-per-row reference profile for backward compatibility and reproduce
 the legacy `worlds/tomato_field_22x14.sdf`:
 
 ```bash
-python3 scripts/generate_tomato_field.py
+python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py
 ```
 
 Use `--help` to inspect parameters. Generated worlds contain no robot; the
@@ -96,7 +111,7 @@ stem box dimensions and center Z.
 Example values, pending real greenhouse measurements:
 
 ```bash
-python3 scripts/generate_tomato_field.py \
+python3 sim_ws/src/agri_greenhouse_worlds/scripts/generate_tomato_field.py \
   --randomize-fruits --plant-height 2.4 --plant-width 1.0 \
   --fruit-diameter-min 0.06 --fruit-diameter-max 0.09 \
   --fruit-height-min 1.00 --fruit-height-max 1.70 \

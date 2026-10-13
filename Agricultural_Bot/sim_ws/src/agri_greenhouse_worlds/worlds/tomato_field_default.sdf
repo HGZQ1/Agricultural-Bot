@@ -7004,7 +7004,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7014,15 +7014,15 @@
     </model>
     <model name="tomato_20_fruit_2">
       <static>true</static>
-      <pose>-1.3554182430104154 -4.910435724835418 1.3579961417686346 0 0 0</pose>
+      <pose>-0.80669043077002811 -5.0386863860587914 1.4195707441362064 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.039093132799592145</radius></sphere></geometry>
+          <geometry><sphere><radius>0.030318893206426938</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.07818626559918429 0.07818626559918429 0.07818626559918429</scale>
+            <scale>0.060637786412853875 0.060637786412853875 0.060637786412853875</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7032,6 +7032,17 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.36179068600822345 0.02018777004179281 0 0 1.5707963267948966 -0.055741780277625975</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66406917930932352</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7076,7 +7087,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7086,15 +7097,15 @@
     </model>
     <model name="tomato_21_fruit_1">
       <static>true</static>
-      <pose>-1.4351418139218481 -4.4452161837457709 1.503827984109765 0 0 0</pose>
+      <pose>-0.83329147210286636 -4.4435356173041214 1.3868511494849125 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.042720229192595029</radius></sphere></geometry>
+          <geometry><sphere><radius>0.031950601112788676</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.085440458385190057 0.085440458385190057 0.085440458385190057</scale>
+            <scale>0.063901202225577353 0.063901202225577353 0.063901202225577353</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7104,6 +7115,17 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.34897173110843088 0.075130091712378569 0 0 1.5707963267948966 -0.21205324212715138</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65003380824393431</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7148,7 +7170,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7158,15 +7180,15 @@
     </model>
     <model name="tomato_22_fruit_1">
       <static>true</static>
-      <pose>-1.3016940697242496 -3.6523982847493839 1.4059893468369773 0 0 0</pose>
+      <pose>-0.81265901119382999 -3.5772218816389998 1.3945898480416938 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.036448322249847516</radius></sphere></geometry>
+          <geometry><sphere><radius>0.031121179032029045</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.072896644499695032 0.072896644499695032 0.072896644499695032</scale>
+            <scale>0.06224235806405809 0.06224235806405809 0.06224235806405809</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7176,45 +7198,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35922254643869594 -0.011904445994021726 0 0 1.5707963267948966 0.033127349779369375</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65659713362883887</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_22_fruit_2">
       <static>true</static>
-      <pose>-1.5588661936254564 -3.3702685104299017 1.3312303301365285 0 0 0</pose>
+      <pose>-0.82666762251208203 -3.4435483219084473 1.4001762554486747 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.033205521014836502</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026160190972611068</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.066411042029673004 0.066411042029673004 0.066411042029673004</scale>
-          </mesh></geometry>
-          <material>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
-              <metalness>0</metalness>
-              <roughness>0.4</roughness>
-            </metal></pbr>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="tomato_23_fruit_0">
-      <static>true</static>
-      <pose>-1.6755646745453352 -2.9968445189495916 1.464697685413499 0 0 0</pose>
-      <link name="fruit_link">
-        <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034256796074895408</radius></sphere></geometry>
-        </collision>
-        <visual name="fruit_visual">
-          <geometry><mesh>
-            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.068513592149790817 0.068513592149790817 0.068513592149790817</scale>
+            <scale>0.052320381945222136 0.052320381945222136 0.052320381945222136</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7224,6 +7233,52 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.34940687946166188 -0.081186193410832705 0 0 1.5707963267948966 0.22830325657338643</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.665109378841651</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_23_fruit_0">
+      <static>true</static>
+      <pose>-0.8161341793946546 -2.8809437548325305 1.3907273792922066 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.029579135316137047</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.059158270632274093 0.059158270632274093 0.059158270632274093</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.3567167393664501 -0.0099400809864867556 0 0 1.5707963267948966 0.027858264876264742</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65455213942000967</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7244,7 +7299,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7254,15 +7309,15 @@
     </model>
     <model name="tomato_24_fruit_0">
       <static>true</static>
-      <pose>-1.6473251928651602 -2.0979735442091911 1.5379425373001379 0 0 0</pose>
+      <pose>-0.77646525082256479 -2.1729274828491096 1.37458224051684 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.039169109595910204</radius></sphere></geometry>
+          <geometry><sphere><radius>0.032168745071456201</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.078338219191820407 0.078338219191820407 0.078338219191820407</scale>
+            <scale>0.064337490142912401 0.064337490142912401 0.064337490142912401</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7272,21 +7327,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37784049960151261 -0.014137667081494215 0 0 1.5707963267948966 0.037399577060538571</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69187231346883082</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_24_fruit_1">
       <static>true</static>
-      <pose>-1.5874990647563163 -2.3480283477281612 1.2687849271749259 0 0 0</pose>
+      <pose>-0.77450609840097828 -2.2443474577122027 1.3632653566585604 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.040775188732484827</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026076032153961853</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.081550377464969653 0.081550377464969653 0.081550377464969653</scale>
+            <scale>0.052152064307923705 0.052152064307923705 0.052152064307923705</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7296,21 +7362,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37576067637672572 0.022969222303312498 0 0 1.5707963267948966 -0.061051299993135938</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70077202505119207</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_24_fruit_2">
       <static>true</static>
-      <pose>-1.5668476477879796 -1.9745929720550581 1.6023083957957649 0 0 0</pose>
+      <pose>-0.78459111478484933 -2.0779189568228702 1.4024672911716254 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.043389897393170493</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026865571451325801</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.086779794786340986 0.086779794786340986 0.086779794786340986</scale>
+            <scale>0.053731142902651602 0.053731142902651602 0.053731142902651602</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7322,28 +7399,50 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37094581892723855 -0.063300097989715337 0 0 1.5707963267948966 0.16901710096519454</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69888483615999675</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_24_fruit_3">
       <static>true</static>
-      <pose>-1.3392031826558892 -2.1182352680516794 1.4871382434857667 0 0 0</pose>
+      <pose>-0.80468903460068808 -2.3096708267938073 1.361725712942131 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.042061647842597145</radius></sphere></geometry>
+          <geometry><sphere><radius>0.03111575785032137</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.084123295685194291 0.084123295685194291 0.084123295685194291</scale>
+            <scale>0.062231515700642739 0.062231515700642739 0.062231515700642739</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.36302337107945676 0.0572593777934952 0 0 1.5707963267948966 -0.15644034080132618</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67279121672384801</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7364,7 +7463,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7374,15 +7473,15 @@
     </model>
     <model name="tomato_25_fruit_0">
       <static>true</static>
-      <pose>-1.4540434767435215 -1.3057165860927991 1.6239981480673058 0 0 0</pose>
+      <pose>-0.79666749077416799 -1.396587809271536 1.404165080458821 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.044250594126647336</radius></sphere></geometry>
+          <geometry><sphere><radius>0.032197667781011852</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.088501188253294671 0.088501188253294671 0.088501188253294671</scale>
+            <scale>0.064395335562023703 0.064395335562023703 0.064395335562023703</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7394,19 +7493,30 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.36759384511907783 -0.054047956440838665 0 0 1.5707963267948966 0.14598573083263011</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.6786966279656661</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_25_fruit_1">
       <static>true</static>
-      <pose>-1.4813059964791306 -1.26410250259103 1.3835103654275798 0 0 0</pose>
+      <pose>-0.79056261147643503 -1.3414762346736568 1.3393232703563094 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.042458537545821226</radius></sphere></geometry>
+          <geometry><sphere><radius>0.025592927344939394</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.084917075091642452 0.084917075091642452 0.084917075091642452</scale>
+            <scale>0.051185854689878789 0.051185854689878789 0.051185854689878789</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7416,6 +7526,17 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.3672071810346027 -0.082052434695643064 0 0 1.5707963267948966 0.219838615524449</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70133980159796439</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7436,7 +7557,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7460,7 +7581,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7484,7 +7605,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7494,15 +7615,15 @@
     </model>
     <model name="tomato_26_fruit_1">
       <static>true</static>
-      <pose>-1.344847752305693 -0.85001533365078275 1.2904075271287527 0 0 0</pose>
+      <pose>-0.82221366376072469 -0.9274703041242337 1.3626486314831021 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.033209293156589811</radius></sphere></geometry>
+          <geometry><sphere><radius>0.027691485458760261</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.066418586313179623 0.066418586313179623 0.066418586313179623</scale>
+            <scale>0.055382970917520521 0.055382970917520521 0.055382970917520521</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7512,21 +7633,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35250036016014569 0.066294237152714014 0 0 1.5707963267948966 -0.18589714932615842</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66197727273330442</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_26_fruit_2">
       <static>true</static>
-      <pose>-1.6994253539535378 -0.70693093010099284 1.272633768866859 0 0 0</pose>
+      <pose>-0.77288088110683295 -0.77170696034033115 1.3855951041628269 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.04249336754010731</radius></sphere></geometry>
+          <geometry><sphere><radius>0.031884861662915785</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.08498673508021462 0.08498673508021462 0.08498673508021462</scale>
+            <scale>0.06376972332583157 0.06376972332583157 0.06376972332583157</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7536,21 +7668,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37948993492843613 -0.014766389028140724 0 0 1.5707963267948966 0.038891527671995788</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69578450635607614</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_26_fruit_3">
       <static>true</static>
-      <pose>-1.6632891844712809 -0.71960520393977745 1.4029832427670561 0 0 0</pose>
+      <pose>-0.79123018494545183 -0.84017951297634097 1.403165435498839 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.043209850091367352</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026877409860044086</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.086419700182734704 0.086419700182734704 0.086419700182734704</scale>
+            <scale>0.053754819720088172 0.053754819720088172 0.053754819720088172</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7562,19 +7705,30 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.36780207070057264 0.020850363204732936 0 0 1.5707963267948966 -0.056628476450421406</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68303036161134534</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_27_fruit_0">
       <static>true</static>
-      <pose>-1.4804309591555023 0.073371851737794341 1.6674012369290745 0 0 0</pose>
+      <pose>-0.81869528113026457 -0.23865587114816555 1.3875912901618304 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.042801719258536569</radius></sphere></geometry>
+          <geometry><sphere><radius>0.027209463955770976</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.085603438517073138 0.085603438517073138 0.085603438517073138</scale>
+            <scale>0.054418927911541952 0.054418927911541952 0.054418927911541952</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7584,6 +7738,17 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35398380853127098 0.072041088201582254 0 0 1.5707963267948966 -0.20077327075234169</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66806139733357284</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7604,7 +7769,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7614,63 +7779,15 @@
     </model>
     <model name="tomato_27_fruit_2">
       <static>true</static>
-      <pose>-1.6017440406421002 -0.23937541585962027 1.4753993195198447 0 0 0</pose>
+      <pose>-0.78298743399357151 0.015981076174549441 1.3705715309765685 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.035041943155475735</radius></sphere></geometry>
+          <geometry><sphere><radius>0.027492865180279963</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.070083886310951471 0.070083886310951471 0.070083886310951471</scale>
-          </mesh></geometry>
-          <material>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
-              <metalness>0</metalness>
-              <roughness>0.4</roughness>
-            </metal></pbr>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="tomato_27_fruit_3">
-      <static>true</static>
-      <pose>-1.4107068771212052 -0.18532514874889988 1.4355798726818452 0 0 0</pose>
-      <link name="fruit_link">
-        <collision name="fruit_collision">
-          <geometry><sphere><radius>0.031914416959217408</radius></sphere></geometry>
-        </collision>
-        <visual name="fruit_visual">
-          <geometry><mesh>
-            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.063828833918434816 0.063828833918434816 0.063828833918434816</scale>
-          </mesh></geometry>
-          <material>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
-              <metalness>0</metalness>
-              <roughness>0.4</roughness>
-            </metal></pbr>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="tomato_27_fruit_4">
-      <static>true</static>
-      <pose>-1.4444557711281285 -0.23665928724147653 1.2653727049316976 0 0 0</pose>
-      <link name="fruit_link">
-        <collision name="fruit_collision">
-          <geometry><sphere><radius>0.030754269502329411</radius></sphere></geometry>
-        </collision>
-        <visual name="fruit_visual">
-          <geometry><mesh>
-            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.061508539004658823 0.061508539004658823 0.061508539004658823</scale>
+            <scale>0.054985730360559926 0.054985730360559926 0.054985730360559926</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7682,19 +7799,30 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37207633175329313 -0.060185574732924164 0 0 1.5707963267948966 0.16036694859878103</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69883944846253854</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
-    <model name="tomato_28_fruit_0">
+    <model name="tomato_27_fruit_3">
       <static>true</static>
-      <pose>-1.6011268447964293 0.74258190460152251 1.6658428839023931 0 0 0</pose>
+      <pose>-0.8184190500470363 -0.12884257339155658 1.4093258645927567 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034173849234582089</radius></sphere></geometry>
+          <geometry><sphere><radius>0.027081299429708969</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.068347698469164178 0.068347698469164178 0.068347698469164178</scale>
+            <scale>0.054162598859417939 0.054162598859417939 0.054162598859417939</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7704,6 +7832,87 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35431901704213364 0.014993776240030151 0 0 1.5707963267948966 -0.042291932202755261</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65510964552531736</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_27_fruit_4">
+      <static>true</static>
+      <pose>-0.81856213370288622 -0.10299951285989215 1.3327502235465847 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.031386375761561655</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.06277275152312331 0.06277275152312331 0.06277275152312331</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35641196900126204 0.0015688331061612037 0 0 1.5707963267948966 -0.0044017123736320406</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65005809204264597</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_28_fruit_0">
+      <static>true</static>
+      <pose>-0.81752338696660432 0.57051263088389281 1.3813790700837152 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.025237606937280173</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.050475213874560346 0.050475213874560346 0.050475213874560346</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35384534809430229 0.015288389653234246 0 0 1.5707963267948966 -0.043179561212340858</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65787573085881712</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7724,7 +7933,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7830,15 +8039,15 @@
     </model>
     <model name="tomato_29_fruit_1">
       <static>true</static>
-      <pose>-1.6589659982861626 1.3567436633119212 1.6356183057332112 0 0 0</pose>
+      <pose>-0.83295609324757225 1.1508867644354523 1.3376553372780604 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038636950926186214</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026503452292850362</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.077273901852372429 0.077273901852372429 0.077273901852372429</scale>
+            <scale>0.053006904585700725 0.053006904585700725 0.053006904585700725</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7850,28 +8059,50 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.34645448858192668 0.077447600143487408 0 0 1.5707963267948966 -0.21992755879159334</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.6570039218854169</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_30_fruit_0">
       <static>true</static>
-      <pose>1.4715769321654197 -4.8698195965206086 1.439069676920731 0 0 0</pose>
+      <pose>0.7964176255915687 -5.1187636645843995 1.3708609310436515 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.040359216238994702</radius></sphere></geometry>
+          <geometry><sphere><radius>0.031318295267467954</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.080718432477989405 0.080718432477989405 0.080718432477989405</scale>
+            <scale>0.062636590534935907 0.062636590534935907 0.062636590534935907</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36723190412598883 0.061988202480170937 0 0 1.5707963267948966 -2.9743704587979587</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68221724386406102</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7892,7 +8123,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -7902,24 +8133,35 @@
     </model>
     <model name="tomato_30_fruit_2">
       <static>true</static>
-      <pose>1.6119743875390766 -5.1482364698474887 1.2593996133526393 0 0 0</pose>
+      <pose>0.79026026763135959 -4.908492760742555 1.339702713949509 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.036425670198521165</radius></sphere></geometry>
+          <geometry><sphere><radius>0.030328455833189275</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.07285134039704233 0.07285134039704233 0.07285134039704233</scale>
+            <scale>0.06065691166637855 0.06065691166637855 0.06065691166637855</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36990960558208358 -0.047692703730506894 0 0 1.5707963267948966 3.013369323812451</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68528600918217675</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -7950,15 +8192,15 @@
     </model>
     <model name="tomato_30_fruit_4">
       <static>true</static>
-      <pose>1.286812029497139 -4.9692558707630914 1.304841001505374 0 0 0</pose>
+      <pose>0.81777811518385679 -5.0078660673142723 1.3517188819645245 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.040609629655591152</radius></sphere></geometry>
+          <geometry><sphere><radius>0.030320649358848401</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.081219259311182304 0.081219259311182304 0.081219259311182304</scale>
+            <scale>0.060641298717696801 0.060641298717696801 0.060641298717696801</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -7970,28 +8212,50 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35627025946180807 0.0041078216711782755 0 0 1.5707963267948966 -3.1300630926965218</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65194658211067169</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_30_fruit_5">
       <static>true</static>
-      <pose>1.6729237915046253 -5.0594406820757989 1.376721034513779 0 0 0</pose>
+      <pose>0.79425566218943988 -4.8323766217784163 1.4087982673243902 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.042122988282101335</radius></sphere></geometry>
+          <geometry><sphere><radius>0.028784196083548964</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.084245976564202671 0.084245976564202671 0.084245976564202671</scale>
+            <scale>0.057568392167097929 0.057568392167097929 0.057568392167097929</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36687472654817987 -0.087137477062739055 0 0 1.5707963267948966 2.9084006499627595</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69659340715360785</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8012,7 +8276,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8022,15 +8286,15 @@
     </model>
     <model name="tomato_31_fruit_1">
       <static>true</static>
-      <pose>1.6164597028555676 -4.4709680070952036 1.3988947512748255 0 0 0</pose>
+      <pose>0.78187355913119772 -4.1684685448090208 1.3341976764003394 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.04125714422740509</radius></sphere></geometry>
+          <geometry><sphere><radius>0.028483998998774351</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.082514288454810181 0.082514288454810181 0.082514288454810181</scale>
+            <scale>0.056967997997548703 0.056967997997548703 0.056967997997548703</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8040,21 +8304,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.37307217705034196 -0.068331596702290165 0 0 1.5707963267948966 2.9604413676502128</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70158867463005681</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_31_fruit_2">
       <static>true</static>
-      <pose>1.5178434174487081 -4.4651662017040863 1.341284952673941 0 0 0</pose>
+      <pose>0.78577081026167372 -4.354840425231342 1.3523452846035144 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034875212518331394</radius></sphere></geometry>
+          <geometry><sphere><radius>0.031521593752312477</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.069750425036662789 0.069750425036662789 0.069750425036662789</scale>
+            <scale>0.063043187504624953 0.063043187504624953 0.063043187504624953</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8064,21 +8339,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.3728291366617999 0.028626817115467044 0 0 1.5707963267948966 -3.064960343354501</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68480989914313506</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_31_fruit_3">
       <static>true</static>
-      <pose>1.6898092316304498 -4.2694450065218774 1.6160751416786612 0 0 0</pose>
+      <pose>0.80237370677708142 -4.1879631409744871 1.4187753088356381 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038942325119061441</radius></sphere></geometry>
+          <geometry><sphere><radius>0.030786714982662423</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.077884650238122882 0.077884650238122882 0.077884650238122882</scale>
+            <scale>0.061573429965324847 0.061573429965324847 0.061573429965324847</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8088,21 +8374,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.3640117545747355 -0.058459284042333998 0 0 1.5707963267948966 2.9823551109377719</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67577871211963514</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_32_fruit_0">
       <static>true</static>
-      <pose>1.5779066164936864 -3.3957950861477304 1.342004492794151 0 0 0</pose>
+      <pose>0.82666858222237938 -3.5007910246551583 1.4093753529201853 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.040801119961562909</radius></sphere></geometry>
+          <geometry><sphere><radius>0.029947428356060977</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.081602239923125819 0.081602239923125819 0.081602239923125819</scale>
+            <scale>0.059894856712121955 0.059894856712121955 0.059894856712121955</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8112,45 +8409,102 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35147948863585077 -0.051787157114073806 0 0 1.5707963267948966 2.9953047113104936</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65065349652972992</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_32_fruit_1">
       <static>true</static>
-      <pose>1.4776814647389904 -3.7301978623916097 1.5550530076926221 0 0 0</pose>
+      <pose>0.79090841949700508 -3.709811119621333 1.4183222044183232 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.037362320026178793</radius></sphere></geometry>
+          <geometry><sphere><radius>0.03137474877556725</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.074724640052357585 0.074724640052357585 0.074724640052357585</scale>
+            <scale>0.0627494975511345 0.0627494975511345 0.0627494975511345</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.37004837341717556 0.057306316019389715 0 0 1.5707963267948966 -2.987951422598695</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68616922307056716</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_32_fruit_2">
       <static>true</static>
-      <pose>1.6777970955925621 -3.5634062049948381 1.4070889097326571 0 0 0</pose>
+      <pose>0.7931275124582654 -3.5363981365665107 1.3385155951242467 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034593090451951324</radius></sphere></geometry>
+          <geometry><sphere><radius>0.029969277856283089</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.069186180903902647 0.069186180903902647 0.069186180903902647</scale>
+            <scale>0.059938555712566177 0.059938555712566177 0.059938555712566177</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36836059251813941 -0.033143771348484827 0 0 1.5707963267948966 3.051857859309278</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67975877617261882</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_33_fruit_0">
+      <static>true</static>
+      <pose>0.79314406634834911 -2.9689397902080565 1.3726152252706068 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.030657793610085714</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.061315587220171427 0.061315587220171427 0.061315587220171427</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8162,28 +8516,15 @@
             </metal></pbr>
           </material>
         </visual>
-      </link>
-    </model>
-    <model name="tomato_33_fruit_0">
-      <static>true</static>
-      <pose>1.5189464204064955 -3.0540584732537988 1.4919984595300382 0 0 0</pose>
-      <link name="fruit_link">
-        <collision name="fruit_collision">
-          <geometry><sphere><radius>0.03496186945793895</radius></sphere></geometry>
-        </collision>
-        <visual name="fruit_visual">
-          <geometry><mesh>
-            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.0699237389158779 0.0699237389158779 0.0699237389158779</scale>
-          </mesh></geometry>
+        <visual name="harvest_support_visual">
+          <pose>0.36868447437223506 0.035957865112462094 0 0 1.5707963267948966 -3.0443699554092047</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67955203849059564</length>
+          </cylinder></geometry>
           <material>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
-              <metalness>0</metalness>
-              <roughness>0.4</roughness>
-            </metal></pbr>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8204,7 +8545,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8214,24 +8555,35 @@
     </model>
     <model name="tomato_33_fruit_2">
       <static>true</static>
-      <pose>1.2859236592804484 -2.8928398156027906 1.3389390110488961 0 0 0</pose>
+      <pose>0.80944693223779762 -2.8976718627907014 1.3599823918162688 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.033245769598179084</radius></sphere></geometry>
+          <geometry><sphere><radius>0.027992944645331225</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.066491539196358168 0.066491539196358168 0.066491539196358168</scale>
+            <scale>0.055985889290662449 0.055985889290662449 0.055985889290662449</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35927292665967675 -0.0012112561769662422 0 0 1.5707963267948966 3.1382212568106072</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66256404765773291</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8252,7 +8604,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8262,15 +8614,15 @@
     </model>
     <model name="tomato_33_fruit_4">
       <static>true</static>
-      <pose>1.3968084514418064 -2.8107760093290972 1.4881921750371361 0 0 0</pose>
+      <pose>0.80952328394639816 -2.7544498211372161 1.3598129993273649 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038300384501979125</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026501620832207282</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.07660076900395825 0.07660076900395825 0.07660076900395825</scale>
+            <scale>0.053003241664414565 0.053003241664414565 0.053003241664414565</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8280,21 +8632,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35820422867305118 -0.075508251532004897 0 0 1.5707963267948966 2.933837579827117</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67914910720479726</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_33_fruit_5">
       <static>true</static>
-      <pose>1.6749142855417771 -2.9466241719339035 1.4018449537384325 0 0 0</pose>
+      <pose>0.82457356651752167 -3.05820119379809 1.3680654669581467 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.04309079602497802</radius></sphere></geometry>
+          <geometry><sphere><radius>0.027763958232037173</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.086181592049956041 0.086181592049956041 0.086181592049956041</scale>
+            <scale>0.055527916464074345 0.055527916464074345 0.055527916464074345</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8304,21 +8667,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35122939082947646 0.082266411516807428 0 0 1.5707963267948966 -2.9115160499717239</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66594238076595813</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_34_fruit_0">
       <static>true</static>
-      <pose>1.3748577007063134 -2.250188564604684 1.6032060752392592 0 0 0</pose>
+      <pose>0.77965208875823955 -2.3440635128869012 1.3527963429617238 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.033787175857394589</radius></sphere></geometry>
+          <geometry><sphere><radius>0.029785658008988997</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.067574351714789177 0.067574351714789177 0.067574351714789177</scale>
+            <scale>0.059571316017977993 0.059571316017977993 0.059571316017977993</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8330,28 +8704,50 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.37477759961096679 0.074952362197043723 0 0 1.5707963267948966 -2.9442051952889514</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70482676291491664</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_34_fruit_1">
       <static>true</static>
-      <pose>1.4514311416606398 -2.0689885312391767 1.4805157127792117 0 0 0</pose>
+      <pose>0.79272106365959005 -2.269379288715283 1.4198732667822496 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038655317347062269</radius></sphere></geometry>
+          <geometry><sphere><radius>0.030747686537747326</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.077310634694124539 0.077310634694124539 0.077310634694124539</scale>
+            <scale>0.061495373075494651 0.061495373075494651 0.061495373075494651</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36893987522991317 0.036190510994995859 0 0 1.5707963267948966 -3.0438122277447293</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67992592314074662</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8382,48 +8778,70 @@
     </model>
     <model name="tomato_35_fruit_1">
       <static>true</static>
-      <pose>1.6678992098870049 -1.5607946223592117 1.3658007745911525 0 0 0</pose>
+      <pose>0.82325778740120359 -1.419580870200096 1.3981668078563747 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.033385307055975519</radius></sphere></geometry>
+          <geometry><sphere><radius>0.028889200155332931</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.066770614111951038 0.066770614111951038 0.066770614111951038</scale>
+            <scale>0.057778400310665862 0.057778400310665862 0.057778400310665862</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35271478627983482 -0.041914063659864373 0 0 1.5707963267948966 3.0233145783657136</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65261447463365041</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_36_fruit_0">
       <static>true</static>
-      <pose>1.4966554589257628 -0.60077605325178296 1.434719124750504 0 0 0</pose>
+      <pose>0.77809761642375774 -0.68136762253016425 1.3380385383222106 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034580703664790408</radius></sphere></geometry>
+          <geometry><sphere><radius>0.02697221056246206</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.069161407329580815 0.069161407329580815 0.069161407329580815</scale>
+            <scale>0.053944421124924119 0.053944421124924119 0.053944421124924119</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.3742588058295655 -0.061503068745434979 0 0 1.5707963267948966 2.9787154358029295</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.7046128442310361</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8444,7 +8862,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8468,7 +8886,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8478,15 +8896,15 @@
     </model>
     <model name="tomato_36_fruit_3">
       <static>true</static>
-      <pose>1.7067543842524429 -0.84401900578638067 1.4948690809153233 0 0 0</pose>
+      <pose>0.80442677060136725 -0.81337304190269177 1.375773814260816 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.033472143518340387</radius></sphere></geometry>
+          <geometry><sphere><radius>0.02977154381603463</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.066944287036680775 0.066944287036680775 0.066944287036680775</scale>
+            <scale>0.05954308763206926 0.05954308763206926 0.05954308763206926</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8498,28 +8916,50 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36266963620847237 0.006972660874316563 0 0 1.5707963267948966 -3.12236909238587</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66593022828590143</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_36_fruit_4">
       <static>true</static>
-      <pose>1.5927573375112825 -0.62139240184261035 1.5514796186527118 0 0 0</pose>
+      <pose>0.79007170229546209 -0.91736646856887849 1.3904486131345883 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.043858665667238228</radius></sphere></geometry>
+          <geometry><sphere><radius>0.025764226028378946</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.087717331334476456 0.087717331334476456 0.087717331334476456</scale>
+            <scale>0.051528452056757892 0.051528452056757892 0.051528452056757892</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36767374821208804 0.060784405344404574 0 0 1.5707963267948966 -2.9777529929588695</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69380027825597812</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8540,7 +8980,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8550,39 +8990,15 @@
     </model>
     <model name="tomato_37_fruit_1">
       <static>true</static>
-      <pose>1.4062653154594698 0.073675245921107579 1.5548399963626882 0 0 0</pose>
+      <pose>0.77603117579678293 -0.051786136799750165 1.3915793647475196 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.030894570592707706</radius></sphere></geometry>
+          <geometry><sphere><radius>0.026343094727678845</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.061789141185415411 0.061789141185415411 0.061789141185415411</scale>
-          </mesh></geometry>
-          <material>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
-              <metalness>0</metalness>
-              <roughness>0.4</roughness>
-            </metal></pbr>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="tomato_37_fruit_2">
-      <static>true</static>
-      <pose>1.6330818063718235 -0.18797525504043952 1.3280885791933132 0 0 0</pose>
-      <link name="fruit_link">
-        <collision name="fruit_collision">
-          <geometry><sphere><radius>0.036587301730106062</radius></sphere></geometry>
-        </collision>
-        <visual name="fruit_visual">
-          <geometry><mesh>
-            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.073174603460212123 0.073174603460212123 0.073174603460212123</scale>
+            <scale>0.05268618945535769 0.05268618945535769 0.05268618945535769</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8594,28 +9010,85 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.37512684765221138 -0.024982173141709592 0 0 1.5707963267948966 3.0750942453970618</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69922939305206122</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
-    <model name="tomato_37_fruit_3">
+    <model name="tomato_37_fruit_2">
       <static>true</static>
-      <pose>1.3445539294437292 0.022227295048415099 1.3064312045001185 0 0 0</pose>
+      <pose>0.79628652336510042 0.030921599186598286 1.355023381317729 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038099723438970209</radius></sphere></geometry>
+          <geometry><sphere><radius>0.02597040855719163</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.076199446877940419 0.076199446877940419 0.076199446877940419</scale>
+            <scale>0.05194081711438326 0.05194081711438326 0.05194081711438326</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36462288883932775 -0.067835864015503219 0 0 1.5707963267948966 2.9576517219806995</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68981805344198976</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_37_fruit_3">
+      <static>true</static>
+      <pose>0.76619877687228888 -0.15568422991620651 1.3445186311860313 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.02716860393800245</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.054337207876004899 0.054337207876004899 0.054337207876004899</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.38044596920782298 0.028869999330016674 0 0 1.5707963267948966 -3.065853188304374</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.7087423747306717</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8646,15 +9119,15 @@
     </model>
     <model name="tomato_38_fruit_0">
       <static>true</static>
-      <pose>1.543112446082221 0.39713386394892081 1.6997006918142159 0 0 0</pose>
+      <pose>0.8280921900017606 0.44734283246935846 1.3993747286520164 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.044261794167095282</radius></sphere></geometry>
+          <geometry><sphere><radius>0.029091616801068042</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.088523588334190564 0.088523588334190564 0.088523588334190564</scale>
+            <scale>0.058183233602136085 0.058183233602136085 0.058183233602136085</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8664,21 +9137,32 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35013822489537338 0.079551255189122608 0 0 1.5707963267948966 -2.9181856147773737</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65993981639709054</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_38_fruit_1">
       <static>true</static>
-      <pose>1.3148461247810976 0.68728453787612298 1.3293505762761435 0 0 0</pose>
+      <pose>0.78224994219981026 0.73408895145563979 1.3510241019044862 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.041344032456188354</radius></sphere></geometry>
+          <geometry><sphere><radius>0.029396259900048936</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.082688064912376708 0.082688064912376708 0.082688064912376708</scale>
+            <scale>0.058792519800097871 0.058792519800097871 0.058792519800097871</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8688,45 +9172,102 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.3733231925365621 -0.069743659226893503 0 0 1.5707963267948966 2.9569031902717064</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70077152381452212</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_38_fruit_2">
       <static>true</static>
-      <pose>1.3547127986953678 0.48721792147615117 1.4443493036178607 0 0 0</pose>
+      <pose>0.80403365967198781 0.53295300320814709 1.3938056517653836 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038779944379167812</radius></sphere></geometry>
+          <geometry><sphere><radius>0.031946346307011327</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.077559888758335624 0.077559888758335624 0.077559888758335624</scale>
+            <scale>0.063892692614022653 0.063892692614022653 0.063892692614022653</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.3638827339228381 0.035055207529773133 0 0 1.5707963267948966 -3.045552478588657</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66724207368317501</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
     <model name="tomato_38_fruit_3">
       <static>true</static>
-      <pose>1.6284600676612926 0.40740530641648653 1.4690934566648297 0 0 0</pose>
+      <pose>0.78454304555923837 0.6535044655269503 1.4015006812254447 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034999625904976378</radius></sphere></geometry>
+          <geometry><sphere><radius>0.030979244355382133</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.069999251809952756 0.069999251809952756 0.069999251809952756</scale>
+            <scale>0.061958488710764266 0.061958488710764266 0.061958488710764266</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.37317496667277777 -0.027907377258596006 0 0 1.5707963267948966 3.066947972736632</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68647554968322122</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_38_fruit_4">
+      <static>true</static>
+      <pose>0.83378259505773267 0.74859933968697401 1.4112035965392991 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.031737130701581129</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.063474261403162258 0.063474261403162258 0.063474261403162258</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8738,28 +9279,15 @@
             </metal></pbr>
           </material>
         </visual>
-      </link>
-    </model>
-    <model name="tomato_38_fruit_4">
-      <static>true</static>
-      <pose>1.7078031925251462 0.68824414581059379 1.6616354776942472 0 0 0</pose>
-      <link name="fruit_link">
-        <collision name="fruit_collision">
-          <geometry><sphere><radius>0.034323266930421835</radius></sphere></geometry>
-        </collision>
-        <visual name="fruit_visual">
-          <geometry><mesh>
-            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.06864653386084367 0.06864653386084367 0.06864653386084367</scale>
-          </mesh></geometry>
+        <visual name="harvest_support_visual">
+          <pose>0.34859667309782105 -0.077754251172559977 0 0 1.5707963267948966 2.9221356695988097</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65085161400742275</length>
+          </cylinder></geometry>
           <material>
-            <ambient>1 1 1 1</ambient>
-            <diffuse>1 1 1 1</diffuse>
-            <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
-              <metalness>0</metalness>
-              <roughness>0.4</roughness>
-            </metal></pbr>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -8780,7 +9308,7 @@
             <ambient>1 1 1 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <pbr><metal>
-              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
@@ -8790,15 +9318,15 @@
     </model>
     <model name="tomato_39_fruit_0">
       <static>true</static>
-      <pose>1.436594207976797 1.1382622405791147 1.3798155160500365 0 0 0</pose>
+      <pose>0.80463768559244964 1.126943445512363 1.3546267928338431 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.039864905797246934</radius></sphere></geometry>
+          <geometry><sphere><radius>0.032250319408233356</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.079729811594493868 0.079729811594493868 0.079729811594493868</scale>
+            <scale>0.064500638816466713 0.064500638816466713 0.064500638816466713</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8810,19 +9338,30 @@
             </metal></pbr>
           </material>
         </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36332900243921434 0.090422595537308539 0 0 1.5707963267948966 -2.8976754523379826</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.6843229980892559</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
       </link>
     </model>
     <model name="tomato_39_fruit_1">
       <static>true</static>
-      <pose>1.5534066543900571 1.4687033905373217 1.6493709325911134 0 0 0</pose>
+      <pose>0.78328101461935018 1.2440461926823287 1.3374461736928098 0 0 0</pose>
       <link name="fruit_link">
         <collision name="fruit_collision">
-          <geometry><sphere><radius>0.038238294586279975</radius></sphere></geometry>
+          <geometry><sphere><radius>0.025450149470025409</radius></sphere></geometry>
         </collision>
         <visual name="fruit_visual">
           <geometry><mesh>
             <uri>model://tomato_fruit/meshes/fruit.dae</uri>
-            <scale>0.07647658917255995 0.07647658917255995 0.07647658917255995</scale>
+            <scale>0.050900298940050819 0.050900298940050819 0.050900298940050819</scale>
           </mesh></geometry>
           <material>
             <ambient>1 1 1 1</ambient>
@@ -8832,6 +9371,17 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.37104596521916894 0.028967328712307432 0 0 1.5707963267948966 -3.0636813018927049</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69344965756737476</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>
@@ -10752,6 +11302,566 @@
               <metalness>0</metalness>
               <roughness>0.4</roughness>
             </metal></pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_20_fruit_4">
+      <static>true</static>
+      <pose>-0.78318310723829587 -4.8464276135330824 1.4044711644560364 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.032047433962947014</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.064094867925894028 0.064094867925894028 0.064094867925894028</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37407661538432424 -0.080142975320666276 0 0 1.5707963267948966 0.21105167341456751</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70103573705770095</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_20_fruit_5">
+      <static>true</static>
+      <pose>-0.80272171902071487 -5.1085894819239028 1.379260336925574 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.02569174787387532</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.05138349574775064 0.05138349574775064 0.05138349574775064</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.36133201714337915 0.056271445152446919 0 0 1.5707963267948966 -0.15449236422007151</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67999137981866664</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_21_fruit_3">
+      <static>true</static>
+      <pose>-0.81239193507032159 -4.3272921138321028 1.3744301857290198 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.026073066994535096</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.052146133989070191 0.052146133989070191 0.052146133989070191</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35683030916461128 0.014163087830363115 0 0 1.5707963267948966 -0.039670557552272293</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66207641562807162</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_21_fruit_4">
+      <static>true</static>
+      <pose>-0.77931158224230346 -4.2369248045499308 1.3897369923721443 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.027302884155151051</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.054605768310302102 0.054605768310302102 0.054605768310302102</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37394366519694455 -0.032727832428607884 0 0 1.5707963267948966 0.08729831160249496</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.6961404624665154</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_22_fruit_3">
+      <static>true</static>
+      <pose>-0.78307081701555525 -3.649399631484985 1.3393615962713483 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.029759538782561233</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.059519077565122466 0.059519077565122466 0.059519077565122466</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37330916288292854 0.025722673192932373 0 0 1.5707963267948966 -0.068795739259903996</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68886955679150175</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_23_fruit_2">
+      <static>true</static>
+      <pose>-0.82170133806180368 -3.0660969702256793 1.3559701868438638 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.031491953003602427</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.062983906007204854 0.062983906007204854 0.062983906007204854</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.35444344410734796 0.086793599171141517 0 0 1.5707963267948966 -0.24014738007218306</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.66684698927679031</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_25_fruit_4">
+      <static>true</static>
+      <pose>-0.77742502749117026 -1.4755628578892948 1.3680636729445248 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.027085224107977333</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.054170448215954667 0.054170448215954667 0.054170448215954667</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37482236019501292 -0.012676314058529826 0 0 1.5707963267948966 0.033806639704705307</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69590285657570505</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_28_fruit_5">
+      <static>true</static>
+      <pose>-0.77529664104498119 0.5936572206953441 1.3403742944435935 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.02714768566277017</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.05429537132554034 0.05429537132554034 0.05429537132554034</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37592500244874993 0.0032901866621300388 0 0 1.5707963267948966 -0.0087520187090910362</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.69758342953099217</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_28_fruit_6">
+      <static>true</static>
+      <pose>-0.80873595323577618 0.42967551706502205 1.3553593932578534 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.030144163365309722</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.060288326730619443 0.060288326730619443 0.060288326730619443</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.36026641714085217 0.088768093039969895 0 0 1.5707963267948966 -0.24158350663737096</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68179432543545648</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_28_fruit_7">
+      <static>true</static>
+      <pose>-0.76836415049192008 0.51351143591585979 1.3343918457424728 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.027284750242325899</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.054569500484651798 0.054569500484651798 0.054569500484651798</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt4.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37936596666514216 0.04484583108020268 0 0 1.5707963267948966 -0.11766651228784364</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70944538216895681</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_29_fruit_2">
+      <static>true</static>
+      <pose>-0.77045270159865376 1.3128232177435908 1.3413800059376477 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.026952900548607588</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.053905801097215177 0.053905801097215177 0.053905801097215177</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>-0.37824801818771087 -0.0066484472068243589 0 0 1.5707963267948966 0.017575142066844726</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.70270708569019014</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_37_fruit_5">
+      <static>true</static>
+      <pose>0.81354168552419637 -0.25616618794528745 1.3910209850708615 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.02640299463972828</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.05280598927945656 0.05280598927945656 0.05280598927945656</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35610175095823277 0.08101155131357872 0 0 1.5707963267948966 -2.9179042171148497</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67759480064824285</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_36_fruit_5">
+      <static>true</static>
+      <pose>0.80370996157244701 -0.66877501642514203 1.3992445733907353 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.030226290452395138</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.060452580904790276 0.060452580904790276 0.060452580904790276</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36299671201700823 -0.068411487947943078 0 0 1.5707963267948966 2.9553144690466588</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.67832138890846838</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_35_fruit_2">
+      <static>true</static>
+      <pose>0.80499283795569432 -1.3670541350831464 1.3590392074323931 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.027363433728868687</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.054726867457737374 0.054726867457737374 0.054726867457737374</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.36094165221986113 -0.069043461361954397 0 0 1.5707963267948966 2.9525888011967298</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.68024490305877117</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_33_fruit_6">
+      <static>true</static>
+      <pose>0.82060683058227568 -2.7973748433799517 1.4093264306807698 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.029085224145725418</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.058170448291450835 0.058170448291450835 0.058170448291450835</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35407607112890327 -0.053484659385312702 0 0 1.5707963267948966 2.9916719137913494</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65801520623017684</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="tomato_30_fruit_6">
+      <static>true</static>
+      <pose>0.81491590805701442 -4.9556131964279899 1.4112091631096813 0 0 0</pose>
+      <link name="fruit_link">
+        <collision name="fruit_collision">
+          <geometry><sphere><radius>0.031403144949955379</radius></sphere></geometry>
+        </collision>
+        <visual name="fruit_visual">
+          <geometry><mesh>
+            <uri>model://tomato_fruit/meshes/fruit.dae</uri>
+            <scale>0.062806289899910758 0.062806289899910758 0.062806289899910758</scale>
+          </mesh></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>model://tomato_0/materials/textures/AG15frt1.png</albedo_map>
+              <metalness>0</metalness>
+              <roughness>0.4</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <visual name="harvest_support_visual">
+          <pose>0.35821076594471796 -0.0232085828475064 0 0 1.5707963267948966 3.0768927848654659</pose>
+          <geometry><cylinder>
+            <radius>0.0040000000000000001</radius>
+            <length>0.65511735828697304</length>
+          </cylinder></geometry>
+          <material>
+            <ambient>0.12 0.35 0.04 1</ambient>
+            <diffuse>0.12 0.35 0.04 1</diffuse>
           </material>
         </visual>
       </link>

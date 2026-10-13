@@ -14,10 +14,16 @@
 
 ## 1. 任务范围与侧偏停车点
 
-当前默认场景为：
+当前默认场景为近侧果实 `harvest_demo_v1`，生成参数及待验证项见
+[近侧果实演示场景](harvest_demo_fruit_profile.md)。本轮只改变果实分布并更新任务资产哈希，
+下面的底盘路线和地图沿用原资产。新场景短程往返的 map 到站检查已通过，但独立真值显示
+回程定位偏差最大 0.743 m，实际停车精度尚未达标；详见上述文档的验证记录。
+实际夹取仍待定位精度、IK/MoveIt 和相机验证。
+
+当前场景：
 
 ```text
-FIELD_ID=rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42
+FIELD_ID=rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42
 6 行 × 10 株，行距 3.0 m，株距 0.7 m
 中央通道两侧：row_id=2 和 row_id=3（从 0 开始编号）
 home=(0.50, 0.00, 0.00)，坐标系为 map
@@ -38,11 +44,12 @@ map = [6, 0] + R(-π/2) × world
 `base_pose`，共 20 次采摘停车。左侧 row 2 按列 0→9 前进，右侧 row 3 按列 9→0
 倒车返回；底盘只在行端换侧，避免逐株横跨通道。
 
-下面的位姿和生成参数已在 domain 197 完成整线及锁车后停位验收，包含 20 个采摘站、
+下面的位姿和生成参数此前已在 domain 197 完成整线及锁车后停位验收，包含 20 个采摘站、
 3 个中转点和 home。加入停位检查后，3 次同目标纠偏使 27 个 Nav2 成功结果对应
-24 个已验证的逻辑到站；每个到站最终均满足 0.10 m / 5°。当前默认场景、地图和
-keepout 和上述任务已切换为默认并重新安装。新任务的控制服务、三个故障探针与
-无任务路径覆盖的默认入口检查均通过，源码、归档和安装任务哈希一致。
+24 个已验证的逻辑到站；每个到站最终均满足 0.10 m / 5°。该历史版本的控制服务、三个
+故障探针与无任务路径覆盖的默认入口检查均通过。当前近侧果实场景沿用上述地图、
+keepout 和停车几何，任务场景绑定已更新并重新安装，源码、归档和安装任务哈希一致；
+本轮未重跑完整 20 站巡航。
 
 | 顺序 | 停车位 | 底盘预设位姿 `[x,y,yaw]` / m,rad | 植株 | 作业侧 |
 | --- | --- | --- | --- | --- |
@@ -212,7 +219,7 @@ source /opt/ros/jazzy/setup.bash
 source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 NAV_MAP_DIR="$PWD/ros2_ws/src/agri_navigation/maps"
 MISSION="$PWD/ros2_ws/src/agri_task_manager/config/missions/tomato_field_default_single_corridor.yaml"
@@ -300,7 +307,7 @@ cd "/home/hgzq/Agricultural Bot/Agricultural_Bot"
 source /opt/ros/jazzy/setup.bash
 source ros2_ws/install/setup.bash
 
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MISSION="$(ros2 pkg prefix --share agri_task_manager)/config/missions/tomato_field_default_single_corridor.yaml"
 MAP_DIR="$(ros2 pkg prefix --share agri_navigation)/maps"
@@ -355,7 +362,7 @@ source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 export GZ_PARTITION="agri_stage5_${ROS_DOMAIN_ID}_$(date +%s%N)"
 
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 
 ros2 launch agri_sim_bringup tomato_field.launch.py \
@@ -427,7 +434,7 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 export ROS_DOMAIN_ID=96
 
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 
 ros2 launch agri_task_manager field_route.launch.py \
@@ -606,7 +613,7 @@ ros2 service call /field_route_executor/return_home std_srvs/srv/Trigger '{}'
 domain 197 的完整 Gazebo 路线已通过，运行 `run_id=291028000000`。本轮使用有界舵轮
 修复、侧偏期望 0.40 m / 最小原点距离 0.80 m 的任务，以及 `PARKING_CHECK`。
 全部采摘站、中转点和 home 都在锁车反馈确认后通过新鲜 TF 和连续稳定窗口检查。
-已验收默认任务 SHA-256 为
+近侧果实方案实施前，已验收侧偏路线任务的历史 SHA-256 为
 `443aec43490081c7e1c697a98ffe8b45deb96141e454b2723b229da51ed11a27`。
 原始本轮结果见
 [整线运行结果](../artifacts/navigation_stage5_20261012/run_side_3m/final_result.json)，运行与
@@ -673,7 +680,7 @@ domain 197 的 6 项控制服务检查已通过：暂停时取消目标并锁车
 改写静态任务 YAML。各版本的运行结果由匹配的报告及资产哈希证明；重新生成任务
 或修改地图、参数后，要对新版本重新执行整线验收。
 
-地图停位达标与绝对定位精度分开记录。本轮采摘站 map 位姿与独立 Gazebo 真值的最大
+地图停位达标与绝对定位精度分开记录。上述历史复测的采摘站 map 位姿与独立 Gazebo 真值的最大
 差异为 0.195671 m / 6.86288°，尚未通过阶段八绝对精度验收。稀疏真值样本和导航碰撞
 监测也不能替代接触式碰撞审计；机械臂 IK、D405 视场和实际采摘仍属于后续验收。
 
@@ -724,9 +731,9 @@ keepout、离线/实时版本绑定、Nav2 Action 调度、暂停/继续/跳过/
 的全田跨行定位问题已经解决。
 
 只读 [机械臂可达性粗界报告](../artifacts/navigation_stage5_20261012/run_side_3m/arm_reach_bound_audit.json)
-进一步确认侧偏停车没有解决全部果实的伸距问题。按当前 URDF/STL，`tool0` 的非常
+记录的是近侧果实方案实施前的原随机果实，确认当时侧偏停车没有解决全部伸距问题。按当前 URDF/STL，`tool0` 的非常
 宽松半径上界约 1.05665 m；名义夹爪 `q=0` 时，任意夹爪几何点的粗界约 1.27957 m。
-所选 20 株共有 56 个成熟果，其中仅 20 个果实表面满足后一个粗界的必要条件，36 个
+该历史场景所选 20 株共有 56 个成熟果，其中仅 20 个果实表面满足后一个粗界的必要条件，36 个
 连必要条件都不满足；6 株没有满足该条件的成熟果，另 1 株没有成熟果。通过粗界的
 果实仍可能因关节限位、接近姿态、视场或碰撞而无法采摘，报告没有执行 IK/FOV。
 
@@ -734,7 +741,8 @@ keepout、离线/实时版本绑定、Nav2 Action 调度、暂停/继续/跳过/
 导航 `map/odom→base_footprint` 的 `z=0` 是平面导航约定，不能替代物理离地高度。
 进入采摘阶段前应先校准基座高度、抓取 TCP 和真实夹爪开度，再选择近侧、较低且通过
 IK/FOV 的果实。个别远侧果实所需停车侧偏会越过通道或压缩转向余量，不能仅靠继续
-把全部停车点移近植株来解决；本轮未修改场景、株高或 URDF 尺寸。
+把全部停车点移近植株来解决。当前已改用[近侧果实演示方案](harvest_demo_fruit_profile.md)，
+20 株均有成熟距离候选；该结果仍没有替代 IK/FOV/夹取验证，URDF 尺寸未改。
 
 ## 10. RViz 航点可视测试
 

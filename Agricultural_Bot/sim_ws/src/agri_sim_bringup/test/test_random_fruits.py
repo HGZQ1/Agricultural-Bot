@@ -39,7 +39,7 @@ class RandomFruitTest(unittest.TestCase):
         return world, data
 
     def assert_scene(self, world, data, count_range=(2, 6),
-                     height_range=(0.6, 1.1), diameter_range=(0.06, 0.09),
+                     height_range=(1.0, 1.7), diameter_range=(0.06, 0.09),
                      radius_range=(0.12, 0.25), clearance=0.01):
         self.assertEqual(data["schema_version"], 1)
         self.assertEqual(data["coordinate_frame"], "world")

@@ -73,17 +73,22 @@ class TomatoFieldTest(unittest.TestCase):
         expected = {
             "rows": 6,
             "plants_per_row": 10,
-            "row_spacing": 2.0,
+            "row_spacing": 3.0,
             "plant_spacing": 0.7,
-            "origin_x": -5.0,
+            "origin_x": -7.5,
             "origin_y": -5.0,
-            "plant_height": 2.0,
+            "plant_height": 2.4,
             "plant_width": 1.0,
             "plant_collision_width": 0.06,
         }
         self.assertEqual({key: parameters[key] for key in expected}, expected)
         self.assertEqual(len(data["plants"]), 60)
-        self.assertEqual(len(data["fruits"]), 224)
+        self.assertEqual(len(data["fruits"]), 240)
+        profile = data["harvest_profile"]
+        self.assertEqual(profile["status"], "distance_candidate_pending_ik")
+        self.assertEqual(len(profile["stations"]), 20)
+        for station in profile["stations"]:
+            self.assertGreaterEqual(len(station["ripe_distance_candidate_ids"]), 1)
 
         world = ET.parse(world_path).getroot().find("world")
         plant_names = {plant["id"] for plant in data["plants"]}
