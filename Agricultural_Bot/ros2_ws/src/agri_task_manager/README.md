@@ -1,5 +1,62 @@
 # agri_task_manager
 
+新增 `harvest_preflight.launch.py` 用于接入机械臂前的显式模拟作业验收。它启动
+带 `require_harvest_handshake:=true` 的路线执行器、`harvest_coordinator` 和可选
+`mock_harvest_worker`。普通 `field_route.launch.py` 保持阶段五导航的旧模式；运行
+作业前置检测时同时在仿真入口开启 `require_harvest_interlock:=true`，使速度出口
+独立检查机械臂收纳心跳，阻断直接服务或话题绕过执行器解锁。
+
+```bash
+# 已启动匹配默认场景、导航、视觉，且仿真开启 require_harvest_interlock:=true
+ros2 launch agri_task_manager harvest_preflight.launch.py \
+  use_sim_time:=true autostart:=false enable_mock_worker:=true \
+  field_metadata:="$(ros2 pkg prefix --share agri_greenhouse_worlds)/worlds/tomato_field_default.json" \
+  field_sdf:="$(ros2 pkg prefix --share agri_greenhouse_worlds)/worlds/tomato_field_default.sdf"
+
+ros2 topic echo /harvest_coordinator/status
+ros2 topic echo /harvest_worker/state
+ros2 service call /field_route_executor/start std_srvs/srv/Trigger '{}'
+```
+
+守护模式要求锁定成功响应和本次请求后的新状态反馈；`/odom` 实测三维线速度模长
+严格小于 `0.01 m/s`、角速度 Z 绝对值小于 `0.02 rad/s`，时间戳连续增加、最大样本
+间隙/年龄 `0.35 s`，停稳至少 `0.5 s`，并通过已有的 TF 停车位姿检查。进入
+`AT_STATION` 后再积累本作业站的 `0.5 s` 停稳证据，执行器才发布
+`harvest_work_ready=true`。协调器仅选择到站后产生、RGB/深度时间差不超过 `0.05 s`、
+年龄不超过 `0.5 s` 的有效三维目标，要求成熟 `tomato_R`、置信度至少 `0.5`、稳定
+至少 3 帧、有效深度样本至少 15、有效比例至少 `0.6`、深度 MAD 不超过 `0.03 m`。
+默认 `require_segmentation:=true` 还要求实际使用分割掩膜采样；没有 mask 的检测模型
+只能显式设为 `false` 做兼容测试，不能据此证明框内深度不会被背景污染。
+
+目标按图像时间 TF 转到 `base_footprint` 后，左侧要求 Y>0.1 m、右侧 Y<-0.1 m，
+机械臂纵向基准 X=-0.17998 m 附近 ±0.30 m，平面距 0.15–1.25 m、相对底盘高度
+0.2–1.5 m。该窗口只限制当前作业侧/邻域，**不证明 IK 可达或植株身份**；任务植株
+ID 是路线上下文，状态明确包含 `plant_identity_verified=false`。上一站已用过的
+检测 ID 不会重新用于下一站，仍需实际相机/定位验收排除重复植株误定位。
+
+每站由执行器生成 UUID `work_id`，协调器报告 `STARTED` 后必须等待执行器回执，再
+向 `/harvest_work` 发送带 `run_id/waypoint_id/work_id/plant_id/work_side` 的
+`agri_harvest_interfaces/action/HarvestWork`。动作目标保留完整目标类别、置信度、
+ID 和三维质量字段；Header 是目标实际坐标系/观察时间，不带伪造抓取姿态。
+成功结果与随后一条同身份、更新的 `STOWED` 心跳都收到才完成本株并允许离站。
+整个扫描、作业和收纳阶段保持锁车；工作中速度、TF、锁或 worker 心跳丢失会失败
+并保持锁车。worker 心跳同时按 ROS 时间和墙钟 `0.75 s` 租约检查，暂停仿真时钟也
+不能无限保留作业许可。
+
+守护模式拒绝 `/complete_current` 的无身份 Trigger 完成；作业未确认终态或收纳
+反馈过期时，`start/resume/skip/return_home` 也不能触发运动。`pause/cancel` 会
+撤销采摘事件，协调器取消活动动作，等待终态和收纳。暂停后恢复会重新进行停车检查
+并生成新工作 nonce。未确认取消或终态时须排查后重启相关栈，不能通过遗留服务跳过。
+
+`mock_harvest_worker` 不发布任何关节命令，模拟 `SCANNING→WORKING→RETRACTING→STOWED`，
+仅用于消息、停稳及互锁验收。`failure_mode` 可设为 `reject/fail/no_stow/stall/heartbeat_loss`；
+这些故障均不得使底盘提前解锁。模拟成功不是实际采摘验证，实际 IK、碰撞、收纳位置
+反馈、相机视场和此前观测到的定位偏差仍需后续联合验收。实 worker 须在物理部署前
+先发布非收纳状态并确认底盘已锁定，终态后持续发布已校验的真实收纳反馈。
+
+完整复现流程见[机械臂前置检测说明](../../../docs/harvest_preflight.md)；本文以下内容
+保留原阶段五导航模式的说明。
+
 `agri_task_manager` 实现默认中央通道的阶段五预设采摘路线。当前任务为通道两侧
 `tomato_20..39` 共 20 个植株任务，每株都有独立的底盘停车位。执行器通过 Nav2
 `NavigateToPose` 沿左侧 row 2 的列 0→9 前进，在行端经过 3 个纯导航中转点换到右侧，
@@ -89,11 +146,11 @@ Nav2 内部目标判据为平面误差 `0.07 m`、航向误差 `0.05236 rad`（�
 cd "/home/hgzq/Agricultural Bot/Agricultural_Bot/ros2_ws"
 source /opt/ros/jazzy/setup.bash
 colcon build --symlink-install --packages-select \
-  agri_base_kinematics agri_navigation agri_task_manager
+  agri_harvest_interfaces agri_base_kinematics agri_navigation agri_task_manager
 source install/setup.bash
 cd ..
 
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 MISSION="$(ros2 pkg prefix --share agri_task_manager)/config/missions/tomato_field_default_single_corridor.yaml"
 MAP_DIR="$(ros2 pkg prefix --share agri_navigation)/maps"
@@ -149,7 +206,7 @@ source /opt/ros/jazzy/setup.bash
 source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 
-FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42"
+FIELD_ID="rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42"
 FIELD_DIR="$PWD/artifacts/fields/$FIELD_ID"
 
 ros2 launch agri_task_manager field_route.launch.py \

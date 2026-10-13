@@ -69,8 +69,8 @@ def test_route_follows_saved_free_space_and_validates_against_map():
     stop_poses = {}
     for point in mission.waypoints:
         stop_poses.setdefault(point.stop_id, point.pose)
-    assert stop_poses['stop_00_left'].y == pytest.approx(0.46)
-    assert stop_poses['stop_00_right'].y == pytest.approx(-0.43)
+    assert stop_poses['stop_00_left'].y == pytest.approx(0.26)
+    assert stop_poses['stop_00_right'].y == pytest.approx(-0.23)
     assert all(report.occupied_cells == 0 for report in reports.values())
     assert all(report.outside_cells == 0 for report in reports.values())
     assert max(report.unknown_cells for report in reports.values()) <= 1

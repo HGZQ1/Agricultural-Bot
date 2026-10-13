@@ -51,6 +51,7 @@ def generate_launch_description():
             DeclareLaunchArgument("spawn_yaw", default_value="1.5708"),
             DeclareLaunchArgument("use_control", default_value="false"),
             DeclareLaunchArgument("steering_effort_limit", default_value="40.0"),
+            DeclareLaunchArgument("require_harvest_interlock", default_value="false"),
             DeclareLaunchArgument(
                 "use_kinematics",
                 default_value=LaunchConfiguration("use_control"),
@@ -91,6 +92,7 @@ def generate_launch_description():
                     "spawn_yaw": LaunchConfiguration("spawn_yaw"),
                     "use_control": LaunchConfiguration("use_control"),
                     "steering_effort_limit": LaunchConfiguration("steering_effort_limit"),
+                    "require_harvest_interlock": LaunchConfiguration("require_harvest_interlock"),
                     "use_kinematics": LaunchConfiguration("use_kinematics"),
                 }.items(),
             ),

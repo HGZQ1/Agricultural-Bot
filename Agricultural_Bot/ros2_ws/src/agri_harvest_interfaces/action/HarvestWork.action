@@ -1,0 +1,17 @@
+# Goal binds one observation to one station/work transaction.
+# header matches the target's observation time/frame. No world truth input.
+std_msgs/Header header
+string work_id
+string run_id
+string waypoint_id
+string plant_id
+string work_side
+TomatoTarget target
+---
+# Success alone cannot unlock: fresh matching worker stow feedback is required.
+bool success
+bool arm_stowed
+string message
+---
+string phase
+bool arm_stowed

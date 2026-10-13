@@ -3,6 +3,10 @@
 本文说明如何在 Agricultural_Bot 的 ROS 2 仿真中启动已经接入的 YOLO 番茄
 分割节点。
 
+可靠三维目标、成熟筛选、随机深度采样和停车作业握手已加入，完整构建与测试流程见
+[机械臂接入前置检查](harvest_preflight.md)。本页的旧 `PoseArray` 输出仅供兼容；
+采摘业务应使用携带类别、置信度、目标 ID 和深度质量的 `TomatoTargetArray`。
+
 ## 1. 模型文件
 
 本项目使用 Ultralytics YOLO 分割模型。按照《需求文档.md》的目录约定，训练好的
@@ -43,7 +47,7 @@ colcon --log-base ros2_ws/log build --symlink-install \
   --base-paths ros2_ws/src \
   --build-base ros2_ws/build \
   --install-base ros2_ws/install \
-  --packages-select agri_perception
+  --packages-select agri_harvest_interfaces agri_perception
 
 source ros2_ws/install/setup.bash
 ```
@@ -70,7 +74,7 @@ source ros2_ws/install/setup.bash
 source sim_ws/install/setup.bash
 
 ros2 launch agri_perception tomato_detector.launch.py \
-  device:=0
+  device:=0 mature_only:=true
 ```
 
 如果没有设置环境变量，直接传入绝对路径：
@@ -121,6 +125,24 @@ ros2 topic echo /agri_vision/tomato_positions_base --once
 - `tomato_positions_camera` 是相机坐标系下的三维位置，单位为米；
 - `tomato_positions_base` 是通过 TF 转换到 `base_link` 后的位置，单位为米。
 
+另有两个可靠三维观察话题：
+
+```text
+/agri_vision/tomato_targets_camera
+/agri_vision/tomato_targets_base
+```
+
+类型为 `agri_harvest_interfaces/msg/TomatoTargetArray`。每个目标包含 `target_id`、
+`class_name`、`confidence`、同帧二维 `detection_index`、三维 `position`、成熟标记、
+有效深度样本数/比例/MAD、是否使用分割和多帧稳定标记。数组携带 RGB/深度时间戳、
+点的坐标系及观察有效性。默认三维输出仅含 `tomato_R`，二维检测仍包含红绿两类。
+若按前置检查命令设置 `target_frame:=base_footprint`，三维 base 话题的 header 即为
+`base_footprint`，不是固定为 `base_link`。
+
+```bash
+ros2 topic echo /agri_vision/tomato_targets_base --once
+```
+
 检查 TF：
 
 ```bash
@@ -132,10 +154,18 @@ ros2 run tf2_ros tf2_echo base_link camera_optical_frame
 
 ## 5. 当前边界和下一步
 
-当前已经完成图像检测、分割、深度反投影和 TF 坐标转换，但不会自动控制底盘或
-机械臂。`PoseArray` 的位置顺序与同一帧 YOLO 检测框顺序一致，后续应将
-`tomato_R`/`tomato_G` 类别和三维位置放入同一个目标消息，并增加时间滤波、目标
-选择和安全距离检查，之后再接入采摘动作。
+当前已经完成图像检测、分割、成熟三维目标筛选、随机深度采样中值估计、质量门、多帧
+稳定标记和采集时刻 TF 转换。无效深度会跳过目标，旧 `PoseArray` 不能按下标与完整
+二维检测数组配对；新消息已将类别和位置放在同一条目标记录中。
+
+中心邻域最多随机采样 81 个像素，有掩膜时只采其内缩区域；有效比例至少 60%、
+有效样本至少 15 个，取中值，MAD 大于 3 cm 时拒绝。RGB/深度最大时间差为 0.05 s，
+观察最大年龄为 0.5 s；输入过时、TF 不可用和输入失联会清空可靠目标。
+Point 是可见表面深度估计，尚未生成果实中心或抓取方向；旧四元数为兼容占位。
+独立实例掩膜发布、TCP/抓取姿态与规划坐标系方案见前置检查文档第 5 节。
+
+检测节点本身不发送底盘或机械臂命令。显式启动前置作业流程后，协调器可以把到站后
+的新鲜成熟稳定目标交给模拟 worker；真实机械臂需要实现同一 Action 及新鲜收纳反馈。
 
 ## 当前演示果实与机械臂交接
 

@@ -144,6 +144,9 @@ ros2 launch agri_sim_bringup tomato_field.launch.py \
 保存地图导航和 20 航点可视检查沿用 [阶段五流程](navigation_stage5.md#5-三终端启动)，
 所有终端改用相同 domain。YOLO 启动方式见 [相机接入文档](yolo_tomato_integration.md)。
 默认 D405 深度量程及其姿态仍需按相机文档设置；有候选果不等于相机当前就能测到它。
+可靠视觉输出与模拟停车作业握手的独立测试流程见
+[机械臂接入前置检查](harvest_preflight.md)。使用该流程的扩展仿真相机配置时，深度量程为
+0.07–2.0 m；真实扫描姿态和实体量程仍须单独验证。
 
 ## 5. 地图兼容与交接
 

@@ -186,6 +186,7 @@ def _prepare_simulation(context):
                 / "base_adapter.yaml"
             ),
             "use_sim_time": "true",
+            "require_harvest_interlock": LaunchConfiguration("require_harvest_interlock"),
         }.items(),
         condition=IfCondition(LaunchConfiguration("use_kinematics")),
     )
@@ -360,6 +361,7 @@ def generate_launch_description():
         DeclareLaunchArgument("steering_effort_limit", default_value="40.0",
                              description="Gazebo steering joint effort limit in N m; not a hardware motor rating."),
         DeclareLaunchArgument("use_kinematics", default_value=LaunchConfiguration("use_control")),
+        DeclareLaunchArgument("require_harvest_interlock", default_value="false"),
         DeclareLaunchArgument("use_lidar", default_value="true"),
         DeclareLaunchArgument("use_scan", default_value="false",
                              description="Publish a horizontal LaserScan from MID-360 points."),

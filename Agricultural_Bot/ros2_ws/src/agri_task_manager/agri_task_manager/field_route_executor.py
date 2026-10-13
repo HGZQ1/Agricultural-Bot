@@ -10,14 +10,17 @@ from pathlib import Path
 import signal
 import time
 from typing import Callable
+import uuid
 
 from action_msgs.msg import GoalStatus, GoalStatusArray
+
+from agri_harvest_interfaces.msg import HarvestWorkerState
 
 from ament_index_python.packages import get_package_share_directory
 
 from nav2_msgs.action import NavigateToPose
 
-from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import OccupancyGrid, Odometry
 
 import rclpy
 from rclpy.action import ActionClient
@@ -36,6 +39,7 @@ from std_srvs.srv import SetBool, Trigger
 
 from tf2_ros import Buffer, TransformListener
 
+from .harvest_safety import fresh_stamp, StoppedMotion, WorkerLease
 from .route_validation import verify_mission_map
 from .waypoint_schema import (
     HarvestWaypoint, load_mission, MissionConfigError, Pose2D, sha256_file)
@@ -77,6 +81,11 @@ class FieldRouteExecutor(Node):
             'motion_lock_state_topic', '/base_motion/locked')
         self.declare_parameter('require_motion_lock', True)
         self.declare_parameter('require_station_ack', False)
+        self.declare_parameter('require_harvest_handshake', False)
+        self.declare_parameter('odom_topic', '/odom')
+        self.declare_parameter('worker_state_topic', '/harvest_worker/state')
+        self.declare_parameter('worker_state_timeout_s', 0.75)
+        self.declare_parameter('work_timeout_s', 45.0)
         self.declare_parameter('autostart', False)
         self.declare_parameter('server_wait_timeout_s', 30.0)
         self.declare_parameter('goal_response_timeout_s', 10.0)
@@ -141,6 +150,33 @@ class FieldRouteExecutor(Node):
             self.get_parameter('require_motion_lock').value)
         self._require_station_ack = bool(
             self.get_parameter('require_station_ack').value)
+        self._require_harvest = bool(
+            self.get_parameter('require_harvest_handshake').value)
+        if self._require_harvest and not self._require_lock:
+            raise ValueError('harvest handshake requires the motion lock')
+        self._require_station_ack = self._require_station_ack or self._require_harvest
+        self._work_timeout = float(self.get_parameter('work_timeout_s').value)
+        worker_timeout = float(self.get_parameter('worker_state_timeout_s').value)
+        if not all(math.isfinite(value) and value > 0.0
+                   for value in (self._work_timeout, worker_timeout)):
+            raise ValueError('worker and work timeouts must be positive')
+        self._worker_lease = WorkerLease(worker_timeout)
+        self._motion_evidence = StoppedMotion()
+        self._lock_received_wall_s = None
+        self._lock_observation_count = 0
+        self._lock_request_observation_count = 0
+        self._work_id = ''
+        self._work_started = False
+        self._work_terminal = True
+        self._work_context = None
+        self._work_previous_context = None
+        self._work_result_pending = None
+        self._work_station_started_ns = 0
+        self._work_station_started_wall = None
+        self._work_phase = 'IDLE'
+        self._work_permission = False
+        self._work_last_report_ns = 0
+        self._work_active_received_wall = None
         self._require_live_map = bool(
             self.get_parameter('require_live_map').value)
         self._require_live_keepout = bool(
@@ -222,6 +258,15 @@ class FieldRouteExecutor(Node):
             self._lock_state_callback,
             qos,
         )
+        self._odom_subscription = self.create_subscription(
+            Odometry, str(self.get_parameter('odom_topic').value),
+            self._odom_callback, 10)
+        self._worker_subscription = self.create_subscription(
+            HarvestWorkerState,
+            str(self.get_parameter('worker_state_topic').value),
+            self._worker_callback, 10)
+        self._work_report_subscription = self.create_subscription(
+            String, '~/work_report', self._work_report_callback, 10)
         self._navigate = ActionClient(
             self, NavigateToPose,
             str(self.get_parameter('navigate_action').value))
@@ -457,6 +502,8 @@ class FieldRouteExecutor(Node):
 
     def _lock_state_callback(self, message: Bool) -> None:
         """Use the velocity gate's latched state as the lock authority."""
+        self._lock_received_wall_s = time.monotonic()
+        self._lock_observation_count = getattr(self, '_lock_observation_count', 0) + 1
         previous = self._base_lock_observed
         self._base_lock_observed = bool(message.data)
         self._base_lock_confirmed = self._base_lock_observed
@@ -483,6 +530,169 @@ class FieldRouteExecutor(Node):
                 'locked': self._base_lock_observed,
             })
             self._publish_status()
+
+    def _odom_callback(self, message: Odometry) -> None:
+        """Measure stop evidence; a lock command is not zero velocity evidence."""
+        velocity = message.twist.twist
+        self._motion_evidence.update(
+            int(message.header.stamp.sec) * 1_000_000_000 +
+            int(message.header.stamp.nanosec),
+            self.get_clock().now().nanoseconds, time.monotonic(),
+            (velocity.linear.x, velocity.linear.y, velocity.linear.z),
+            velocity.angular.z)
+
+    def _worker_callback(self, message: HarvestWorkerState) -> None:
+        """Track a worker lease separately from its matching terminal result."""
+        self._worker_lease.update(
+            message, self.get_clock().now().nanoseconds, time.monotonic())
+
+    def _work_movement_error(self) -> str | None:
+        """All movement paths share the same fresh stow/terminal interlock."""
+        if not getattr(self, '_require_harvest', False):
+            return None
+        if not self._work_terminal:
+            return 'harvest action is active or its terminal result is unconfirmed'
+        if not self._worker_lease.stowed(
+                self.get_clock().now().nanoseconds, time.monotonic(),
+                self._work_context):
+            return 'fresh matching worker STOWED acknowledgement is unavailable'
+        return None
+
+    def _harvest_work_ready(self) -> bool:
+        """Issue permission only while all live parking observations agree."""
+        if (self._state != 'AT_STATION' or self._work_started or
+                self._work_result_pending is not None or
+                self._base_lock_observed is not True or
+                self._lock_received_wall_s is None or
+                time.monotonic() - self._lock_received_wall_s > 0.35 or
+                self._work_movement_error() is not None or
+                not self._motion_evidence.ready(
+                    self.get_clock().now().nanoseconds, time.monotonic(),
+                    self._work_station_started_ns)):
+            return False
+        status, _ = self._parked_pose_status()
+        return status == 'valid'
+
+    def _work_report_callback(self, message: String) -> None:
+        """Consume matching, fresh coordinator reports without Trigger bypasses."""
+        if not getattr(self, '_require_harvest', False) or not self._work_id:
+            return
+        try:
+            payload = json.loads(message.data)
+            stamp = int(payload['stamp_ns'])
+            point = self._current_point()
+            context = (payload['run_id'], payload['waypoint_id'], payload['work_id'])
+            expected = (self._run_id, point.waypoint_id, self._work_id)
+            if (context != expected or stamp < self._work_station_started_ns or
+                    stamp <= self._work_last_report_ns or
+                    not fresh_stamp(stamp, self.get_clock().now().nanoseconds, 0.75)):
+                self._record('work_report_rejected', {'reason': 'identity or freshness'})
+                return
+            phase = payload['phase']
+        except (ValueError, TypeError, KeyError, AttributeError):
+            self._record('work_report_rejected', {'reason': 'malformed report'})
+            return
+        if phase == 'STARTED':
+            if not self._harvest_work_ready():
+                self._fail('harvest coordinator started without fresh parking permission')
+                return
+            self._work_started = True
+            self._work_terminal = False
+            self._work_previous_context = self._work_context
+            self._work_context = context
+            self._work_active_received_wall = time.monotonic()
+            self._work_phase = 'WORKING'
+            self._work_permission = False
+        elif phase == 'SUCCESS':
+            if (not self._work_started or self._state != 'AT_STATION' or
+                    payload.get('success') is not True or
+                    payload.get('arm_stowed') is not True):
+                self._fail('work success requires an active matching action and stowed result')
+                return
+            self._work_terminal = True
+            self._work_result_pending = payload
+            self._work_phase = 'WAITING_FOR_STOW_ACK'
+        elif phase == 'FAILED':
+            self._work_terminal = payload.get('terminal_confirmed') is True
+            if payload.get('action_accepted') is False and self._work_terminal:
+                self._work_context = self._work_previous_context
+            self._work_phase = 'FAILED'
+            self._work_permission = False
+            if self._state not in {'PAUSED', 'CANCELED', 'FAILED'}:
+                self._fail('harvest work failed: ' + str(payload.get('message', 'unknown')))
+        else:
+            self._record('work_report_rejected', {'reason': 'unknown phase'})
+            return
+        self._work_last_report_ns = stamp
+        self._record('harvest_work_report', payload)
+        self._publish_status()
+
+    def _check_harvest(self, now: float) -> None:
+        """Hold the base through scan/work/retraction and reject lease loss."""
+        if not getattr(self, '_require_harvest', False):
+            return
+        if self._state in {'SENDING_GOAL', 'NAVIGATING', 'RETURNING', 'ADVANCING'}:
+            error = self._work_movement_error()
+            if error is not None:
+                if self._state in {'SENDING_GOAL', 'NAVIGATING', 'RETURNING'}:
+                    self._begin_cancel('lock_mismatch')
+                else:
+                    self._fail(error)
+            return
+        if self._state != 'AT_STATION':
+            return
+        if (self._base_lock_observed is not True or
+                self._lock_received_wall_s is None or
+                now - self._lock_received_wall_s > 0.35):
+            self._fail('motion lock feedback lost during harvest')
+            return
+        if not self._motion_evidence.ready(
+                self.get_clock().now().nanoseconds, now):
+            # Initial station settling may still be accumulating its 0.5 s.
+            if self._work_started:
+                self._fail('fresh measured zero velocity lost during harvest')
+                return
+        if self._work_started:
+            status, details = self._parked_pose_status()
+            if status != 'valid':
+                self._fail('parked TF lost or displaced during harvest: ' + status)
+                return
+            anchor = self._parking_stability_anchor
+            pose = details['pose']
+            if (anchor is not None and
+                    (math.hypot(pose[0] - anchor[0], pose[1] - anchor[1]) >
+                     self._parking_stability_position_m or
+                     abs(math.atan2(math.sin(pose[2] - anchor[2]),
+                                    math.cos(pose[2] - anchor[2]))) >
+                     self._parking_stability_yaw_rad)):
+                self._fail('parked TF changed during harvest work')
+                return
+            if (not self._worker_lease.fresh(self.get_clock().now().nanoseconds, now) or
+                    (self._worker_lease.message.run_id,
+                     self._worker_lease.message.waypoint_id,
+                     self._worker_lease.message.work_id) != self._work_context):
+                if now - self._work_active_received_wall > self._worker_lease.maximum_age_s:
+                    self._fail('worker heartbeat lost or work identity changed')
+                    return
+        else:
+            self._work_permission = self._harvest_work_ready()
+        if self._work_result_pending is not None:
+            result = self._work_result_pending
+            if self._worker_lease.stowed(
+                    self.get_clock().now().nanoseconds, now, self._work_context,
+                    int(result['stamp_ns'])):
+                self._record('harvest_work_verified', {
+                    'work_id': self._work_id, 'arm_validation': 'simulated_or_reported',
+                    'actual_grasp_verified': False})
+                self._work_result_pending = None
+                self._work_started = False
+                self._work_phase = 'COMPLETED'
+                self._finish_station()
+                return
+        if (self._work_station_started_wall is not None and
+                now - self._work_station_started_wall > self._work_timeout):
+            self._fail('harvest scan/work/stow timeout; base remains locked')
+        self._publish_status()
 
     def _binding_error(self) -> str | None:
         """Return the current map or keepout failure, if any."""
@@ -518,6 +728,13 @@ class FieldRouteExecutor(Node):
             'log_path': str(self._log_path),
             'parking_retry_count': self._parking_retry_count,
             'parking_pose_check': self._parking_report,
+            'status_stamp_ns': self.get_clock().now().nanoseconds,
+            'require_harvest_handshake': getattr(self, '_require_harvest', False),
+            'work_id': getattr(self, '_work_id', ''),
+            'work_phase': getattr(self, '_work_phase', 'IDLE'),
+            'work_terminal_confirmed': getattr(self, '_work_terminal', True),
+            'harvest_work_ready': getattr(self, '_work_permission', False),
+            'plant_identity_verified': False,
         }
         if point is not None and self._state not in TERMINAL_STATES:
             payload['current'] = point.as_event()
@@ -541,6 +758,9 @@ class FieldRouteExecutor(Node):
         return response
 
     def _start_service(self, _request, response):
+        error = self._work_movement_error()
+        if error is not None:
+            return self._service_reply(response, False, error)
         if self._shutting_down:
             return self._service_reply(
                 response, False, 'mission executor is shutting down')
@@ -563,6 +783,8 @@ class FieldRouteExecutor(Node):
             return self._service_reply(
                 response, False, 'motion-lock transition is still active')
         if self._state == 'AT_STATION':
+            self._work_permission = False
+            self._publish_point_tombstone('paused')
             if self._dwell_until is not None:
                 self._paused_dwell_remaining = max(
                     0.0, self._dwell_until - time.monotonic())
@@ -581,6 +803,9 @@ class FieldRouteExecutor(Node):
             response, False, f'cannot pause while {self._state}')
 
     def _resume_service(self, _request, response):
+        error = self._work_movement_error()
+        if error is not None:
+            return self._service_reply(response, False, error)
         if self._lock_pending:
             return self._service_reply(
                 response, False, 'motion-lock transition is still active')
@@ -589,6 +814,13 @@ class FieldRouteExecutor(Node):
                 response, False, f'cannot resume while {self._state}')
         if self._parking_paused:
             self._parking_paused = False
+            self._begin_parking_check()
+        elif (getattr(self, '_require_harvest', False) and self._work_id and
+              not self._returning):
+            point = self._current_point()
+            if point is None:
+                return self._service_reply(response, False, 'no station to resume')
+            self._parking_reused_pose = True
             self._begin_parking_check()
         elif self._paused_dwell_remaining is not None:
             self._dwell_until = (
@@ -602,6 +834,9 @@ class FieldRouteExecutor(Node):
         return self._service_reply(response, True, 'mission resumed')
 
     def _skip_service(self, _request, response):
+        error = self._work_movement_error()
+        if error is not None:
+            return self._service_reply(response, False, error)
         if self._lock_pending:
             return self._service_reply(
                 response, False, 'motion-lock transition is still active')
@@ -653,6 +888,9 @@ class FieldRouteExecutor(Node):
         return self._service_reply(response, True, 'cancel queued')
 
     def _return_home_service(self, _request, response):
+        error = self._work_movement_error()
+        if error is not None:
+            return self._service_reply(response, False, error)
         if self._state == 'CANCELING':
             return self._service_reply(
                 response, False, 'goal cancellation is still in progress')
@@ -675,6 +913,10 @@ class FieldRouteExecutor(Node):
         return self._service_reply(response, True, 'return-home queued')
 
     def _complete_current_service(self, _request, response):
+        if getattr(self, '_require_harvest', False):
+            return self._service_reply(
+                response, False, 'guarded work requires a matching action result '
+                'and fresh STOWED acknowledgement; Trigger cannot complete it')
         if self._lock_pending:
             return self._service_reply(
                 response, False, 'motion-lock transition is still active')
@@ -703,7 +945,10 @@ class FieldRouteExecutor(Node):
         self._cancel_lock_confirmed = False
         self._cancel_request_generation = None
         self._unsafe_active_goal = False
-        self._run_id = str(self.get_clock().now().nanoseconds)
+        self._run_id = uuid.uuid4().hex
+        self._work_id = ''
+        self._work_phase = 'IDLE'
+        self._work_permission = False
         self._publish_point_tombstone('mission_started')
         self._record('mission_started')
         self._wait_started_at = time.monotonic()
@@ -711,6 +956,8 @@ class FieldRouteExecutor(Node):
             'WAITING_FOR_SERVERS', 'waiting for Nav2 and motion lock')
 
     def _servers_ready(self) -> bool:
+        if self._work_movement_error() is not None:
+            return False
         if ((self._require_live_map and not self._live_map_valid) or
                 (self._require_live_keepout and
                  not self._live_keepout_valid)):
@@ -771,6 +1018,14 @@ class FieldRouteExecutor(Node):
                 self._base_lock_observed != self._lock_target):
             return
         target = bool(self._lock_target)
+        if (getattr(self, '_require_harvest', False) and
+                self._lock_observation_count <= self._lock_request_observation_count):
+            return
+        if not target:
+            error = self._work_movement_error()
+            if error is not None:
+                self._start_lock_recovery('arm state changed during unlock: ' + error)
+                return
         callback = self._lock_callback
         self._clear_lock_transition()
         self._record('motion_locked' if target else 'motion_unlocked')
@@ -788,6 +1043,12 @@ class FieldRouteExecutor(Node):
         callback: Callable[[], None],
     ) -> None:
         """Request a gate state and wait for its authoritative feedback."""
+        if not target:
+            error = self._work_movement_error()
+            if error is not None:
+                self._fail('unlock blocked: ' + error)
+                return
+        self._lock_request_observation_count = getattr(self, '_lock_observation_count', 0)
         if self._shutting_down and not target:
             return
         if self._lock_pending:
@@ -1014,6 +1275,10 @@ class FieldRouteExecutor(Node):
     ) -> None:
         if self._shutting_down:
             return
+        error = self._work_movement_error()
+        if error is not None:
+            self._fail('navigation blocked: ' + error)
+            return
         if self._binding_error() is not None:
             self._fail(self._binding_error() or 'map binding error')
             return
@@ -1230,9 +1495,18 @@ class FieldRouteExecutor(Node):
         if self._require_lock and self._base_lock_observed is not True:
             self._start_lock_recovery('base unlocked during parked-pose verification')
             return
+        if (getattr(self, '_require_harvest', False) and
+                (self._lock_received_wall_s is None or
+                 now - self._lock_received_wall_s > 0.35)):
+            self._start_lock_recovery('motion lock heartbeat lost during parking check')
+            return
         status, details = self._parked_pose_status(now)
         self._parking_report = {'status': status, **details}
-        if status in {'valid', 'outside'}:
+        measured_stopped = (
+            not getattr(self, '_require_harvest', False) or
+            self._motion_evidence.ready(
+                self.get_clock().now().nanoseconds, now, self._parking_started_ns))
+        if status in {'valid', 'outside'} and measured_stopped:
             pose = details['pose']
             anchor = self._parking_stability_anchor
             moved = (anchor is None or
@@ -1277,7 +1551,8 @@ class FieldRouteExecutor(Node):
             self._record('parked_pose_failed', {
                 'kind': self._goal_kind, 'label': self._goal_label,
                 'retry_count': self._parking_retry_count, **self._parking_report})
-            self._fail('parked pose could not be verified with fresh, stable TF: ' + status)
+            self._fail('parked pose could not be verified with fresh stable TF '
+                       'and measured stopped odometry: ' + status)
 
     def _finish_parking_check(self) -> None:
         """Publish task completion only after the parking evidence passes."""
@@ -1314,6 +1589,19 @@ class FieldRouteExecutor(Node):
         event = point.as_event()
         event['mission_id'] = self._mission.mission_id
         event['run_id'] = self._run_id
+        if getattr(self, '_require_harvest', False):
+            self._work_id = uuid.uuid4().hex
+            self._work_started = False
+            self._work_terminal = True
+            self._work_result_pending = None
+            self._work_station_started_ns = self.get_clock().now().nanoseconds
+            self._work_station_started_wall = time.monotonic()
+            self._work_phase = 'SCANNING'
+            self._work_permission = False
+            self._work_last_report_ns = 0
+            event['work_id'] = self._work_id
+            event['station_started_ns'] = self._work_station_started_ns
+            event['plant_identity_verified'] = False
         event['active'] = True
         event['reused_base_pose'] = reused_pose
         self._point_pub.publish(String(
@@ -1338,6 +1626,10 @@ class FieldRouteExecutor(Node):
             data=json.dumps(payload, ensure_ascii=False, sort_keys=True)))
 
     def _finish_station(self, skipped: bool = False) -> None:
+        error = self._work_movement_error()
+        if error is not None:
+            self._fail('station completion blocked: ' + error)
+            return
         if self._require_lock and self._base_lock_observed is not True:
             self._start_lock_recovery(
                 'cannot finish harvest point while base lock state is '
@@ -1353,6 +1645,8 @@ class FieldRouteExecutor(Node):
             'harvest_point_skipped' if skipped else
             'harvest_point_completed')
         self._dwell_until = None
+        self._work_permission = False
+        self._work_id = ''
         self._index += 1
         self._advance_from_locked()
 
@@ -1481,6 +1775,7 @@ class FieldRouteExecutor(Node):
         self._fail(message, preserve_goal=True)
 
     def _fail(self, message: str, preserve_goal: bool = False) -> None:
+        self._work_permission = False
         self._parking_started_at = None
         self._parking_paused = False
         self.get_logger().error(message)
@@ -1534,6 +1829,7 @@ class FieldRouteExecutor(Node):
         if self._shutting_down:
             return
         now = time.monotonic()
+        self._check_harvest(now)
         if self._lock_recovery:
             self._maybe_finish_lock_recovery()
             if (self._lock_recovery_request_pending and

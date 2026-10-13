@@ -1,13 +1,17 @@
 """ROS 2 TwistStamped arbitration, watchdog, limit and lock node."""
 
+import time
+
 from geometry_msgs.msg import TwistStamped
 import rclpy
+from rclpy.clock import Clock, ClockType
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import Bool, String
 from std_srvs.srv import SetBool
 
 from .velocity_gate import timestamp_is_current, VelocityGateCore
+from .harvest_interlock import HarvestInterlock
 
 
 class VelocityGateNode(Node):
@@ -31,6 +35,11 @@ class VelocityGateNode(Node):
         self.declare_parameter('max_linear_x', 0.30)
         self.declare_parameter('max_linear_y', 0.0)
         self.declare_parameter('max_angular_z', 0.50)
+        self.declare_parameter('require_harvest_interlock', False)
+        self.declare_parameter('harvest_worker_state_topic', '/harvest_worker/state')
+        self.declare_parameter('harvest_worker_timeout_s', 0.75)
+        self.declare_parameter('harvest_worker_max_age_s', 0.5)
+        self.declare_parameter('harvest_worker_future_skew_s', 0.05)
 
         publish_rate = float(self.get_parameter('publish_rate').value)
         if publish_rate <= 0.0:
@@ -63,6 +72,17 @@ class VelocityGateNode(Node):
                 self._maximum_future_skew < 0.0):
             raise ValueError('input age must be positive and future skew nonnegative')
         self._last_source = None
+        self._stopping = False
+        self._interlock_reason = None
+        self._harvest_interlock = None
+        if bool(self.get_parameter('require_harvest_interlock').value):
+            self._harvest_interlock = HarvestInterlock(
+                receipt_timeout=float(self.get_parameter('harvest_worker_timeout_s').value),
+                maximum_age=float(self.get_parameter('harvest_worker_max_age_s').value),
+                future_skew=float(self.get_parameter('harvest_worker_future_skew_s').value),
+            )
+            # An enabled interlock starts locked before any worker exists.
+            self._core.set_locked(True)
 
         state_qos = QoSProfile(
             depth=1,
@@ -87,13 +107,29 @@ class VelocityGateNode(Node):
         self._lock_service = self.create_service(
             SetBool, self.get_parameter('lock_service').value,
             self._set_lock_service)
-        self._timer = self.create_timer(1.0 / publish_rate, self._publish_selected)
-        self._publish_state('watchdog')
+        self._worker_state_subscription = None
+        if self._harvest_interlock is not None:
+            from agri_harvest_interfaces.msg import HarvestWorkerState
+            self._worker_state_subscription = self.create_subscription(
+                HarvestWorkerState,
+                str(self.get_parameter('harvest_worker_state_topic').value),
+                self._worker_state_callback,
+                QoSProfile(depth=10, reliability=ReliabilityPolicy.RELIABLE,
+                           durability=DurabilityPolicy.VOLATILE),
+            )
+        # The worker watchdog must still expire when simulation /clock pauses.
+        self._timer_clock = Clock(clock_type=ClockType.STEADY_TIME)
+        self._timer = self.create_timer(
+            1.0 / publish_rate, self._publish_selected, clock=self._timer_clock)
+        self._publish_selected()
 
     def _now_seconds(self) -> float:
         return self.get_clock().now().nanoseconds / 1e9
 
     def _on_command(self, source: str, message: TwistStamped) -> None:
+        if not self._enforce_harvest_interlock():
+            self._core.clear_source(source)
+            return
         if message.header.frame_id != self._frame_id:
             self._core.clear_source(source)
             self.get_logger().warning(
@@ -119,14 +155,49 @@ class VelocityGateNode(Node):
             self._core.clear_source(source)
             self.get_logger().warning(f'rejected nonfinite {source} velocity command')
 
-    def _set_locked(self, locked: bool) -> None:
-        self._core.set_locked(locked)
+    def _worker_state_callback(self, message) -> None:
+        stamp = float(message.header.stamp.sec) + float(
+            message.header.stamp.nanosec) / 1e9
+        self._harvest_interlock.observe(
+            stamp=stamp, ros_now=self._now_seconds(), wall_now=time.monotonic(),
+            arm_stowed=message.arm_stowed, phase=message.phase)
+        # Deployment revokes motion immediately, without waiting for a timer.
         self._publish_selected()
 
+    def _enforce_harvest_interlock(self) -> bool:
+        if self._stopping:
+            self._core.set_locked(True)
+            return False
+        if self._harvest_interlock is None:
+            return True
+        allowed = self._harvest_interlock.permits_unlock(
+            ros_now=self._now_seconds(), wall_now=time.monotonic())
+        if not allowed and not self._core.locked:
+            self._core.set_locked(True)
+        reason = self._harvest_interlock.reason
+        if reason != self._interlock_reason:
+            self._interlock_reason = reason
+            if not allowed:
+                self.get_logger().warning(f'Harvest motion interlock: {reason}')
+        return allowed
+
+    def _set_locked(self, locked: bool) -> bool:
+        if not locked and not self._enforce_harvest_interlock():
+            self._publish_selected()
+            return False
+        self._core.set_locked(locked)
+        self._publish_selected()
+        return True
+
     def _set_lock_service(self, request, response):
-        self._set_locked(request.data)
-        response.success = True
-        response.message = 'base motion locked' if request.data else 'base motion unlocked'
+        accepted = self._set_locked(request.data)
+        response.success = accepted
+        if accepted:
+            response.message = 'base motion locked' if request.data else 'base motion unlocked'
+        else:
+            reason = ('gate is shutting down' if self._stopping else
+                      self._harvest_interlock.reason)
+            response.message = f'base unlock rejected: {reason}'
         return response
 
     def _publish_state(self, source: str) -> None:
@@ -136,8 +207,11 @@ class VelocityGateNode(Node):
             self._last_source = source
 
     def _publish_selected(self) -> None:
+        permitted = self._enforce_harvest_interlock()
         now = self.get_clock().now()
         twist, source = self._core.select(now.nanoseconds / 1e9)
+        if not permitted:
+            source = 'harvest_interlock' if not self._stopping else 'shutdown'
         message = TwistStamped()
         message.header.stamp = now.to_msg()
         message.header.frame_id = self._frame_id
@@ -149,6 +223,7 @@ class VelocityGateNode(Node):
 
     def stop(self) -> None:
         """Best-effort locked zero output during orderly shutdown."""
+        self._stopping = True
         self._core.set_locked(True)
         for _ in range(3):
             self._publish_selected()

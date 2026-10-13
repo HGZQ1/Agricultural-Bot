@@ -43,6 +43,11 @@ def generate_launch_description() -> LaunchDescription:
         DeclareLaunchArgument(
             'motion_lock_state_topic', default_value='/base_motion/locked'),
         DeclareLaunchArgument('require_station_ack', default_value='false'),
+        DeclareLaunchArgument('require_harvest_handshake', default_value='false'),
+        DeclareLaunchArgument('odom_topic', default_value='/odom'),
+        DeclareLaunchArgument('worker_state_topic', default_value='/harvest_worker/state'),
+        DeclareLaunchArgument('worker_state_timeout_s', default_value='0.75'),
+        DeclareLaunchArgument('work_timeout_s', default_value='45.0'),
         DeclareLaunchArgument('require_live_map', default_value='true'),
         DeclareLaunchArgument('require_live_keepout', default_value='true'),
         DeclareLaunchArgument('base_frame', default_value='base_footprint'),
@@ -84,6 +89,14 @@ def generate_launch_description() -> LaunchDescription:
                 'motion_lock_state_topic'),
             'require_station_ack': ParameterValue(
                 LaunchConfiguration('require_station_ack'), value_type=bool),
+            'require_harvest_handshake': ParameterValue(
+                LaunchConfiguration('require_harvest_handshake'), value_type=bool),
+            'odom_topic': LaunchConfiguration('odom_topic'),
+            'worker_state_topic': LaunchConfiguration('worker_state_topic'),
+            'worker_state_timeout_s': ParameterValue(
+                LaunchConfiguration('worker_state_timeout_s'), value_type=float),
+            'work_timeout_s': ParameterValue(
+                LaunchConfiguration('work_timeout_s'), value_type=float),
             'require_live_map': ParameterValue(
                 LaunchConfiguration('require_live_map'), value_type=bool),
             'require_live_keepout': ParameterValue(

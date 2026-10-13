@@ -19,6 +19,13 @@ base_velocity_gate:
     max_linear_x: 0.30
     max_linear_y: 0.0
     max_angular_z: 0.50
+    # Enable for stage-seven work. Unknown/deployed/stale arm feedback keeps
+    # the final velocity output locked, including direct unlock requests.
+    require_harvest_interlock: false
+    harvest_worker_state_topic: /harvest_worker/state
+    harvest_worker_timeout_s: 0.75
+    harvest_worker_max_age_s: 0.5
+    harvest_worker_future_skew_s: 0.05
 
 base_odom_adapter:
   ros__parameters:

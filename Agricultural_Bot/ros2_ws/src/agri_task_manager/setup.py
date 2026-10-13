@@ -30,6 +30,8 @@ setup(
             'agri_task_manager.generate_single_corridor_mission:main',
             'validate_field_route = '
             'agri_task_manager.validate_field_route:main',
+            'harvest_coordinator = agri_task_manager.harvest_coordinator:main',
+            'mock_harvest_worker = agri_task_manager.mock_harvest_worker:main',
         ],
     },
 )
