@@ -22,6 +22,39 @@ feedback values must be present and finite in one `JointState` message before
 odometry is updated. The configured steering offsets account for the CAD
 module zero headings; change them only after a new calibration.
 
+`max_wheel_acceleration` limits normal changes of the final wheel commands after
+the steering alignment scale. Its default is 0.8 rad/s², corresponding to about
+0.10 m/s² when driving straight with the 0.127 m wheel radius. This also ramps
+drive when steering alignment recovers from a zero-speed hold. The limiter uses
+ROS time (`/clock` in simulation); a slower real-time factor does not increase
+the permitted acceleration. It does not extend the command watchdog.
+The current permitted speed of each wheel is a hard upper bound: decreasing
+the alignment scale or reducing a commanded speed can immediately reduce the
+output. The ramp never postpones such a reduction for smoother braking.
+
+A full zero command, including the velocity gate's locked output, bypasses the
+ramp and stops immediately. Expired commands, stale joint feedback, backwards
+time, zero elapsed time, or a timer gap exceeding the shorter of the command
+and joint feedback timeouts also stop and clear the ramp history. The next
+valid command therefore starts from zero. Odometry still uses measured wheel
+states. These changes address drive-command steps; the arm stow check remains
+unchanged and must be verified in Gazebo after rebuilding.
+
+Normal steering position references are also smoothed using ROS/SIM time.
+`max_steering_velocity` defaults to 0.5 rad/s and
+`max_steering_acceleration` to 1.0 rad/s². Initialization uses the first fresh
+measured angles. Velocity changes are limited before the bounded position
+reference is published; a changed target decelerates before reversing. Wheel
+alignment continues to compare the raw inverse-kinematics target with actual
+measured steering, so a slowly moving reference cannot falsely release drive.
+Zero or expired commands hold fresh measured steering and clear planned
+motion. Missing feedback or discontinuous time clears reference history and
+stops drive; steering publishing resumes from fresh measured angles. These
+safety transitions deliberately bypass normal steering reference continuity.
+Measured joint states and wheel odometry are never replaced with references.
+This reduces steering target steps; its effect on arm hold during turning
+still requires an actual Gazebo test.
+
 Steering uses bounded revolute joint coordinates. Equivalent wheel headings
 are selected by their direct travel within the limits; a heading shifted by
 pi also reverses that wheel's speed. Calibration and alignment checks preserve

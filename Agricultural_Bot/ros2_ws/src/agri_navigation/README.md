@@ -101,6 +101,38 @@ The filter-info message should report `type: 0`, `base: 0.0`, and
 `multiplier: 1.0`; the mask should be in `map` at 0.05 m resolution and match
 the map dimensions. A route executor must reject a different map or mask.
 
+### Separate localization and collision inputs
+
+The default continues to use `/map` and `/scan` for both localization and
+navigation. For a simulation whose rendered leaves have no collision geometry,
+a separate collision map and obstacle scan can be selected explicitly:
+
+```bash
+ros2 launch agri_navigation navigation.launch.py \
+  map:="/absolute/path/to/localization.yaml" \
+  navigation_map:="/absolute/path/to/navigation.yaml" \
+  keepout_mask:="/absolute/path/to/keepout.yaml" \
+  obstacle_scan:=/scan_obstacles \
+  use_sim_time:=true
+```
+
+`map_server` and AMCL retain the localization map on `/map`; AMCL continues to
+read `/scan`. The additional `navigation_map_server` publishes a transient-local
+`/navigation_map` in the same `map` frame and has its own lifecycle manager.
+Both costmaps read it through a static layer, which is added to the local
+costmap only in this mode. Their obstacle layers and the collision monitor read
+`obstacle_scan`. The footprint, inflation parameters, stop polygon and keepout
+filters retain their configured values.
+
+The two map YAMLs must share the world-to-map alignment, and the navigation
+map, obstacle scan and keepout must describe the same collision geometry. This
+launch does not create `/scan_obstacles` or a collision map; start the matching
+obstacle source first. If it is missing, the collision monitor retains its
+normal source timeout and stops motion. A route using these inputs also needs
+the corresponding navigation-map and scene binding checks. An empty
+`navigation_map` omits the extra map server and keeps the previous costmap plugin
+layout; `obstacle_scan` can also be selected independently.
+
 The default controller profile is specialized for the validated central
 corridor. NavFn keeps the requested goal yaw with
 `use_final_approach_orientation: false`; the shim consumes path orientations

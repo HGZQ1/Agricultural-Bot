@@ -18,6 +18,9 @@
           <always_on>true</always_on>
           <visualize>${visualize}</visualize>
           <lidar>
+            <!-- 0x0FFFFFFF: retain the visible plant for localization, but
+                 hide the simulation-only 0x20000000 hard-obstacle proxies. -->
+            <visibility_mask>268435455</visibility_mask>
             <scan>
               <horizontal>
                 <samples>${h_samples}</samples><resolution>1</resolution>

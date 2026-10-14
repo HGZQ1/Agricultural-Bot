@@ -2,6 +2,46 @@
 
 提供 MID-360 双后端与 D405 原生 RGB-D 仿真、参数校验、桥接和 RViz 配置。
 
+## 仿真专用硬障碍观测
+
+`use_collision_scan:=true` 可额外启用独立的 `gpu_lidar`，从原 MID-360 光心发布
+`/hard_obstacles/points`。默认关闭，不替换 `/mid360/points` 或定位用 `/scan`，
+不增加机器人实体、TF frame 或 `robot_state_publisher`。点云 frame 保持
+`mid360_sensor_frame`，安装位置和倾角直接来自 canonical URDF；重命名 header
+不承担坐标变换。
+
+配置 `config/collision_scan.yaml` 为 10 Hz、0.1–8 m、水平 720 线、垂直 16 线；
+垂直角 −35°…+52° 以倾斜传感器局部坐标表达，扩大向下覆盖，用于接近低处茎杆。
+无距离噪声。点云仅以 SensorDataQoS 单向桥接；二维投影与 Nav2 障碍输入需另行启动。
+
+它使用已明确标注的场景视觉体模拟“可以穿过的无碰撞枝叶”和“不能穿过的硬障碍”：
+
+| 对象 | `visibility_flags` | 定位 GPU LiDAR / RGB-D | 硬障碍 GPU LiDAR |
+| --- | --- | --- | --- |
+| 无碰撞枝叶 | `4` | 可见 | 不可见 |
+| 与真实茎杆碰撞箱重合的代理视觉 | `0x20000000` | 不可见 | 可见 |
+| 普通机器人、地面、果实视觉 | 普通标记 | 可见 | 可见 |
+
+普通传感器 mask 为 `0x0FFFFFFF`，硬障碍 mask 为 `0x2FFFFFFB`；SDF 输出使用
+等值十进制 unsigned int。GUI 默认 mask 同普通传感器，因此代理不会改变模型外观。
+**必须使用配套标注的场景**；普通未标注世界中的叶片仍会被这个传感器看到。
+代理应严格等于硬碰撞几何，不应通过减少茎杆或果实尺寸放行。
+
+```bash
+ros2 launch agri_sim_bringup tomato_field.launch.py \
+  world:=/absolute/path/to/marked_scene.sdf \
+  use_lidar:=true lidar_mode:=gpu_lidar use_scan:=true \
+  use_collision_scan:=true use_camera:=true
+
+ros2 topic info /hard_obstacles/points --verbose
+ros2 topic echo /hard_obstacles/points --once --field header
+```
+
+这是一种**仿真专用的场景语义观测**，不是实体 MID-360 的能力，也没有证明真实雷达
+可以忽略叶片。现有 RGL 自定义后端尚未验证这些 visibility mask，联合验证使用
+`lidar_mode:=gpu_lidar`。机器人自身遮挡、果实等普通视觉体保留，后续点云处理仍需
+使用已有机器人过滤和真实 TF；不能直接把该点云改成水平 frame 名称。
+
 ## MID-360
 
 基于 `rm_sim_26` 的双后端组织方式，适配农业机器人自己的光心、安装位姿和 ROS 接口。

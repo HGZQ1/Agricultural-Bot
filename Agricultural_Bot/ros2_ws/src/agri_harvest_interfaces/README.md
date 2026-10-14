@@ -18,6 +18,21 @@ Completion requires a successful result and fresh matching stowed feedback;
 action success or stale stow feedback alone must not release the base lock.
 Initial idle readiness may use empty identity, but cannot complete active work.
 
+`scan_before_selection=false` uses the supplied observation. When true, the goal
+contains only the request timestamp and station identity; the guarded arm worker
+first deploys the wrist camera, then selects a fresh `TomatoTargetArray` captured
+after scan arrival. Selection and grasp stay within the same acknowledged parked
+transaction. The returned `target_id` records the observation actually selected.
+`sim_fruit_verified` refers only to checked Gazebo attachment/release/basket state.
+It never asserts real-world detachment or visual plant identity.
+
+`SimFruitCommand` carries a frozen visual observation and work/plant identity.
+The planning scene exposes select/clear contact operations; the Gazebo gateway
+exposes attach/release/status. Scene truth supplies obstacles and simulation
+validation, never a replacement target observation.
+
 The mock worker exercises this transport contract without commanding any arm
-joint. Actual TCP, tool orientation, IK, trajectory collision and physical fruit
-detachment remain part of the arm integration.
+joint. The Gazebo integration in `agri_arm_control` and `agri_harvest_sim` uses
+collision-checked MoveIt motion and verifies simulated fruit detachment and
+basket state. Physical TCP calibration and field harvesting still require
+independent hardware validation.

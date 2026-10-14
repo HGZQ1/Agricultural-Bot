@@ -1,0 +1,7 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: agri_robot_description
+    relative_path: urdf/agri_robot.urdf.xacro
+    xacro_args: use_ros2_control:=true
+  srdf:
+    relative_path: config/agri_arm.srdf

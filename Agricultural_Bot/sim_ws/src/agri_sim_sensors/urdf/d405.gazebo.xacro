@@ -13,6 +13,8 @@
         <update_rate>${rate}</update_rate>
         <always_on>true</always_on>
         <camera>
+          <!-- Preserve normal scene appearance; exclude hidden stem proxies. -->
+          <visibility_mask>268435455</visibility_mask>
           <optical_frame_id>${optical_frame}</optical_frame_id>
           <horizontal_fov>${hfov}</horizontal_fov>
           <image>

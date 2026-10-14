@@ -1,5 +1,26 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_wheel_collision" params="mesh_file">
+    <collision>
+      <xacro:if value="${wheel_collision_is_cylinder}">
+        <!-- STL radius 0.127 m, width 0.100 m and center (0,0.05,0)
+             before the CAD mesh origin y=-0.05. The cylinder is centered
+             at the wheel link origin with its axis along Y. It encloses
+             the tire chamfers: local X support grows by at most 0.215 mm.
+             Visuals, inertia, joints and navigation footprint are unchanged. -->
+        <origin xyz="0 0 0" rpy="1.5707963267948966 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </xacro:if>
+      <xacro:unless value="${wheel_collision_is_cylinder}">
+        <origin xyz="0 -0.05 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://${mesh_package}/meshes/visual/${mesh_file}"/>
+        </geometry>
+      </xacro:unless>
+    </collision>
+  </xacro:macro>
   <xacro:macro name="agri_wheel_modules">
     <link name="f1_steer_link">
         <!-- Provisional 15 kg mass properties from the centered steer mesh bounds. -->
@@ -47,12 +68,7 @@
             <color rgba="${rubber_rgba}"/>
           </material>
         </visual>
-        <collision>
-          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
-          <geometry>
-            <mesh filename="package://${mesh_package}/meshes/visual/f1_wheel_link.STL"/>
-          </geometry>
-        </collision>
+        <xacro:agri_wheel_collision mesh_file="f1_wheel_link.STL" />
       </link>
     <joint name="f1_wheel_joint" type="continuous">
         <origin xyz="0 0 0" rpy="0 0.8213 0"/>
@@ -108,12 +124,7 @@
             <color rgba="${rubber_rgba}"/>
           </material>
         </visual>
-        <collision>
-          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
-          <geometry>
-            <mesh filename="package://${mesh_package}/meshes/visual/f2_wheel_link.STL"/>
-          </geometry>
-        </collision>
+        <xacro:agri_wheel_collision mesh_file="f2_wheel_link.STL" />
       </link>
     <joint name="f2_wheel_joint" type="continuous">
         <origin xyz="0 0 0" rpy="0 0.8213 0"/>
@@ -169,12 +180,7 @@
             <color rgba="${rubber_rgba}"/>
           </material>
         </visual>
-        <collision>
-          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
-          <geometry>
-            <mesh filename="package://${mesh_package}/meshes/visual/r1_wheel_link.STL"/>
-          </geometry>
-        </collision>
+        <xacro:agri_wheel_collision mesh_file="r1_wheel_link.STL" />
       </link>
     <joint name="r1_wheel_joint" type="continuous">
         <origin xyz="0 0 0" rpy="0 0.8213 0"/>
@@ -230,12 +236,7 @@
             <color rgba="${rubber_rgba}"/>
           </material>
         </visual>
-        <collision>
-          <origin xyz="0 -0.05 0" rpy="0 0 0"/>
-          <geometry>
-            <mesh filename="package://${mesh_package}/meshes/visual/r2_wheel_link.STL"/>
-          </geometry>
-        </collision>
+        <xacro:agri_wheel_collision mesh_file="r2_wheel_link.STL" />
       </link>
     <joint name="r2_wheel_joint" type="continuous">
         <origin xyz="0 0 0" rpy="0 0.8213 0"/>

@@ -4,7 +4,7 @@ from math import isfinite
 
 
 class HarvestInterlock:
-    """Require fresh, increasing, explicitly stowed worker heartbeats.
+    """Require fresh, advancing, explicitly stowed worker heartbeats.
 
     This validates the worker's reported state; it does not measure arm joints.
     A valid heartbeat only permits an explicit unlock request, never unlocks.
@@ -24,6 +24,7 @@ class HarvestInterlock:
         self._last_ros_now = None
         self._last_wall_now = None
         self._last_stamp = None
+        self._last_report = None
         self._eligible_stamp = None
         self._received_at = None
         self.reason = 'no harvest-worker heartbeat received'
@@ -45,12 +46,17 @@ class HarvestInterlock:
         self._last_wall_now = wall_now
         if jumped:
             self._last_stamp = None
+            self._last_report = None
             return self._invalidate('local clock moved backwards')
         return True
 
     def observe(self, *, stamp: float, ros_now: float, wall_now: float,
-                arm_stowed: bool, phase: str) -> bool:
-        """Reject old, duplicated or unsafe feedback without extending a lease."""
+                arm_stowed: bool, phase: str, identity: tuple = ()) -> bool:
+        """Ignore exact duplicates without renewing; revoke changed/old reports.
+
+        Identity includes the worker message frame and work context. A report
+        with the same stamp but different state must never reuse a stowed lease.
+        """
         if not self._observe_time(ros_now, wall_now):
             return False
         if not isfinite(stamp) or stamp <= 0.0:
@@ -58,10 +64,19 @@ class HarvestInterlock:
         age = ros_now - stamp
         if not -self.future_skew <= age <= self.maximum_age:
             return self._invalidate('worker stamp is stale or future')
-        if self._last_stamp is not None and stamp <= self._last_stamp:
+        report = (arm_stowed, phase, tuple(identity))
+        if self._last_stamp is not None and stamp == self._last_stamp:
+            if report != self._last_report:
+                self._last_report = report
+                return self._invalidate('worker state changed without timestamp increase')
+            # A repeated safe report is not a new observation. In particular,
+            # /clock pause and DDS retransmission cannot extend the wall lease.
+            return self.permits_unlock(ros_now=ros_now, wall_now=wall_now)
+        if self._last_stamp is not None and stamp < self._last_stamp:
             return self._invalidate('worker stamp did not increase')
         # Track deployed feedback too: an older STOWED message cannot undo it.
         self._last_stamp = stamp
+        self._last_report = report
         if arm_stowed is not True or phase not in {'IDLE', 'STOWED'}:
             return self._invalidate('worker does not report IDLE/STOWED arm')
         self._eligible_stamp = stamp

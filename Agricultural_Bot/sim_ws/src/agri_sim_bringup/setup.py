@@ -12,7 +12,8 @@ setup(
         (f"share/{package_name}", ["package.xml"]),
         (
             f"share/{package_name}/launch",
-            ["launch/simulation.launch.py", "launch/tomato_field.launch.py"],
+            ["launch/simulation.launch.py", "launch/tomato_field.launch.py",
+             "launch/harvest_arm.launch.py"],
         ),
     ],
     install_requires=["setuptools"],

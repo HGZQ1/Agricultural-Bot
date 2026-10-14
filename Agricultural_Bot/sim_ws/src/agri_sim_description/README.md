@@ -31,6 +31,8 @@ ros2 launch agri_sim_bringup simulation.launch.py gui:=false world:=mid360_valid
 | `steering_effort_limit` | `40.0` | Gazebo 四个转向关节的 effort 上限（N·m），用于当前载荷/轮胎接触模型 |
 | `use_kinematics` | 跟随 `use_control` | 启动四舵轮命令/里程计节点 |
 | `use_lidar` | `true` | 启动 MID-360 和公开点云输出 |
+| `use_collision_scan` | `false` | 额外启用仿真专用硬障碍 GPU 点云 `/hard_obstacles/points`；不替换定位扫描 |
+| `collision_scan_config` | 包内 collision_scan.yaml | 硬障碍观测配置；固定使用原 `mid360_sensor_frame` 和独立点云 topic |
 | `use_scan` | `false` | 将 MID-360 点云过滤并转换为 `/scan`；要求 `use_lidar:=true` |
 | `scan_min_height`、`scan_max_height` | `-0.40`、`0.40` | `mid360_scan_frame` 中的导航高度切片 |
 | `scan_range_min`、`scan_range_max` | `0.10`、`40.0` | 二维扫描量程（米） |
@@ -44,6 +46,12 @@ ros2 launch agri_sim_bringup simulation.launch.py gui:=false world:=mid360_valid
 | `rgl_install_prefix`、`rgl_patterns_dir` | 雷达 YAML 中配置 | 覆盖 RGL 本地缓存路径 |
 
 仅加载模型使用 `use_control:=false use_lidar:=false use_camera:=false`。
+
+配套语义场景可用 `use_collision_scan:=true` 区分无碰撞枝叶与真实硬障碍。该观测
+与原 MID-360 共用 canonical 光心和倾角，默认 720×16、10 Hz、0.1–8 m；普通
+GPU 雷达和 RGB-D 保持原场景可见性。场景标记、掩码和仿真限制见
+[agri_sim_sensors](../agri_sim_sensors/README.md)。此选项只产生点云，二维投影与
+导航代价地图配置独立处理；普通未标记世界不会自动排除叶片。
 
 当前导航场景在 10 N·m 仿真限力下曾出现右后舵轮无法达到目标角度、驱动轮因换舵
 互锁保持零速的情况。Gazebo overlay 默认使用 40 N·m；canonical 模型仍使用原来的

@@ -1,4 +1,5 @@
 from pathlib import Path
+import math
 import os
 import shlex
 import xml.etree.ElementTree as ET
@@ -10,6 +11,9 @@ from agri_sim_sensors.configuration import (
 from agri_sim_sensors.camera_configuration import (
     camera_xacro_mappings, image_bridge_environment, load_camera_config, write_camera_bridge,
     write_camera_rviz,
+)
+from agri_sim_sensors.collision_scan_configuration import (
+    collision_scan_xacro_mappings, load_collision_scan_config, write_collision_scan_bridge,
 )
 
 from ament_index_python.packages import get_package_share_directory
@@ -55,12 +59,14 @@ def _make_robot(context, model_xacro, controller_config, sensor_mappings):
         mappings={
             **sensor_mappings,
             "use_lidar": "true" if _enabled(context, "use_lidar") else "false",
+            "use_collision_scan": "true" if _enabled(context, "use_collision_scan") else "false",
             "use_camera": "true" if _enabled(context, "use_camera") else "false",
             "use_gazebo": "true",
             "use_ros2_control": "true" if control_enabled else "false",
             "use_control": "true" if control_enabled else "false",
             "controller_config": str(controller_config),
             "steering_effort_limit": LaunchConfiguration("steering_effort_limit").perform(context),
+            "wheel_collision_geometry": LaunchConfiguration("wheel_collision_geometry").perform(context),
         },
     ).toxml()
 
@@ -115,6 +121,7 @@ def _prepare_simulation(context):
     description_share = Path(get_package_share_directory("agri_robot_description"))
     control_share = Path(get_package_share_directory("agri_sim_control"))
     use_scan = _enabled(context, "use_scan")
+    use_collision_scan = _enabled(context, "use_collision_scan")
     if use_scan and not _enabled(context, "use_lidar"):
         raise ValueError("use_scan:=true requires use_lidar:=true in the simulation")
     scan_share = Path(get_package_share_directory("agri_lidar_adapter"))
@@ -131,6 +138,11 @@ def _prepare_simulation(context):
     camera_arg = LaunchConfiguration("camera_config").perform(context)
     camera_config = load_camera_config(
         Path(camera_arg) if camera_arg else sensor_share / "config" / "d405.yaml")
+    collision_scan_config = None
+    if use_collision_scan:
+        collision_arg = LaunchConfiguration("collision_scan_config").perform(context)
+        collision_scan_config = load_collision_scan_config(
+            Path(collision_arg) if collision_arg else sensor_share / "config" / "collision_scan.yaml")
     prefix_arg = LaunchConfiguration("rgl_install_prefix").perform(context)
     patterns_arg = LaunchConfiguration("rgl_patterns_dir").perform(context)
     prefix = Path(prefix_arg or config['rgl']['install_prefix'])
@@ -146,11 +158,33 @@ def _prepare_simulation(context):
     bridge_config = Path(runtime.name) / "bridge.yaml"
     clock_bridge_config = Path(runtime.name) / "clock_bridge.yaml"
     camera_bridge_config = Path(runtime.name) / "camera_bridge.yaml"
+    collision_bridge_config = Path(runtime.name) / "collision_scan_bridge.yaml"
     camera_raw_info_topic = camera_config['info_topic'] + '/gz_raw'
+    physics_overrides = {
+        "max_step_size": float(LaunchConfiguration("physics_step_size").perform(context)),
+        "real_time_factor": float(LaunchConfiguration("real_time_factor").perform(context)),
+    }
+    if any(not math.isfinite(value) or value < 0 for value in physics_overrides.values()):
+        raise ValueError("physics_step_size and real_time_factor must be finite and nonnegative")
     write_world(world_source, world, config, mode)
+    if any(value > 0 for value in physics_overrides.values()):
+        runtime_world = ET.parse(world)
+        world_element = runtime_world.getroot().find("world")
+        physics = world_element.find("physics")
+        if physics is None:
+            physics = ET.SubElement(world_element, "physics", name="runtime_physics", type="ode")
+        for name, value in physics_overrides.items():
+            if value > 0:
+                element = physics.find(name)
+                if element is None:
+                    element = ET.SubElement(physics, name)
+                element.text = str(value)
+        runtime_world.write(world, encoding="utf-8", xml_declaration=True)
     write_bridge(config, bridge_config, mode)
     write_camera_bridge(camera_config, camera_bridge_config, include_images=False,
                         info_topic_override=camera_raw_info_topic)
+    if use_collision_scan:
+        write_collision_scan_bridge(collision_scan_config, collision_bridge_config)
     model_xacro = sim_share / "urdf" / "agri_robot.gazebo.urdf.xacro"
     controller_config = control_share / "config" / "controllers.yaml"
     use_control = LaunchConfiguration("use_control")
@@ -180,11 +214,7 @@ def _prepare_simulation(context):
             )
         ),
         launch_arguments={
-            "config": str(
-                Path(get_package_share_directory("agri_base_adapter"))
-                / "config"
-                / "base_adapter.yaml"
-            ),
+            "config": LaunchConfiguration("base_adapter_config"),
             "use_sim_time": "true",
             "require_harvest_interlock": LaunchConfiguration("require_harvest_interlock"),
         }.items(),
@@ -271,8 +301,23 @@ def _prepare_simulation(context):
     actions.append(clock_bridge)
     actions.extend(_make_robot(
         context, model_xacro, controller_config,
-        {**xacro_mappings(config, mode), **camera_xacro_mappings(camera_config)},
+        {**xacro_mappings(config, mode), **camera_xacro_mappings(camera_config),
+         **(collision_scan_xacro_mappings(collision_scan_config) if use_collision_scan else {})},
     ))
+    if use_collision_scan:
+        actions.extend([
+            LogInfo(msg=("Simulation-only hard-obstacle observation: /hard_obstacles/points "
+                         "in mid360_sensor_frame; soft plant visuals are excluded. "
+                         "This is not a physical MID-360 sensing mode.")),
+            Node(
+                package="ros_gz_bridge", executable="parameter_bridge", name="collision_scan_bridge",
+                output="screen", parameters=[{
+                    "config_file": str(collision_bridge_config), "use_sim_time": True,
+                }],
+                additional_env=image_bridge_environment(
+                    sensor_share / "config" / "d405_fastdds.xml", context.environment),
+            ),
+        ])
     if _enabled(context, "use_lidar"):
         actions.append(Node(
             package="ros_gz_bridge", executable="parameter_bridge", name="mid360_bridge",
@@ -356,13 +401,24 @@ def generate_launch_description():
         DeclareLaunchArgument("rviz", default_value="false"),
         DeclareLaunchArgument("headless_rendering", default_value="true"),
         DeclareLaunchArgument("paused", default_value="false"),
+        DeclareLaunchArgument("physics_step_size", default_value="0",
+                             description="Optional physics step in seconds; 0 preserves the source world."),
+        DeclareLaunchArgument("real_time_factor", default_value="0",
+                             description="Optional desired simulation/wall time ratio; 0 preserves the source world."),
         DeclareLaunchArgument("spawn_z", default_value="0.40"),
         DeclareLaunchArgument("use_control", default_value="true"),
         DeclareLaunchArgument("steering_effort_limit", default_value="40.0",
                              description="Gazebo steering joint effort limit in N m; not a hardware motor rating."),
+        DeclareLaunchArgument("wheel_collision_geometry", default_value="mesh", choices=["mesh", "cylinder"],
+                             description="Optional simulation tire collision primitive; CAD visuals and inertia stay unchanged."),
         DeclareLaunchArgument("use_kinematics", default_value=LaunchConfiguration("use_control")),
+        DeclareLaunchArgument("base_adapter_config", default_value=str(
+            Path(get_package_share_directory("agri_base_adapter")) / "config" / "base_adapter.yaml")),
         DeclareLaunchArgument("require_harvest_interlock", default_value="false"),
         DeclareLaunchArgument("use_lidar", default_value="true"),
+        DeclareLaunchArgument("use_collision_scan", default_value="false",
+                             description="Simulation-only hard-obstacle cloud; preserves MID-360 /scan for localization."),
+        DeclareLaunchArgument("collision_scan_config", default_value=""),
         DeclareLaunchArgument("use_scan", default_value="false",
                              description="Publish a horizontal LaserScan from MID-360 points."),
         DeclareLaunchArgument("use_camera", default_value="true"),

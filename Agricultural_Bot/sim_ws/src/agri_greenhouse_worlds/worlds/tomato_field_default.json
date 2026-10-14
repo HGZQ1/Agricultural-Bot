@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 1,
   "coordinate_frame": "world",
   "seed": 42,
   "parameters": {
@@ -28,25 +28,7 @@
     "fruit_radius_min": 0.12,
     "fruit_radius_max": 0.25,
     "ripe_ratio": 0.7,
-    "fruit_min_clearance": 0.01,
-    "harvest_mission": "sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_harvest_stations.yaml",
-    "harvest_profile_ratio": 0.85,
-    "harvest_sector_half_angle": 0.25,
-    "harvest_height_min": 1.33,
-    "harvest_height_max": 1.42,
-    "harvest_radius_min": 0.68,
-    "harvest_radius_max": 0.74,
-    "harvest_diameter_min": 0.05,
-    "harvest_diameter_max": 0.065,
-    "harvest_arm_reference_height": 0.891556378129253,
-    "harvest_arm_reference_longitudinal_offset": -0.17998,
-    "harvest_shoulder_lateral_offset": 0.08,
-    "harvest_tcp_offset": 0.16,
-    "harvest_flange_radius": 0.86,
-    "harvest_pregrasp_distance": 0.08,
-    "harvest_parking_xy_allowance": 0.1,
-    "harvest_parking_yaw_allowance": 0.08726646,
-    "harvest_preserve_scan_max_z": 1.22
+    "fruit_min_clearance": 0.01
   },
   "plants": [
     {
@@ -1029,11 +1011,7 @@
       "y": -5.229008079691297,
       "z": 1.0807392262959994,
       "radius": 0.04408855710487074,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_20_fruit_1",
@@ -1042,62 +1020,16 @@
       "y": -4.823839383741474,
       "z": 1.0758817830502978,
       "radius": 0.033981995437844525,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_20_fruit_2",
       "plant_id": "tomato_20",
-      "x": -0.8066904307700281,
-      "y": -5.038686386058791,
-      "z": 1.4195707441362064,
-      "radius": 0.030318893206426938,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_20",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.259999999999483,
-          -4.9999800000000265,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9975029728366233,
-          -0.07062449420773767,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6470899551161684,
-          -5.027386466985553,
-          1.4195707441362064
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7268901929430982,
-          -5.033036426522172,
-          1.4195707441362064
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5672897172892385,
-          -5.021736507448934,
-          1.4195707441362064
-        ],
-        "arm_reference_to_fruit_center_m": 0.761030736650984,
-        "nominal_grasp_flange_distance_m": 0.6552777414917977,
-        "grasp_flange_worst_distance_m": 0.7871309433872897,
-        "pregrasp_flange_worst_distance_m": 0.7297763306300901,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.07286905661271026,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.3554182430104154,
+      "y": -4.910435724835418,
+      "z": 1.3579961417686346,
+      "radius": 0.039093132799592145,
+      "ripe": true
     },
     {
       "id": "tomato_20_fruit_3",
@@ -1106,11 +1038,7 @@
       "y": -4.925543879047437,
       "z": 1.0011838947530407,
       "radius": 0.04063177925751256,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_21_fruit_0",
@@ -1119,62 +1047,16 @@
       "y": -4.475761036100789,
       "z": 1.0489816677884172,
       "radius": 0.03546332207671896,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_21_fruit_1",
       "plant_id": "tomato_21",
-      "x": -0.8332914721028664,
-      "y": -4.443535617304121,
-      "z": 1.3868511494849125,
-      "radius": 0.031950601112788676,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_21",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999955536,
-          -4.299980000000026,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9700497638632894,
-          -0.24290626922493494,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.67808350988474,
-          -4.404670614228132,
-          1.3868511494849125
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7556874909938032,
-          -4.424103115766127,
-          1.3868511494849125
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.6004795287756768,
-          -4.385238112690137,
-          1.3868511494849125
-        ],
-        "arm_reference_to_fruit_center_m": 0.7710954790285028,
-        "nominal_grasp_flange_distance_m": 0.6565598651133255,
-        "grasp_flange_worst_distance_m": 0.798787262304073,
-        "pregrasp_flange_worst_distance_m": 0.7376924849119586,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.061212737695926944,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.4351418139218481,
+      "y": -4.445216183745771,
+      "z": 1.503827984109765,
+      "radius": 0.04272022919259503,
+      "ripe": true
     },
     {
       "id": "tomato_21_fruit_2",
@@ -1183,11 +1065,7 @@
       "y": -4.359675738991218,
       "z": 1.2069586417681628,
       "radius": 0.03603600580586587,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_22_fruit_0",
@@ -1196,164 +1074,34 @@
       "y": -3.593157387166564,
       "z": 1.2106649121958957,
       "radius": 0.039232723739270704,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_22_fruit_1",
       "plant_id": "tomato_22",
-      "x": -0.81265901119383,
-      "y": -3.577221881639,
-      "z": 1.3945898480416938,
-      "radius": 0.031121179032029045,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_22",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999962775,
-          -3.599980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9991532088920929,
-          0.041144442645803705,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6527944977710951,
-          -3.5838049924623285,
-          1.3945898480416938
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7327267544824626,
-          -3.580513437050664,
-          1.3945898480416938
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5728622410597277,
-          -3.5870965478739927,
-          1.3945898480416938
-        ],
-        "arm_reference_to_fruit_center_m": 0.7476580678743715,
-        "nominal_grasp_flange_distance_m": 0.6384291818209239,
-        "grasp_flange_worst_distance_m": 0.7744429132621182,
-        "pregrasp_flange_worst_distance_m": 0.715506285996142,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.08555708673788176,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.3016940697242496,
+      "y": -3.652398284749384,
+      "z": 1.4059893468369773,
+      "radius": 0.036448322249847516,
+      "ripe": true
     },
     {
       "id": "tomato_22_fruit_2",
       "plant_id": "tomato_22",
-      "x": -0.826667622512082,
-      "y": -3.4435483219084473,
-      "z": 1.4001762554486747,
-      "radius": 0.026160190972611068,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_22",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999962775,
-          -3.599980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9639448193632778,
-          0.26610220822589553,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6724364514139576,
-          -3.4861246752245907,
-          1.4001762554486747
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7495520369630198,
-          -3.4648364985665188,
-          1.4001762554486747
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5953208658648954,
-          -3.507412851882662,
-          1.4001762554486747
-        ],
-        "arm_reference_to_fruit_center_m": 0.7773527152579378,
-        "nominal_grasp_flange_distance_m": 0.6646510671317609,
-        "grasp_flange_worst_distance_m": 0.8046904379336404,
-        "pregrasp_flange_worst_distance_m": 0.7444168200603155,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.05530956206635962,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.5588661936254564,
+      "y": -3.3702685104299017,
+      "z": 1.3312303301365285,
+      "radius": 0.0332055210148365,
+      "ripe": true
     },
     {
       "id": "tomato_23_fruit_0",
       "plant_id": "tomato_23",
-      "x": -0.8161341793946546,
-      "y": -2.8809437548325305,
-      "z": 1.3907273792922066,
-      "radius": 0.029579135316137047,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_23",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999970014,
-          -2.8999800000000273,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9994146818678872,
-          0.034209555198947236,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6562278302957927,
-          -2.886417283664362,
-          1.3907273792922066
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7361810048452236,
-          -2.8836805192484465,
-          1.3907273792922066
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5762746557463617,
-          -2.889154048080278,
-          1.3907273792922066
-        ],
-        "arm_reference_to_fruit_center_m": 0.7475421677225986,
-        "nominal_grasp_flange_distance_m": 0.6374575508828617,
-        "grasp_flange_worst_distance_m": 0.774484654492314,
-        "pregrasp_flange_worst_distance_m": 0.7151787894630225,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.08551534550768602,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.6755646745453352,
+      "y": -2.9968445189495916,
+      "z": 1.464697685413499,
+      "radius": 0.03425679607489541,
+      "ripe": false
     },
     {
       "id": "tomato_23_fruit_1",
@@ -1362,215 +1110,43 @@
       "y": -3.0679098746856845,
       "z": 1.2172936250064408,
       "radius": 0.03352302897790026,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_24_fruit_0",
       "plant_id": "tomato_24",
-      "x": -0.7764652508225648,
-      "y": -2.1729274828491096,
-      "z": 1.37458224051684,
-      "radius": 0.0321687450714562,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_24",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.2599999999997725,
-          -2.199980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9986309774477385,
-          0.052308420753968424,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6166842944309266,
-          -2.1812968301697446,
-          1.37458224051684
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.6965747726267457,
-          -2.177112156509427,
-          1.37458224051684
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5367938162351076,
-          -2.185481503830062,
-          1.37458224051684
-        ],
-        "arm_reference_to_fruit_center_m": 0.7076596482257007,
-        "nominal_grasp_flange_distance_m": 0.6007384875834322,
-        "grasp_flange_worst_distance_m": 0.7341554359404053,
-        "pregrasp_flange_worst_distance_m": 0.6759617467105873,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.12584456405959465,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.6473251928651602,
+      "y": -2.097973544209191,
+      "z": 1.5379425373001379,
+      "radius": 0.039169109595910204,
+      "ripe": true
     },
     {
       "id": "tomato_24_fruit_1",
       "plant_id": "tomato_24",
-      "x": -0.7745060984009783,
-      "y": -2.2443474577122027,
-      "z": 1.3632653566585604,
-      "radius": 0.026076032153961853,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_24",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.2599999999997725,
-          -2.199980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9963025343629287,
-          -0.08591425971283874,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6150976929029097,
-          -2.2306011761581486,
-          1.3632653566585604
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.694801895651944,
-          -2.2374743169351756,
-          1.3632653566585604
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5353934901538754,
-          -2.2237280353811215,
-          1.3632653566585604
-        ],
-        "arm_reference_to_fruit_center_m": 0.6994243039965337,
-        "nominal_grasp_flange_distance_m": 0.5912202536784409,
-        "grasp_flange_worst_distance_m": 0.7261833642452691,
-        "pregrasp_flange_worst_distance_m": 0.6673856431647952,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1338166357547309,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.5874990647563163,
+      "y": -2.348028347728161,
+      "z": 1.2687849271749259,
+      "radius": 0.04077518873248483,
+      "ripe": true
     },
     {
       "id": "tomato_24_fruit_2",
       "plant_id": "tomato_24",
-      "x": -0.7845911147848493,
-      "y": -2.07791895682287,
-      "z": 1.4024672911716254,
-      "radius": 0.0268655714513258,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_24",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.2599999999997725,
-          -2.199980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9739821694503666,
-          0.22662465354139497,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6287539676727907,
-          -2.1141789013894936,
-          1.4024672911716254
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.70667254122882,
-          -2.096048929106182,
-          1.4024672911716254
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5508353941167613,
-          -2.1323088736728053,
-          1.4024672911716254
-        ],
-        "arm_reference_to_fruit_center_m": 0.7423777320466556,
-        "nominal_grasp_flange_distance_m": 0.6359019407606478,
-        "grasp_flange_worst_distance_m": 0.7686722066183173,
-        "pregrasp_flange_worst_distance_m": 0.7108924351590135,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09132779338168273,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.5668476477879796,
+      "y": -1.9745929720550581,
+      "z": 1.602308395795765,
+      "radius": 0.04338989739317049,
+      "ripe": true
     },
     {
       "id": "tomato_24_fruit_3",
       "plant_id": "tomato_24",
-      "x": -0.8046890346006881,
-      "y": -2.3096708267938073,
-      "z": 1.361725712942131,
-      "radius": 0.03111575785032137,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_24",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.2599999999997725,
-          -2.199980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9803191812500551,
-          -0.1974191046307864,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6478379656006792,
-          -2.2780837700528815,
-          1.361725712942131
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7262635001006836,
-          -2.2938772984233444,
-          1.361725712942131
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5694124311006747,
-          -2.2622902416824187,
-          1.361725712942131
-        ],
-        "arm_reference_to_fruit_center_m": 0.7278581079410771,
-        "nominal_grasp_flange_distance_m": 0.6144735062281395,
-        "grasp_flange_worst_distance_m": 0.7554633948125502,
-        "pregrasp_flange_worst_distance_m": 0.6946314675485847,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.10453660518744978,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.3392031826558892,
+      "y": -2.1182352680516794,
+      "z": 1.4871382434857667,
+      "radius": 0.042061647842597145,
+      "ripe": false
     },
     {
       "id": "tomato_24_fruit_4",
@@ -1579,113 +1155,25 @@
       "y": -2.14576779462339,
       "z": 1.0933373738899201,
       "radius": 0.031820378987840764,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_25_fruit_0",
       "plant_id": "tomato_25",
-      "x": -0.796667490774168,
-      "y": -1.396587809271536,
-      "z": 1.404165080458821,
-      "radius": 0.03219766778101185,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_25",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999984487,
-          -1.499980000000022,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.984822997398987,
-          0.17356170025116363,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.63909581119033,
-          -1.4243576813117222,
-          1.404165080458821
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.717881650982249,
-          -1.410472745291629,
-          1.404165080458821
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.560309971398411,
-          -1.4382426173318152,
-          1.404165080458821
-        ],
-        "arm_reference_to_fruit_center_m": 0.7858984486173005,
-        "nominal_grasp_flange_distance_m": 0.6727626862193079,
-        "grasp_flange_worst_distance_m": 0.8132933120264136,
-        "pregrasp_flange_worst_distance_m": 0.7528747864874286,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.04670668797358635,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.4540434767435215,
+      "y": -1.305716586092799,
+      "z": 1.6239981480673058,
+      "radius": 0.044250594126647336,
+      "ripe": true
     },
     {
       "id": "tomato_25_fruit_1",
       "plant_id": "tomato_25",
-      "x": -0.790562611476435,
-      "y": -1.3414762346736568,
-      "z": 1.3393232703563094,
-      "radius": 0.025592927344939394,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_25",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999984487,
-          -1.499980000000022,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9646927088642088,
-          0.2633780124919976,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6362117780581616,
-          -1.3836167166723765,
-          1.3393232703563094
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7133871947672983,
-          -1.3625464756730166,
-          1.3393232703563094
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5590363613490249,
-          -1.4046869576717362,
-          1.3393232703563094
-        ],
-        "arm_reference_to_fruit_center_m": 0.7501143774397542,
-        "nominal_grasp_flange_distance_m": 0.6290406053961048,
-        "grasp_flange_worst_distance_m": 0.7790487423340784,
-        "pregrasp_flange_worst_distance_m": 0.7150629325147343,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.0809512576659216,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.4813059964791306,
+      "y": -1.26410250259103,
+      "z": 1.3835103654275798,
+      "radius": 0.042458537545821226,
+      "ripe": true
     },
     {
       "id": "tomato_25_fruit_2",
@@ -1694,11 +1182,7 @@
       "y": -1.2974708620849367,
       "z": 1.1730678162567616,
       "radius": 0.03388787322697529,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_25_fruit_3",
@@ -1707,11 +1191,7 @@
       "y": -1.6278468506908532,
       "z": 1.1922182128422767,
       "radius": 0.03940122655472672,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_26_fruit_0",
@@ -1720,215 +1200,43 @@
       "y": -0.9032706094900367,
       "z": 1.0564043603603679,
       "radius": 0.04339540249185475,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_26_fruit_1",
       "plant_id": "tomato_26",
-      "x": -0.8222136637607247,
-      "y": -0.9274703041242337,
-      "z": 1.3626486314831021,
-      "radius": 0.02769148545876026,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_26",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999991725,
-          -0.7999800000000219,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9789977246596239,
-          -0.2038711728304896,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6655740278151849,
-          -0.8948509164713554,
-          1.3626486314831021
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7438938457879548,
-          -0.9111606102977945,
-          1.3626486314831021
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.587254209842415,
-          -0.8785412226449162,
-          1.3626486314831021
-        ],
-        "arm_reference_to_fruit_center_m": 0.7829350285375678,
-        "nominal_grasp_flange_distance_m": 0.6621752764804377,
-        "grasp_flange_worst_distance_m": 0.8117346756812917,
-        "pregrasp_flange_worst_distance_m": 0.7480276767375996,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.048265324318708336,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.344847752305693,
+      "y": -0.8500153336507827,
+      "z": 1.2904075271287527,
+      "radius": 0.03320929315658981,
+      "ripe": true
     },
     {
       "id": "tomato_26_fruit_2",
       "plant_id": "tomato_26",
-      "x": -0.772880881106833,
-      "y": -0.7717069603403311,
-      "z": 1.385595104162827,
-      "radius": 0.031884861662915785,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_26",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999991725,
-          -0.7999800000000219,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9987408972315255,
-          0.05016592665512566,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6130823375497889,
-          -0.7797335086051512,
-          1.385595104162827
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.6929816093283109,
-          -0.7757202344727412,
-          1.385595104162827
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5331830657712668,
-          -0.7837467827375613,
-          1.385595104162827
-        ],
-        "arm_reference_to_fruit_center_m": 0.7494721568598616,
-        "nominal_grasp_flange_distance_m": 0.6379338163785864,
-        "grasp_flange_worst_distance_m": 0.7766755080923108,
-        "pregrasp_flange_worst_distance_m": 0.7167553051653436,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.0833244919076892,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.6994253539535378,
+      "y": -0.7069309301009928,
+      "z": 1.272633768866859,
+      "radius": 0.04249336754010731,
+      "ripe": true
     },
     {
       "id": "tomato_26_fruit_3",
       "plant_id": "tomato_26",
-      "x": -0.7912301849454518,
-      "y": -0.840179512976341,
-      "z": 1.403165435498839,
-      "radius": 0.026877409860044086,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_26",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999991725,
-          -0.7999800000000219,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9976167994606996,
-          -0.06899798137474966,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6316114970317399,
-          -0.8291398359563811,
-          1.403165435498839
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7114208409885958,
-          -0.834659674466361,
-          1.403165435498839
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5518021530748839,
-          -0.8236199974464011,
-          1.403165435498839
-        ],
-        "arm_reference_to_fruit_center_m": 0.7753633705031144,
-        "nominal_grasp_flange_distance_m": 0.6635890129025741,
-        "grasp_flange_worst_distance_m": 0.8025355733486591,
-        "pregrasp_flange_worst_distance_m": 0.7426521122842245,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.05746442665134088,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.663289184471281,
+      "y": -0.7196052039397774,
+      "z": 1.402983242767056,
+      "radius": 0.04320985009136735,
+      "ripe": true
     },
     {
       "id": "tomato_27_fruit_0",
       "plant_id": "tomato_27",
-      "x": -0.8186952811302646,
-      "y": -0.23865587114816555,
-      "z": 1.3875912901618304,
-      "radius": 0.027209463955770976,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_27",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999998964,
-          -0.09998000000002165,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9750163970757098,
-          -0.22213290038511121,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.662692657598151,
-          -0.20311460708654777,
-          1.3875912901618304
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7406939693642078,
-          -0.22088523911735666,
-          1.3875912901618304
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5846913458320943,
-          -0.18534397505573888,
-          1.3875912901618304
-        ],
-        "arm_reference_to_fruit_center_m": 0.797365397082246,
-        "nominal_grasp_flange_distance_m": 0.6794247738913742,
-        "grasp_flange_worst_distance_m": 0.8256162362954007,
-        "pregrasp_flange_worst_distance_m": 0.7631796614283034,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.03438376370459928,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.4804309591555023,
+      "y": 0.07337185173779434,
+      "z": 1.6674012369290745,
+      "radius": 0.04280171925853657,
+      "ripe": true
     },
     {
       "id": "tomato_27_fruit_1",
@@ -1937,215 +1245,43 @@
       "y": -0.17119908721687438,
       "z": 1.154377086026673,
       "radius": 0.03904878883411862,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_27_fruit_2",
       "plant_id": "tomato_27",
-      "x": -0.7829874339935715,
-      "y": 0.01598107617454944,
-      "z": 1.3705715309765685,
-      "radius": 0.027492865180279963,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_27",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999998964,
-          -0.09998000000002165,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9801295527791629,
-          0.1983584123976546,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6261667055489054,
-          -0.015756269809075296,
-          1.3705715309765685
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7045770697712385,
-          0.0001124031827370725,
-          1.3705715309765685
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5477563413265724,
-          -0.031624942800887665,
-          1.3705715309765685
-        ],
-        "arm_reference_to_fruit_center_m": 0.7557890495101467,
-        "nominal_grasp_flange_distance_m": 0.6401123965305251,
-        "grasp_flange_worst_distance_m": 0.7837307049482428,
-        "pregrasp_flange_worst_distance_m": 0.7220699528588614,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.07626929505175717,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.6017440406421002,
+      "y": -0.23937541585962027,
+      "z": 1.4753993195198447,
+      "radius": 0.035041943155475735,
+      "ripe": true
     },
     {
       "id": "tomato_27_fruit_3",
       "plant_id": "tomato_27",
-      "x": -0.8184190500470363,
-      "y": -0.12884257339155658,
-      "z": 1.4093258645927567,
-      "radius": 0.02708129942970897,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_27",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999998964,
-          -0.09998000000002165,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9988766832308706,
-          -0.047385353197955705,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.658598780730097,
-          -0.12126091687988366,
-          1.4093258645927567
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7385089153885667,
-          -0.12505174513572012,
-          1.4093258645927567
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5786886460716274,
-          -0.1174700886240472,
-          1.4093258645927567
-        ],
-        "arm_reference_to_fruit_center_m": 0.7994323171573768,
-        "nominal_grasp_flange_distance_m": 0.6854042490446546,
-        "grasp_flange_worst_distance_m": 0.826957123767676,
-        "pregrasp_flange_worst_distance_m": 0.7662175699650607,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.03304287623232394,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.4107068771212052,
+      "y": -0.18532514874889988,
+      "z": 1.4355798726818452,
+      "radius": 0.03191441695921741,
+      "ripe": true
     },
     {
       "id": "tomato_27_fruit_4",
       "plant_id": "tomato_27",
-      "x": -0.8185621337028862,
-      "y": -0.10299951285989215,
-      "z": 1.3327502235465847,
-      "radius": 0.031386375761561655,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_27",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999998964,
-          -0.09998000000002165,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9999876909113103,
-          -0.004961655556921373,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6585641031570766,
-          -0.10220564797078473,
-          1.3327502235465847
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7385631184299813,
-          -0.10260258041533843,
-          1.3327502235465847
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5785650878841717,
-          -0.10180871552623101,
-          1.3327502235465847
-        ],
-        "arm_reference_to_fruit_center_m": 0.7516708037891756,
-        "nominal_grasp_flange_distance_m": 0.6291793999998282,
-        "grasp_flange_worst_distance_m": 0.7808565481547184,
-        "pregrasp_flange_worst_distance_m": 0.716277607761313,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.0791434518452816,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": -1.4444557711281285,
+      "y": -0.23665928724147653,
+      "z": 1.2653727049316976,
+      "radius": 0.03075426950232941,
+      "ripe": false
     },
     {
       "id": "tomato_28_fruit_0",
       "plant_id": "tomato_28",
-      "x": -0.8175233869666043,
-      "y": 0.5705126308838928,
-      "z": 1.3813790700837152,
-      "radius": 0.025237606937280173,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_28",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000006204,
-          0.6000199999999837,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9989945668305887,
-          -0.04483141134254354,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6576842562737101,
-          0.5776856566986998,
-          1.3813790700837152
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7376038216201573,
-          0.5740991437912963,
-          1.3813790700837152
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.577764690927263,
-          0.5812721696061033,
-          1.3813790700837152
-        ],
-        "arm_reference_to_fruit_center_m": 0.8204474137893436,
-        "nominal_grasp_flange_distance_m": 0.698652067474841,
-        "grasp_flange_worst_distance_m": 0.8493553915592559,
-        "pregrasp_flange_worst_distance_m": 0.7853551807902133,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.010644608440744108,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.6011268447964293,
+      "y": 0.7425819046015225,
+      "z": 1.665842883902393,
+      "radius": 0.03417384923458209,
+      "ripe": true
     },
     {
       "id": "tomato_28_fruit_1",
@@ -2154,11 +1290,7 @@
       "y": 0.35700237589836437,
       "z": 1.036459925770279,
       "radius": 0.04123536391624276,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_28_fruit_2",
@@ -2167,11 +1299,7 @@
       "y": 0.4762388500066381,
       "z": 1.0281806962785367,
       "radius": 0.04435928404164552,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_28_fruit_3",
@@ -2180,11 +1308,7 @@
       "y": 0.4694856947546511,
       "z": 1.166981459322234,
       "radius": 0.039320034848792366,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_28_fruit_4",
@@ -2193,11 +1317,7 @@
       "y": 0.714330935603519,
       "z": 1.1793705875935305,
       "radius": 0.03697550975152831,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_29_fruit_0",
@@ -2206,113 +1326,25 @@
       "y": 1.3796173915734327,
       "z": 1.1146360671170394,
       "radius": 0.041666878292631486,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_29_fruit_1",
       "plant_id": "tomato_29",
-      "x": -0.8329560932475722,
-      "y": 1.1508867644354523,
-      "z": 1.3376553372780604,
-      "radius": 0.026503452292850362,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_29",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000013442,
-          1.3000199999999837,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9763136431002842,
-          -0.2163600478282687,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6767459103515268,
-          1.1855043720879754,
-          1.3376553372780604
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7548510017995496,
-          1.1681955682617138,
-          1.3376553372780604
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.598640818903504,
-          1.2028131759142369,
-          1.3376553372780604
-        ],
-        "arm_reference_to_fruit_center_m": 0.8210450089626327,
-        "nominal_grasp_flange_distance_m": 0.6922026049175343,
-        "grasp_flange_worst_distance_m": 0.8512379046424227,
-        "pregrasp_flange_worst_distance_m": 0.7842248036008143,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.008762095357577326,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": -1.6589659982861626,
+      "y": 1.3567436633119212,
+      "z": 1.6356183057332112,
+      "radius": 0.038636950926186214,
+      "ripe": true
     },
     {
       "id": "tomato_30_fruit_0",
       "plant_id": "tomato_30",
-      "x": 0.7964176255915687,
-      "y": -5.1187636645843995,
-      "z": 1.3708609310436515,
-      "radius": 0.031318295267467954,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_30",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.23000000000051707,
-          -4.999979999999976,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9787104669681057,
-          -0.2052457596323794,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6398239508766718,
-          -5.085924343043219,
-          1.3708609310436515
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7181207882341203,
-          -5.102344003813809,
-          1.3708609310436515
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5615271135192234,
-          -5.069504682272629,
-          1.3708609310436515
-        ],
-        "arm_reference_to_fruit_center_m": 0.7514461657342999,
-        "nominal_grasp_flange_distance_m": 0.6364549907553141,
-        "grasp_flange_worst_distance_m": 0.7792748488398177,
-        "pregrasp_flange_worst_distance_m": 0.7178850187817208,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.0807251511601823,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.4715769321654197,
+      "y": -4.869819596520609,
+      "z": 1.439069676920731,
+      "radius": 0.0403592162389947,
+      "ripe": false
     },
     {
       "id": "tomato_30_fruit_1",
@@ -2321,62 +1353,16 @@
       "y": -4.761670150873044,
       "z": 1.0847385455471206,
       "radius": 0.03900617422225266,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_30_fruit_2",
       "plant_id": "tomato_30",
-      "x": 0.7902602676313596,
-      "y": -4.908492760742555,
-      "z": 1.339702713949509,
-      "radius": 0.030328455833189275,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_30",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.23000000000051707,
-          -4.999979999999976,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.986928349183917,
-          0.16115965244784,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6323517317619328,
-          -4.934278305134209,
-          1.339702713949509
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7113059996966462,
-          -4.921385532938382,
-          1.339702713949509
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5533974638272194,
-          -4.947171077330037,
-          1.339702713949509
-        ],
-        "arm_reference_to_fruit_center_m": 0.7232541881951666,
-        "nominal_grasp_flange_distance_m": 0.6058372447025407,
-        "grasp_flange_worst_distance_m": 0.7516016290161137,
-        "pregrasp_flange_worst_distance_m": 0.6890311200735147,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.10839837098388627,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.6119743875390766,
+      "y": -5.148236469847489,
+      "z": 1.2593996133526393,
+      "radius": 0.036425670198521165,
+      "ripe": false
     },
     {
       "id": "tomato_30_fruit_3",
@@ -2385,113 +1371,25 @@
       "y": -4.804324917512724,
       "z": 1.073877209450799,
       "radius": 0.04233496377135087,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_30_fruit_4",
       "plant_id": "tomato_30",
-      "x": 0.8177781151838568,
-      "y": -5.007866067314272,
-      "z": 1.3517188819645245,
-      "radius": 0.0303206493588484,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_30",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.23000000000051707,
-          -4.999979999999976,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9999100076666771,
-          -0.013415534578449666,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6577925139571884,
-          -5.005719581781721,
-          1.3517188819645245
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7377853145705227,
-          -5.006792824547996,
-          1.3517188819645245
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5777997133438543,
-          -5.004646339015444,
-          1.3517188819645245
-        ],
-        "arm_reference_to_fruit_center_m": 0.7465218233126953,
-        "nominal_grasp_flange_distance_m": 0.6283222960649609,
-        "grasp_flange_worst_distance_m": 0.774946447390207,
-        "pregrasp_flange_worst_distance_m": 0.7121634899195884,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.08505355260979297,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.286812029497139,
+      "y": -4.969255870763091,
+      "z": 1.304841001505374,
+      "radius": 0.04060962965559115,
+      "ripe": true
     },
     {
       "id": "tomato_30_fruit_5",
       "plant_id": "tomato_30",
-      "x": 0.7942556621894399,
-      "y": -4.832376621778416,
-      "z": 1.4087982673243902,
-      "radius": 0.028784196083548964,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_30",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.23000000000051707,
-          -4.999979999999976,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9586051504623786,
-          0.28473876713050583,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6408788381154593,
-          -4.877934824519297,
-          1.4087982673243902
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7175672501524496,
-          -4.855155723148857,
-          1.4087982673243902
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.564190426078469,
-          -4.900713925889738,
-          1.4087982673243902
-        ],
-        "arm_reference_to_fruit_center_m": 0.7835907839182984,
-        "nominal_grasp_flange_distance_m": 0.6717556225346752,
-        "grasp_flange_worst_distance_m": 0.810751581770981,
-        "pregrasp_flange_worst_distance_m": 0.7508837991017009,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.04924841822901904,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.6729237915046253,
+      "y": -5.059440682075799,
+      "z": 1.376721034513779,
+      "radius": 0.042122988282101335,
+      "ripe": false
     },
     {
       "id": "tomato_31_fruit_0",
@@ -2500,368 +1398,70 @@
       "y": -4.534755909050795,
       "z": 1.1718466183655836,
       "radius": 0.03483456874471677,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_31_fruit_1",
       "plant_id": "tomato_31",
-      "x": 0.7818735591311977,
-      "y": -4.168468544809021,
-      "z": 1.3341976764003394,
-      "radius": 0.02848399899877435,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_31",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.28000000000044467,
-          -4.29997999999997,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.967339912309273,
-          0.25348272930021876,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.627099173161714,
-          -4.209025781497056,
-          1.3341976764003394
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7044863661464559,
-          -4.188747163153038,
-          1.3341976764003394
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5497119801769722,
-          -4.229304399841073,
-          1.3341976764003394
-        ],
-        "arm_reference_to_fruit_center_m": 0.681985081314924,
-        "nominal_grasp_flange_distance_m": 0.5698085861127626,
-        "grasp_flange_worst_distance_m": 0.7095231708122016,
-        "pregrasp_flange_worst_distance_m": 0.6489221981731553,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.15047682918779837,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.6164597028555676,
+      "y": -4.470968007095204,
+      "z": 1.3988947512748255,
+      "radius": 0.04125714422740509,
+      "ripe": true
     },
     {
       "id": "tomato_31_fruit_2",
       "plant_id": "tomato_31",
-      "x": 0.7857708102616737,
-      "y": -4.354840425231342,
-      "z": 1.3523452846035144,
-      "radius": 0.03152159375231248,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_31",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.28000000000044467,
-          -4.29997999999997,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9941686506431605,
-          -0.1078364227817194,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6267038261587681,
-          -4.337586597586267,
-          1.3523452846035144
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7062373182102208,
-          -4.346213511408805,
-          1.3523452846035144
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5471703341073152,
-          -4.328959683763729,
-          1.3523452846035144
-        ],
-        "arm_reference_to_fruit_center_m": 0.6863965290548989,
-        "nominal_grasp_flange_distance_m": 0.5778790665741269,
-        "grasp_flange_worst_distance_m": 0.713260038084223,
-        "pregrasp_flange_worst_distance_m": 0.6542397837930074,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.14673996191577698,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.517843417448708,
+      "y": -4.465166201704086,
+      "z": 1.341284952673941,
+      "radius": 0.034875212518331394,
+      "ripe": true
     },
     {
       "id": "tomato_31_fruit_3",
       "plant_id": "tomato_31",
-      "x": 0.8023737067770814,
-      "y": -4.187963140974487,
-      "z": 1.418775308835638,
-      "radius": 0.030786714982662423,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_31",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.28000000000044467,
-          -4.29997999999997,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.977771864193927,
-          0.20967160415929598,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6459302085060531,
-          -4.221510597639974,
-          1.418775308835638
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7241519576415673,
-          -4.204736869307231,
-          1.418775308835638
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5677084593705389,
-          -4.238284325972718,
-          1.418775308835638
-        ],
-        "arm_reference_to_fruit_center_m": 0.750587681175679,
-        "nominal_grasp_flange_distance_m": 0.6465463366989849,
-        "grasp_flange_worst_distance_m": 0.7764039846840701,
-        "pregrasp_flange_worst_distance_m": 0.719729879290159,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.08359601531592986,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.6898092316304498,
+      "y": -4.269445006521877,
+      "z": 1.6160751416786612,
+      "radius": 0.03894232511906144,
+      "ripe": true
     },
     {
       "id": "tomato_32_fruit_0",
       "plant_id": "tomato_32",
-      "x": 0.8266685822223794,
-      "y": -3.5007910246551583,
-      "z": 1.4093753529201853,
-      "radius": 0.029947428356060977,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_32",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000003723,
-          -3.599979999999971,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.983934883486939,
-          0.17852771509640694,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6692390008644691,
-          -3.5293554590705836,
-          1.4093753529201853
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7479537915434242,
-          -3.5150732418628707,
-          1.4093753529201853
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5905242101855139,
-          -3.543637676278296,
-          1.4093753529201853
-        ],
-        "arm_reference_to_fruit_center_m": 0.7594876445815991,
-        "nominal_grasp_flange_distance_m": 0.6516374116245163,
-        "grasp_flange_worst_distance_m": 0.7859814645606964,
-        "pregrasp_flange_worst_distance_m": 0.7277084458338396,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.07401853543930359,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.5779066164936864,
+      "y": -3.3957950861477304,
+      "z": 1.342004492794151,
+      "radius": 0.04080111996156291,
+      "ripe": true
     },
     {
       "id": "tomato_32_fruit_1",
       "plant_id": "tomato_32",
-      "x": 0.7909084194970051,
-      "y": -3.709811119621333,
-      "z": 1.4183222044183232,
-      "radius": 0.03137474877556725,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_32",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000003723,
-          -3.599979999999971,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9776646940487309,
-          -0.21017075441317143,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6344820684492081,
-          -3.6761837989152255,
-          1.4183222044183232
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7126952439731066,
-          -3.6929974592682795,
-          1.4183222044183232
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5562688929253096,
-          -3.659370138562172,
-          1.4183222044183232
-        ],
-        "arm_reference_to_fruit_center_m": 0.7420057437081172,
-        "nominal_grasp_flange_distance_m": 0.6394894772917601,
-        "grasp_flange_worst_distance_m": 0.7675679991033864,
-        "pregrasp_flange_worst_distance_m": 0.7115023328912776,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09243200089661363,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.4776814647389904,
+      "y": -3.7301978623916097,
+      "z": 1.5550530076926221,
+      "radius": 0.03736232002617879,
+      "ripe": true
     },
     {
       "id": "tomato_32_fruit_2",
       "plant_id": "tomato_32",
-      "x": 0.7931275124582654,
-      "y": -3.5363981365665107,
-      "z": 1.3385155951242467,
-      "radius": 0.02996927785628309,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_32",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000003723,
-          -3.599979999999971,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9924103856938712,
-          0.12297002222876008,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.634341850747246,
-          -3.5560733401231124,
-          1.3385155951242467
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7137346816027557,
-          -3.5462357383448113,
-          1.3385155951242467
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5549490198917363,
-          -3.565910941901413,
-          1.3385155951242467
-        ],
-        "arm_reference_to_fruit_center_m": 0.6834581472597091,
-        "nominal_grasp_flange_distance_m": 0.5720651043622917,
-        "grasp_flange_worst_distance_m": 0.7108504676854543,
-        "pregrasp_flange_worst_distance_m": 0.6505904335462827,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.14914953231454564,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.677797095592562,
+      "y": -3.563406204994838,
+      "z": 1.407088909732657,
+      "radius": 0.034593090451951324,
+      "ripe": true
     },
     {
       "id": "tomato_33_fruit_0",
       "plant_id": "tomato_33",
-      "x": 0.7931440663483491,
-      "y": -2.9689397902080565,
-      "z": 1.3726152252706068,
-      "radius": 0.030657793610085714,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_33",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000002999,
-          -2.8999799999999714,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9910905903869556,
-          -0.13318949525557847,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6345695718864361,
-          -2.947629470967164,
-          1.3726152252706068
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7138568191173926,
-          -2.95828463058761,
-          1.3726152252706068
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5552823246554797,
-          -2.9369743113467175,
-          1.3726152252706068
-        ],
-        "arm_reference_to_fruit_center_m": 0.7067459939092139,
-        "nominal_grasp_flange_distance_m": 0.5995061866269101,
-        "grasp_flange_worst_distance_m": 0.733303214304198,
-        "pregrasp_flange_worst_distance_m": 0.674966881101662,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.126696785695802,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.5189464204064955,
+      "y": -3.0540584732537988,
+      "z": 1.4919984595300382,
+      "radius": 0.03496186945793895,
+      "ripe": true
     },
     {
       "id": "tomato_33_fruit_1",
@@ -2870,62 +1470,16 @@
       "y": -2.7137557325631234,
       "z": 1.083688318878537,
       "radius": 0.03288876440177276,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_33_fruit_2",
       "plant_id": "tomato_33",
-      "x": 0.8094469322377976,
-      "y": -2.8976718627907014,
-      "z": 1.3599823918162688,
-      "radius": 0.027992944645331225,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_33",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000002999,
-          -2.8999799999999714,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.999990497405745,
-          0.004359483709206139,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6494484526528784,
-          -2.8983693801841746,
-          1.3599823918162688
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.729447692445338,
-          -2.8980206214874378,
-          1.3599823918162688
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5694492128604188,
-          -2.898718138880911,
-          1.3599823918162688
-        ],
-        "arm_reference_to_fruit_center_m": 0.7069245446663899,
-        "nominal_grasp_flange_distance_m": 0.5965883702874905,
-        "grasp_flange_worst_distance_m": 0.7340443222797918,
-        "pregrasp_flange_worst_distance_m": 0.6743860581692637,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.12595567772020821,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.2859236592804484,
+      "y": -2.8928398156027906,
+      "z": 1.3389390110488961,
+      "radius": 0.033245769598179084,
+      "ripe": true
     },
     {
       "id": "tomato_33_fruit_3",
@@ -2934,215 +1488,43 @@
       "y": -3.0451786431126946,
       "z": 1.0703682756635535,
       "radius": 0.034244980549124324,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_33_fruit_4",
       "plant_id": "tomato_33",
-      "x": 0.8095232839463982,
-      "y": -2.754449821137216,
-      "z": 1.3598129993273649,
-      "radius": 0.026501620832207282,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_33",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000002999,
-          -2.8999799999999714,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9642466874810173,
-          0.2650062747971928,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6552438139494354,
-          -2.796850825104767,
-          1.3598129993273649
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7323835489479168,
-          -2.7756503231209915,
-          1.3598129993273649
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5781040789509541,
-          -2.818051327088542,
-          1.3598129993273649
-        ],
-        "arm_reference_to_fruit_center_m": 0.7216912113201586,
-        "nominal_grasp_flange_distance_m": 0.6088577912103377,
-        "grasp_flange_worst_distance_m": 0.7492155780955254,
-        "pregrasp_flange_worst_distance_m": 0.6885830289064835,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.11078442190447457,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.3968084514418064,
+      "y": -2.810776009329097,
+      "z": 1.488192175037136,
+      "radius": 0.038300384501979125,
+      "ripe": true
     },
     {
       "id": "tomato_33_fruit_5",
       "plant_id": "tomato_33",
-      "x": 0.8245735665175217,
-      "y": -3.05820119379809,
-      "z": 1.3680654669581467,
-      "radius": 0.027763958232037173,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_33",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000002999,
-          -2.8999799999999714,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9602899310425642,
-          -0.2790040292509544,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6709271775507114,
-          -3.0135605491179374,
-          1.3680654669581467
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7477503720341165,
-          -3.0358808714580134,
-          1.3680654669581467
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5941039830673063,
-          -2.991240226777861,
-          1.3680654669581467
-        ],
-        "arm_reference_to_fruit_center_m": 0.7407126482332614,
-        "nominal_grasp_flange_distance_m": 0.6267260254864259,
-        "grasp_flange_worst_distance_m": 0.768388987188439,
-        "pregrasp_flange_worst_distance_m": 0.7073715996869986,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09161101281156103,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.6749142855417771,
+      "y": -2.9466241719339035,
+      "z": 1.4018449537384325,
+      "radius": 0.04309079602497802,
+      "ripe": true
     },
     {
       "id": "tomato_34_fruit_0",
       "plant_id": "tomato_34",
-      "x": 0.7796520887582395,
-      "y": -2.344063512886901,
-      "z": 1.3527963429617238,
-      "radius": 0.029785658008988997,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_34",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000002275,
-          -2.199979999999966,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9523042898598707,
-          -0.30515002787888995,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6272834023806603,
-          -2.295239508426279,
-          1.3527963429617238
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7034677455694499,
-          -2.31965151065659,
-          1.3527963429617238
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5510990591918706,
-          -2.2708275061959675,
-          1.3527963429617238
-        ],
-        "arm_reference_to_fruit_center_m": 0.6600676971106385,
-        "nominal_grasp_flange_distance_m": 0.556950716343168,
-        "grasp_flange_worst_distance_m": 0.6860599385378972,
-        "pregrasp_flange_worst_distance_m": 0.6291410093344452,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.17394006146210284,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.3748577007063134,
+      "y": -2.250188564604684,
+      "z": 1.6032060752392592,
+      "radius": 0.03378717585739459,
+      "ripe": true
     },
     {
       "id": "tomato_34_fruit_1",
       "plant_id": "tomato_34",
-      "x": 0.79272106365959,
-      "y": -2.269379288715283,
-      "z": 1.4198732667822496,
-      "radius": 0.030747686537747326,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_34",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000002275,
-          -2.199979999999966,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9889391339613798,
-          -0.14832191112481005,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6344908022257693,
-          -2.2456477829353134,
-          1.4198732667822496
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7136059329426797,
-          -2.2575135358252982,
-          1.4198732667822496
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5553756715088589,
-          -2.2337820300453286,
-          1.4198732667822496
-        ],
-        "arm_reference_to_fruit_center_m": 0.7057235853110101,
-        "nominal_grasp_flange_distance_m": 0.6114891085490949,
-        "grasp_flange_worst_distance_m": 0.7298830831939145,
-        "pregrasp_flange_worst_distance_m": 0.6771659273503451,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1301169168060855,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.4514311416606398,
+      "y": -2.0689885312391767,
+      "z": 1.4805157127792117,
+      "radius": 0.03865531734706227,
+      "ripe": false
     },
     {
       "id": "tomato_35_fruit_0",
@@ -3151,113 +1533,25 @@
       "y": -1.3619709940807685,
       "z": 1.082916093548023,
       "radius": 0.0449087718406533,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_35_fruit_1",
       "plant_id": "tomato_35",
-      "x": 0.8232577874012036,
-      "y": -1.419580870200096,
-      "z": 1.3981668078563747,
-      "radius": 0.02888920015533293,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_35",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000001551,
-          -1.4999799999999661,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9869750892557345,
-          0.16087315869539878,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6653417731202861,
-          -1.4453205755913598,
-          1.3981668078563747
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7442997802607448,
-          -1.432450722895728,
-          1.3981668078563747
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5863837659798273,
-          -1.4581904282869917,
-          1.3981668078563747
-        ],
-        "arm_reference_to_fruit_center_m": 0.7116329056561769,
-        "nominal_grasp_flange_distance_m": 0.6099966270270127,
-        "grasp_flange_worst_distance_m": 0.7371435294537736,
-        "pregrasp_flange_worst_distance_m": 0.6812529866562305,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.12285647054622639,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.667899209887005,
+      "y": -1.5607946223592117,
+      "z": 1.3658007745911525,
+      "radius": 0.03338530705597552,
+      "ripe": false
     },
     {
       "id": "tomato_36_fruit_0",
       "plant_id": "tomato_36",
-      "x": 0.7780976164237577,
-      "y": -0.6813676225301643,
-      "z": 1.3380385383222106,
-      "radius": 0.02697221056246206,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_36",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000000827,
-          -0.799979999999966,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9667061337436905,
-          0.25588913807023134,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6234246350247672,
-          -0.7223098846214012,
-          1.3380385383222106
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7007611257242625,
-          -0.7018387535757827,
-          1.3380385383222106
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.546088144325272,
-          -0.7427810156670197,
-          1.3380385383222106
-        ],
-        "arm_reference_to_fruit_center_m": 0.6435889132856373,
-        "nominal_grasp_flange_distance_m": 0.5398860830146104,
-        "grasp_flange_worst_distance_m": 0.6697600147929611,
-        "pregrasp_flange_worst_distance_m": 0.6124552445741901,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1902399852070389,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.4966554589257628,
+      "y": -0.600776053251783,
+      "z": 1.434719124750504,
+      "radius": 0.03458070366479041,
+      "ripe": false
     },
     {
       "id": "tomato_36_fruit_1",
@@ -3266,11 +1560,7 @@
       "y": -0.9801675338213333,
       "z": 1.1477176367137751,
       "radius": 0.03311681858735327,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_36_fruit_2",
@@ -3279,113 +1569,25 @@
       "y": -0.6893247921571475,
       "z": 1.00187300582202,
       "radius": 0.031125973033517516,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_36_fruit_3",
       "plant_id": "tomato_36",
-      "x": 0.8044267706013672,
-      "y": -0.8133730419026918,
-      "z": 1.375773814260816,
-      "radius": 0.02977154381603463,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_36",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000000827,
-          -0.799979999999966,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9996017730904267,
-          -0.028218703628531638,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.644490486906899,
-          -0.8088580493221267,
-          1.375773814260816
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7244586287541331,
-          -0.8111155456124093,
-          1.375773814260816
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5645223450596649,
-          -0.8066005530318442,
-          1.375773814260816
-        ],
-        "arm_reference_to_fruit_center_m": 0.6780314592173406,
-        "nominal_grasp_flange_distance_m": 0.5774509603147937,
-        "grasp_flange_worst_distance_m": 0.7034841687798583,
-        "pregrasp_flange_worst_distance_m": 0.6477956886168329,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.15651583122014168,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.7067543842524429,
+      "y": -0.8440190057863807,
+      "z": 1.4948690809153233,
+      "radius": 0.03347214351834039,
+      "ripe": true
     },
     {
       "id": "tomato_36_fruit_4",
       "plant_id": "tomato_36",
-      "x": 0.7900717022954621,
-      "y": -0.9173664685688785,
-      "z": 1.3904486131345883,
-      "radius": 0.025764226028378946,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_36",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000000827,
-          -0.799979999999966,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.968957400660228,
-          -0.24722774056681926,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6350385181898256,
-          -0.8778100300781874,
-          1.3904486131345883
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7125551102426438,
-          -0.897588249323533,
-          1.3904486131345883
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5575219261370074,
-          -0.8580318108328419,
-          1.3904486131345883
-        ],
-        "arm_reference_to_fruit_center_m": 0.6887227427671219,
-        "nominal_grasp_flange_distance_m": 0.589914801738344,
-        "grasp_flange_worst_distance_m": 0.7138040887480793,
-        "pregrasp_flange_worst_distance_m": 0.6589645727144708,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.14619591125192066,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.5927573375112825,
+      "y": -0.6213924018426104,
+      "z": 1.5514796186527118,
+      "radius": 0.04385866566723823,
+      "ripe": false
     },
     {
       "id": "tomato_37_fruit_0",
@@ -3394,164 +1596,34 @@
       "y": -0.23825206928110676,
       "z": 1.1573666151862168,
       "radius": 0.031721644536915686,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_37_fruit_1",
       "plant_id": "tomato_37",
-      "x": 0.7760311757967829,
-      "y": -0.051786136799750165,
-      "z": 1.3915793647475196,
-      "radius": 0.026343094727678845,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_37",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.33000000000001034,
-          -0.0999799999999658,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9942131730388153,
-          0.10742516723789891,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6169570681105725,
-          -0.068974163557814,
-          1.3915793647475196
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.6964941219536778,
-          -0.06038015017878208,
-          1.3915793647475196
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5374200142674672,
-          -0.07756817693684591,
-          1.3915793647475196
-        ],
-        "arm_reference_to_fruit_center_m": 0.6717808015859517,
-        "nominal_grasp_flange_distance_m": 0.5773462635011493,
-        "grasp_flange_worst_distance_m": 0.6961301030952102,
-        "pregrasp_flange_worst_distance_m": 0.6430431978192549,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1638698969047898,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.4062653154594698,
+      "y": 0.07367524592110758,
+      "z": 1.5548399963626882,
+      "radius": 0.030894570592707706,
+      "ripe": false
     },
     {
       "id": "tomato_37_fruit_2",
       "plant_id": "tomato_37",
-      "x": 0.7962865233651004,
-      "y": 0.030921599186598286,
-      "z": 1.355023381317729,
-      "radius": 0.02597040855719163,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_37",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.33000000000001034,
-          -0.0999799999999658,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9627807851107112,
-          0.270283480482257,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6422415977473866,
-          -0.012323757690562834,
-          1.355023381317729
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7192640605562435,
-          0.009298920748017726,
-          1.355023381317729
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5652191349385297,
-          -0.033946436129143394,
-          1.355023381317729
-        ],
-        "arm_reference_to_fruit_center_m": 0.6703432058177433,
-        "nominal_grasp_flange_distance_m": 0.5656678311731593,
-        "grasp_flange_worst_distance_m": 0.6965742469250257,
-        "pregrasp_flange_worst_distance_m": 0.6390723940406617,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1634257530749743,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.6330818063718235,
+      "y": -0.18797525504043952,
+      "z": 1.3280885791933132,
+      "radius": 0.03658730173010606,
+      "ripe": true
     },
     {
       "id": "tomato_37_fruit_3",
       "plant_id": "tomato_37",
-      "x": 0.7661987768722889,
-      "y": -0.1556842299162065,
-      "z": 1.3445186311860313,
-      "radius": 0.02716860393800245,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_37",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.33000000000001034,
-          -0.0999799999999658,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9919442714086532,
-          -0.12667502681885007,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6074876934469043,
-          -0.13541622562519048,
-          1.3445186311860313
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.6868432351595967,
-          -0.1455502277706985,
-          1.3445186311860313
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5281321517342121,
-          -0.1252822234796825,
-          1.3445186311860313
-        ],
-        "arm_reference_to_fruit_center_m": 0.631305898015935,
-        "nominal_grasp_flange_distance_m": 0.532381394110756,
-        "grasp_flange_worst_distance_m": 0.6566736807940239,
-        "pregrasp_flange_worst_distance_m": 0.6012898897678246,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.2033263192059761,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.3445539294437292,
+      "y": 0.0222272950484151,
+      "z": 1.3064312045001185,
+      "radius": 0.03809972343897021,
+      "ripe": false
     },
     {
       "id": "tomato_37_fruit_4",
@@ -3560,266 +1632,52 @@
       "y": 0.03503282475447922,
       "z": 1.0181054246718348,
       "radius": 0.039055704614188655,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": false
     },
     {
       "id": "tomato_38_fruit_0",
       "plant_id": "tomato_38",
-      "x": 0.8280921900017606,
-      "y": 0.44734283246935846,
-      "z": 1.3993747286520164,
-      "radius": 0.029091616801068042,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_38",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.32999999999993795,
-          0.6000200000000343,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9560924575247568,
-          -0.2930652020698994,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6751173967977995,
-          0.49423326480054236,
-          1.3993747286520164
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.75160479339978,
-          0.47078804863495044,
-          1.3993747286520164
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5986300001958189,
-          0.5176784809661343,
-          1.3993747286520164
-        ],
-        "arm_reference_to_fruit_center_m": 0.7275201882791034,
-        "nominal_grasp_flange_distance_m": 0.6230379828263765,
-        "grasp_flange_worst_distance_m": 0.7534975117274503,
-        "pregrasp_flange_worst_distance_m": 0.696485214883587,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.10650248827254971,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.543112446082221,
+      "y": 0.3971338639489208,
+      "z": 1.699700691814216,
+      "radius": 0.04426179416709528,
+      "ripe": true
     },
     {
       "id": "tomato_38_fruit_1",
       "plant_id": "tomato_38",
-      "x": 0.7822499421998103,
-      "y": 0.7340889514556398,
-      "z": 1.3510241019044862,
-      "radius": 0.029396259900048936,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_38",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.32999999999993795,
-          0.6000200000000343,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9587582776744141,
-          0.28422273834229195,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6288486177719039,
-          0.688613313320873,
-          1.3510241019044862
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7055492799858571,
-          0.7113511323882564,
-          1.3510241019044862
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5521479555579508,
-          0.6658754942534897,
-          1.3510241019044862
-        ],
-        "arm_reference_to_fruit_center_m": 0.6584945581820607,
-        "nominal_grasp_flange_distance_m": 0.5552205514032895,
-        "grasp_flange_worst_distance_m": 0.6845220802877233,
-        "pregrasp_flange_worst_distance_m": 0.6275234415546986,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.17547791971227666,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.3148461247810976,
+      "y": 0.687284537876123,
+      "z": 1.3293505762761435,
+      "radius": 0.041344032456188354,
+      "ripe": true
     },
     {
       "id": "tomato_38_fruit_2",
       "plant_id": "tomato_38",
-      "x": 0.8040336596719878,
-      "y": 0.5329530032081471,
-      "z": 1.3938056517653836,
-      "radius": 0.03194634630701133,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_38",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.32999999999993795,
-          0.6000200000000343,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9901392836119475,
-          -0.14008639851327295,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6456113742940762,
-          0.5553668269702707,
-          1.3938056517653836
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.724822516983032,
-          0.5441599150892089,
-          1.3938056517653836
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5664002316051204,
-          0.5665737388513326,
-          1.3938056517653836
-        ],
-        "arm_reference_to_fruit_center_m": 0.693873349703518,
-        "nominal_grasp_flange_distance_m": 0.5948603015107676,
-        "grasp_flange_worst_distance_m": 0.7189708326533631,
-        "pregrasp_flange_worst_distance_m": 0.6640829294412323,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.14102916734663684,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.3547127986953678,
+      "y": 0.4872179214761512,
+      "z": 1.4443493036178607,
+      "radius": 0.03877994437916781,
+      "ripe": true
     },
     {
       "id": "tomato_38_fruit_3",
       "plant_id": "tomato_38",
-      "x": 0.7845430455592384,
-      "y": 0.6535044655269503,
-      "z": 1.4015006812254447,
-      "radius": 0.030979244355382133,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_38",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.32999999999993795,
-          0.6000200000000343,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9931483696456088,
-          0.11686024075907575,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6256393064159409,
-          0.6348068270054982,
-          1.4015006812254447
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7050911759875896,
-          0.6441556462662242,
-          1.4015006812254447
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5461874368442922,
-          0.6254580077447721,
-          1.4015006812254447
-        ],
-        "arm_reference_to_fruit_center_m": 0.6852103039062422,
-        "nominal_grasp_flange_distance_m": 0.5904709265421151,
-        "grasp_flange_worst_distance_m": 0.7095541849254273,
-        "pregrasp_flange_worst_distance_m": 0.6564497856865559,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.15044581507457266,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.6284600676612926,
+      "y": 0.40740530641648653,
+      "z": 1.4690934566648297,
+      "radius": 0.03499962590497638,
+      "ripe": true
     },
     {
       "id": "tomato_38_fruit_4",
       "plant_id": "tomato_38",
-      "x": 0.8337825950577327,
-      "y": 0.748599339686974,
-      "z": 1.411203596539299,
-      "radius": 0.03173713070158113,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_38",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.32999999999993795,
-          0.6000200000000343,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9591549626771001,
-          0.2828811721763944,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6803178010293967,
-          0.7033383521387508,
-          1.411203596539299
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7570501980435647,
-          0.7259688459128625,
-          1.411203596539299
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.6035854040152286,
-          0.6807078583646393,
-          1.411203596539299
-        ],
-        "arm_reference_to_fruit_center_m": 0.7388544882899956,
-        "nominal_grasp_flange_distance_m": 0.6351617708962601,
-        "grasp_flange_worst_distance_m": 0.7646461082685642,
-        "pregrasp_flange_worst_distance_m": 0.7080492451714003,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09535389173143582,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.7078031925251462,
+      "y": 0.6882441458105938,
+      "z": 1.6616354776942472,
+      "radius": 0.034323266930421835,
+      "ripe": true
     },
     {
       "id": "tomato_38_fruit_5",
@@ -3828,113 +1686,25 @@
       "y": 0.4787162581196616,
       "z": 1.2262916503931962,
       "radius": 0.03471775735755252,
-      "ripe": false,
-      "harvest_background": {
-        "status": "background_unripe",
-        "scan_geometry_preserved": true
-      }
+      "ripe": true
     },
     {
       "id": "tomato_39_fruit_0",
       "plant_id": "tomato_39",
-      "x": 0.8046376855924496,
-      "y": 1.126943445512363,
-      "z": 1.3546267928338431,
-      "radius": 0.032250319408233356,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_39",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.37999999999986556,
-          1.3000200000000397,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9260344259108495,
-          -0.3774390573694823,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6564721774467137,
-          1.18733369469148,
-          1.3546267928338431
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7305549315195816,
-          1.1571385701019217,
-          1.3546267928338431
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5823894233738458,
-          1.2175288192810387,
-          1.3546267928338431
-        ],
-        "arm_reference_to_fruit_center_m": 0.6516953787725006,
-        "nominal_grasp_flange_distance_m": 0.5509712127516069,
-        "grasp_flange_worst_distance_m": 0.6772912234663239,
-        "pregrasp_flange_worst_distance_m": 0.6213231117501663,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.18270877653367612,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": true
-      }
+      "x": 1.436594207976797,
+      "y": 1.1382622405791147,
+      "z": 1.3798155160500365,
+      "radius": 0.039864905797246934,
+      "ripe": true
     },
     {
       "id": "tomato_39_fruit_1",
       "plant_id": "tomato_39",
-      "x": 0.7832810146193502,
-      "y": 1.2440461926823287,
-      "z": 1.3374461736928098,
-      "radius": 0.02545014947002541,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_39",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.37999999999986556,
-          1.3000200000000397,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9905048007395387,
-          -0.13747814266975888,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.624800246501024,
-          1.2660426955094901,
-          1.3374461736928098
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7040406305601871,
-          1.2550444440959094,
-          1.3374461736928098
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5455598624418608,
-          1.2770409469230708,
-          1.3374461736928098
-        ],
-        "arm_reference_to_fruit_center_m": 0.6038098654757735,
-        "nominal_grasp_flange_distance_m": 0.5098032244848809,
-        "grasp_flange_worst_distance_m": 0.6284363368263038,
-        "pregrasp_flange_worst_distance_m": 0.5748708715833033,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.23156366317369614,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
+      "x": 1.553406654390057,
+      "y": 1.4687033905373217,
+      "z": 1.6493709325911134,
+      "radius": 0.038238294586279975,
+      "ripe": true
     },
     {
       "id": "tomato_40_fruit_0",
@@ -4655,1705 +2425,6 @@
       "z": 1.3056982456977595,
       "radius": 0.03542779036851189,
       "ripe": true
-    },
-    {
-      "id": "tomato_20_fruit_4",
-      "plant_id": "tomato_20",
-      "x": -0.7831831072382959,
-      "y": -4.846427613533082,
-      "z": 1.4044711644560364,
-      "radius": 0.032047433962947014,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_20",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.259999999999483,
-          -4.9999800000000265,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.959526696341173,
-          0.28161768234362355,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6296588358237082,
-          -4.891486442708062,
-          1.4044711644560364
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.706420971531002,
-          -4.8689570281205725,
-          1.4044711644560364
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5528967001164143,
-          -4.914015857295552,
-          1.4044711644560364
-        ],
-        "arm_reference_to_fruit_center_m": 0.7485856511598408,
-        "nominal_grasp_flange_distance_m": 0.6414827237809574,
-        "grasp_flange_worst_distance_m": 0.7749757019845286,
-        "pregrasp_flange_worst_distance_m": 0.716962303811405,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.0850242980154714,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_20_fruit_5",
-      "plant_id": "tomato_20",
-      "x": -0.8027217190207149,
-      "y": -5.108589481923903,
-      "z": 1.379260336925574,
-      "radius": 0.02569174787387532,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_20",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.259999999999483,
-          -4.9999800000000265,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9805580368986729,
-          -0.19622929514580886,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6458324331169272,
-          -5.077192794700573,
-          1.379260336925574
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7242770760688211,
-          -5.092891138312238,
-          1.379260336925574
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5673877901650334,
-          -5.061494451088908,
-          1.379260336925574
-        ],
-        "arm_reference_to_fruit_center_m": 0.7376977940096726,
-        "nominal_grasp_flange_distance_m": 0.6266447426863161,
-        "grasp_flange_worst_distance_m": 0.7648481094485396,
-        "pregrasp_flange_worst_distance_m": 0.7050696647697052,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09515189055146034,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_21_fruit_3",
-      "plant_id": "tomato_21",
-      "x": -0.8123919350703216,
-      "y": -4.327292113832103,
-      "z": 1.3744301857290198,
-      "radius": 0.026073066994535096,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_21",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999955536,
-          -4.299980000000026,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9987799135832514,
-          -0.04938303577781702,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6525871488970014,
-          -4.319390828107652,
-          1.3744301857290198
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7324895419836615,
-          -4.323341470969877,
-          1.3744301857290198
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5726847558103413,
-          -4.315440185245427,
-          1.3744301857290198
-        ],
-        "arm_reference_to_fruit_center_m": 0.7342001876594002,
-        "nominal_grasp_flange_distance_m": 0.6226303588752686,
-        "grasp_flange_worst_distance_m": 0.7614557262213472,
-        "pregrasp_flange_worst_distance_m": 0.7014356347085104,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09854427377865282,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_21_fruit_4",
-      "plant_id": "tomato_21",
-      "x": -0.7793115822423035,
-      "y": -4.236924804549931,
-      "z": 1.3897369923721443,
-      "radius": 0.02730288415515105,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_21",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999955536,
-          -4.299980000000026,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.99270902203848,
-          0.12053546185004937,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6204781387161467,
-          -4.256210478445939,
-          1.3897369923721443
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.699894860479225,
-          -4.2465676414979345,
-          1.3897369923721443
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5410614169530683,
-          -4.265853315393943,
-          1.3897369923721443
-        ],
-        "arm_reference_to_fruit_center_m": 0.7223879854566663,
-        "nominal_grasp_flange_distance_m": 0.6164772371443055,
-        "grasp_flange_worst_distance_m": 0.7486464081954294,
-        "pregrasp_flange_worst_distance_m": 0.6909841808775461,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1113535918045706,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_22_fruit_3",
-      "plant_id": "tomato_22",
-      "x": -0.7830708170155553,
-      "y": -3.649399631484985,
-      "z": 1.3393615962713483,
-      "radius": 0.029759538782561233,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_22",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999962775,
-          -3.599980000000027,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9955664426504075,
-          -0.09406092849006245,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.62378018619149,
-          -3.6343498829265752,
-          1.3393615962713483
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7034255016035227,
-          -3.64187475720578,
-          1.3393615962713483
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5441348707794574,
-          -3.62682500864737,
-          1.3393615962713483
-        ],
-        "arm_reference_to_fruit_center_m": 0.6903440395810689,
-        "nominal_grasp_flange_distance_m": 0.5779678417641073,
-        "grasp_flange_worst_distance_m": 0.7178888095915319,
-        "pregrasp_flange_worst_distance_m": 0.6572580254569361,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.1421111904084681,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_23_fruit_2",
-      "plant_id": "tomato_23",
-      "x": -0.8217013380618037,
-      "y": -3.0660969702256793,
-      "z": 1.3559701868438638,
-      "radius": 0.03149195300360243,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_23",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999970014,
-          -2.8999800000000273,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9589435628977047,
-          -0.28359697314508847,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.668270367998171,
-          -3.020721454522465,
-          1.3559701868438638
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7449858530299873,
-          -3.043409212374072,
-          1.3559701868438638
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5915548829663546,
-          -2.998033696670858,
-          1.3559701868438638
-        ],
-        "arm_reference_to_fruit_center_m": 0.7475181781752995,
-        "nominal_grasp_flange_distance_m": 0.6300344260043349,
-        "grasp_flange_worst_distance_m": 0.775810551346155,
-        "pregrasp_flange_worst_distance_m": 0.713337080019467,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.08418944865384503,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_25_fruit_4",
-      "plant_id": "tomato_25",
-      "x": -0.7774250274911703,
-      "y": -1.4755628578892948,
-      "z": 1.3680636729445248,
-      "radius": 0.027085224107977333,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_25",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999984487,
-          -1.499980000000022,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.999075429436138,
-          0.04299170032687894,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6175729587813882,
-          -1.4824415299415954,
-          1.3680636729445248
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.6974989931362792,
-          -1.479002193915445,
-          1.3680636729445248
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5376469244264972,
-          -1.4858808659677456,
-          1.3680636729445248
-        ],
-        "arm_reference_to_fruit_center_m": 0.7413680332092524,
-        "nominal_grasp_flange_distance_m": 0.6272818478754987,
-        "grasp_flange_worst_distance_m": 0.7690605831414066,
-        "pregrasp_flange_worst_distance_m": 0.7080042097849426,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.09093941685859341,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_28_fruit_5",
-      "plant_id": "tomato_28",
-      "x": -0.7752966410449812,
-      "y": 0.5936572206953441,
-      "z": 1.3403742944435935,
-      "radius": 0.02714768566277017,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_28",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000006204,
-          0.6000199999999837,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9999465362021683,
-          -0.010340441832232757,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6153051952526343,
-          0.5953116913885014,
-          1.3403742944435935
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.6953009181488077,
-          0.5944844560419227,
-          1.3403742944435935
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5353094723564608,
-          0.59613892673508,
-          1.3403742944435935
-        ],
-        "arm_reference_to_fruit_center_m": 0.7616219294678863,
-        "nominal_grasp_flange_distance_m": 0.639345376927612,
-        "grasp_flange_worst_distance_m": 0.7907455909063138,
-        "pregrasp_flange_worst_distance_m": 0.7263013602083956,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.06925440909368619,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_28_fruit_6",
-      "plant_id": "tomato_28",
-      "x": -0.8087359532357762,
-      "y": 0.42967551706502205,
-      "z": 1.3553593932578534,
-      "radius": 0.03014416336530972,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_28",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000006204,
-          0.6000199999999837,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9672121816646536,
-          -0.2539696746454213,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6539820041694316,
-          0.47031066500828944,
-          1.3553593932578534
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.7313589787026039,
-          0.44999309103665575,
-          1.3553593932578534
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5766050296362594,
-          0.49062823897992314,
-          1.3553593932578534
-        ],
-        "arm_reference_to_fruit_center_m": 0.8154684645830339,
-        "nominal_grasp_flange_distance_m": 0.689895621720819,
-        "grasp_flange_worst_distance_m": 0.8450769223377179,
-        "pregrasp_flange_worst_distance_m": 0.7794397880943015,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.01492307766228207,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_28_fruit_7",
-      "plant_id": "tomato_28",
-      "x": -0.7683641504919201,
-      "y": 0.5135114359158598,
-      "z": 1.3343918457424728,
-      "radius": 0.0272847502423259,
-      "ripe": false,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_28",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000006204,
-          0.6000199999999837,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9900405576237443,
-          -0.14078243590755712,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6099576612721209,
-          0.5360366256610689,
-          1.3343918457424728
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.6891609058820205,
-          0.5247740307884644,
-          1.3343918457424728
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5307544166622213,
-          0.5472992205336735,
-          1.3343918457424728
-        ],
-        "arm_reference_to_fruit_center_m": 0.7574258528990122,
-        "nominal_grasp_flange_distance_m": 0.6345541903615747,
-        "grasp_flange_worst_distance_m": 0.7866664986546431,
-        "pregrasp_flange_worst_distance_m": 0.7219518900626289,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.07333350134535688,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_29_fruit_2",
-      "plant_id": "tomato_29",
-      "x": -0.7704527015986538,
-      "y": 1.3128232177435908,
-      "z": 1.3413800059376477,
-      "radius": 0.02695290054860759,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_29",
-        "work_side": "left",
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000013442,
-          1.3000199999999837,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          -0.9997801325304664,
-          0.02096870519042833,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          -0.6104878803937791,
-          1.3094682249131222,
-          1.3413800059376477
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          -0.6904702909962165,
-          1.3111457213283566,
-          1.3413800059376477
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          -0.5305054697913418,
-          1.307790728497888,
-          1.3413800059376477
-        ],
-        "arm_reference_to_fruit_center_m": 0.7583915343727317,
-        "nominal_grasp_flange_distance_m": 0.6366866540695455,
-        "grasp_flange_worst_distance_m": 0.7874196549056264,
-        "pregrasp_flange_worst_distance_m": 0.7232037081551416,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.07258034509437361,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_37_fruit_5",
-      "plant_id": "tomato_37",
-      "x": 0.8135416855241964,
-      "y": -0.25616618794528745,
-      "z": 1.3910209850708615,
-      "radius": 0.02640299463972828,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_37",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.33000000000001034,
-          -0.0999799999999658,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9515906745811575,
-          -0.3073681636900239,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6612871775912111,
-          -0.20698728175488362,
-          1.3910209850708615
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7374144315577038,
-          -0.23157673485008554,
-          1.3910209850708615
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5851599236247186,
-          -0.1823978286596817,
-          1.3910209850708615
-        ],
-        "arm_reference_to_fruit_center_m": 0.7125107581867081,
-        "nominal_grasp_flange_distance_m": 0.6088239860355829,
-        "grasp_flange_worst_distance_m": 0.7383959906323566,
-        "pregrasp_flange_worst_distance_m": 0.6816259782525871,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.12160400936764337,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_36_fruit_5",
-      "plant_id": "tomato_36",
-      "x": 0.803709961572447,
-      "y": -0.668775016425142,
-      "z": 1.3992445733907353,
-      "radius": 0.030226290452395138,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_36",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000000827,
-          -0.799979999999966,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.963717586665873,
-          0.2669239838435383,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6495151477059073,
-          -0.7114828538401081,
-          1.3992445733907353
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7266125546391772,
-          -0.6901289351326251,
-          1.3992445733907353
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5724177407726375,
-          -0.7328367725475912,
-          1.3992445733907353
-        ],
-        "arm_reference_to_fruit_center_m": 0.7066563372783277,
-        "nominal_grasp_flange_distance_m": 0.6063571374196688,
-        "grasp_flange_worst_distance_m": 0.7319393684285314,
-        "pregrasp_flange_worst_distance_m": 0.6765914137234246,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.12806063157146863,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_35_fruit_2",
-      "plant_id": "tomato_35",
-      "x": 0.8049928379556943,
-      "y": -1.3670541350831464,
-      "z": 1.3590392074323931,
-      "radius": 0.027363433728868687,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_35",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000001551,
-          -1.4999799999999661,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9630019794549478,
-          0.2694943182441001,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6509125212429027,
-          -1.4101732260022024,
-          1.3590392074323931
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7279526795992985,
-          -1.3886136805426745,
-          1.3590392074323931
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5738723628865068,
-          -1.4317327714617305,
-          1.3590392074323931
-        ],
-        "arm_reference_to_fruit_center_m": 0.6795790442371001,
-        "nominal_grasp_flange_distance_m": 0.5740995546414673,
-        "grasp_flange_worst_distance_m": 0.70591850673088,
-        "pregrasp_flange_worst_distance_m": 0.6481435422099364,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.15408149326912002,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_33_fruit_6",
-      "plant_id": "tomato_33",
-      "x": 0.8206068305822757,
-      "y": -2.7973748433799517,
-      "z": 1.4093264306807698,
-      "radius": 0.029085224145725418,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_33",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000002999,
-          -2.8999799999999714,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9824611385786324,
-          0.18646745341420104,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6634130484096945,
-          -2.827209635926224,
-          1.4093264306807698
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7420099394959851,
-          -2.812292239653088,
-          1.4093264306807698
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5848161573234039,
-          -2.84212703219936,
-          1.4093264306807698
-        ],
-        "arm_reference_to_fruit_center_m": 0.7555589922409158,
-        "nominal_grasp_flange_distance_m": 0.6483725155319363,
-        "grasp_flange_worst_distance_m": 0.7819422796340176,
-        "pregrasp_flange_worst_distance_m": 0.7239339025604641,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.07805772036598235,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
-    },
-    {
-      "id": "tomato_30_fruit_6",
-      "plant_id": "tomato_30",
-      "x": 0.8149159080570144,
-      "y": -4.95561319642799,
-      "z": 1.4112091631096813,
-      "radius": 0.03140314494995538,
-      "ripe": true,
-      "harvest_profile": {
-        "status": "distance_candidate_pending_ik",
-        "waypoint_id": "harvest_tomato_30",
-        "work_side": "right",
-        "nominal_arm_reference_world_xyz_m": [
-          0.23000000000051707,
-          -4.999979999999976,
-          0.891556378129253
-        ],
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "nominal_approach_unit_world": [
-          0.9971356220598531,
-          0.07563432566837693,
-          0.0
-        ],
-        "nominal_grasp_flange_world_xyz_m": [
-          0.6553742085274379,
-          -4.96771468853493,
-          1.4112091631096813
-        ],
-        "nominal_pregrasp_tcp_world_xyz_m": [
-          0.7351450582922262,
-          -4.96166394248146,
-          1.4112091631096813
-        ],
-        "nominal_pregrasp_flange_world_xyz_m": [
-          0.5756033587626497,
-          -4.9737654345884,
-          1.4112091631096813
-        ],
-        "arm_reference_to_fruit_center_m": 0.7836670528321752,
-        "nominal_grasp_flange_distance_m": 0.6723267691693942,
-        "grasp_flange_worst_distance_m": 0.8107361101230168,
-        "pregrasp_flange_worst_distance_m": 0.7510828584168147,
-        "flange_distance_budget_m": 0.86,
-        "remaining_distance_margin_m": 0.04926388987698316,
-        "ik_status": "pending",
-        "full_arm_collision_status": "pending",
-        "fov_status": "pending",
-        "forced_ripe": false
-      }
     }
-  ],
-  "harvest_profile": {
-    "status": "distance_candidate_pending_ik",
-    "usage": "offline_scene_generation_only",
-    "mission_sha256_at_generation": "41fde985d8ede135b6a58d80be2ea1b90a54716dee3ec1dd0303a3f946968b3a",
-    "assumptions": {
-      "ideal_nominal_parking_pose": true,
-      "shoulder_XY_worst_case_radius_around_J1_included": true,
-      "parking_XY_and_yaw_error_allowance_included": true,
-      "flange_to_TCP_aligned_with_horizontal_J1_to_fruit": true,
-      "TCP_is_unvalidated_proxy": true,
-      "IK_full_arm_collision_FOV_pending": true,
-      "actual_parking_accuracy_pending_runtime": true
-    },
-    "stations": [
-      {
-        "plant_id": "tomato_20",
-        "waypoint_id": "harvest_tomato_20",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 1.18,
-          "y": 0.26,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.2599999999995016,
-          "y": -4.820000000000027,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.259999999999483,
-          -4.9999800000000265,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.6129032235276634e-05,
-        "distance_candidate_ids": [
-          "tomato_20_fruit_2",
-          "tomato_20_fruit_4",
-          "tomato_20_fruit_5"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_20_fruit_2",
-          "tomato_20_fruit_4",
-          "tomato_20_fruit_5"
-        ],
-        "original_fruit_count": 4,
-        "protected_fruit_ids": [
-          "tomato_20_fruit_0",
-          "tomato_20_fruit_1",
-          "tomato_20_fruit_3"
-        ],
-        "protected_fruit_count": 3,
-        "near_fruit_count": 3,
-        "total_fruit_count": 6,
-        "effective_near_fraction": 0.5,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_21",
-        "waypoint_id": "harvest_tomato_21",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 1.88,
-          "y": 0.26,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.25999999999957396,
-          "y": -4.120000000000027,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999955536,
-          -4.299980000000026,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.6129032235277575e-05,
-        "distance_candidate_ids": [
-          "tomato_21_fruit_1",
-          "tomato_21_fruit_3",
-          "tomato_21_fruit_4"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_21_fruit_1",
-          "tomato_21_fruit_3",
-          "tomato_21_fruit_4"
-        ],
-        "original_fruit_count": 3,
-        "protected_fruit_ids": [
-          "tomato_21_fruit_0",
-          "tomato_21_fruit_2"
-        ],
-        "protected_fruit_count": 2,
-        "near_fruit_count": 3,
-        "total_fruit_count": 5,
-        "effective_near_fraction": 0.6,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_22",
-        "waypoint_id": "harvest_tomato_22",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 2.58,
-          "y": 0.26,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.25999999999964635,
-          "y": -3.420000000000027,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999962775,
-          -3.599980000000027,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.612903223492038e-05,
-        "distance_candidate_ids": [
-          "tomato_22_fruit_1",
-          "tomato_22_fruit_2",
-          "tomato_22_fruit_3"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_22_fruit_1",
-          "tomato_22_fruit_3"
-        ],
-        "original_fruit_count": 3,
-        "protected_fruit_ids": [
-          "tomato_22_fruit_0"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 3,
-        "total_fruit_count": 4,
-        "effective_near_fraction": 0.75,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_23",
-        "waypoint_id": "harvest_tomato_23",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 3.28,
-          "y": 0.26,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.25999999999971873,
-          "y": -2.7200000000000273,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.25999999999970014,
-          -2.8999800000000273,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.6129032234563184e-05,
-        "distance_candidate_ids": [
-          "tomato_23_fruit_0",
-          "tomato_23_fruit_2"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_23_fruit_0",
-          "tomato_23_fruit_2"
-        ],
-        "original_fruit_count": 2,
-        "protected_fruit_ids": [
-          "tomato_23_fruit_1"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 2,
-        "total_fruit_count": 3,
-        "effective_near_fraction": 0.6666666666666666,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_24",
-        "waypoint_id": "harvest_tomato_24",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 3.98,
-          "y": 0.26,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.2599999999997911,
-          "y": -2.020000000000027,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.2599999999997725,
-          -2.199980000000027,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.6129032234922262e-05,
-        "distance_candidate_ids": [
-          "tomato_24_fruit_0",
-          "tomato_24_fruit_1",
-          "tomato_24_fruit_2",
-          "tomato_24_fruit_3"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_24_fruit_0",
-          "tomato_24_fruit_1",
-          "tomato_24_fruit_2",
-          "tomato_24_fruit_3"
-        ],
-        "original_fruit_count": 5,
-        "protected_fruit_ids": [
-          "tomato_24_fruit_4"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 4,
-        "total_fruit_count": 5,
-        "effective_near_fraction": 0.8,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_25",
-        "waypoint_id": "harvest_tomato_25",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 4.68,
-          "y": 0.21,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.2099999999998635,
-          "y": -1.320000000000022,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999984487,
-          -1.499980000000022,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.550387595063697e-05,
-        "distance_candidate_ids": [
-          "tomato_25_fruit_0",
-          "tomato_25_fruit_1",
-          "tomato_25_fruit_4"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_25_fruit_0",
-          "tomato_25_fruit_1",
-          "tomato_25_fruit_4"
-        ],
-        "original_fruit_count": 4,
-        "protected_fruit_ids": [
-          "tomato_25_fruit_2",
-          "tomato_25_fruit_3"
-        ],
-        "protected_fruit_count": 2,
-        "near_fruit_count": 3,
-        "total_fruit_count": 5,
-        "effective_near_fraction": 0.6,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_26",
-        "waypoint_id": "harvest_tomato_26",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 5.38,
-          "y": 0.21,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.20999999999993588,
-          "y": -0.6200000000000219,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999991725,
-          -0.7999800000000219,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.5503875950809968e-05,
-        "distance_candidate_ids": [
-          "tomato_26_fruit_1",
-          "tomato_26_fruit_2",
-          "tomato_26_fruit_3"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_26_fruit_1",
-          "tomato_26_fruit_2",
-          "tomato_26_fruit_3"
-        ],
-        "original_fruit_count": 4,
-        "protected_fruit_ids": [
-          "tomato_26_fruit_0"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 3,
-        "total_fruit_count": 4,
-        "effective_near_fraction": 0.75,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_27",
-        "waypoint_id": "harvest_tomato_27",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 6.08,
-          "y": 0.21,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.21000000000000826,
-          "y": 0.07999999999997835,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.20999999999998964,
-          -0.09998000000002165,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.550387595097221e-05,
-        "distance_candidate_ids": [
-          "tomato_27_fruit_0",
-          "tomato_27_fruit_2",
-          "tomato_27_fruit_3",
-          "tomato_27_fruit_4"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_27_fruit_0",
-          "tomato_27_fruit_3",
-          "tomato_27_fruit_4"
-        ],
-        "original_fruit_count": 5,
-        "protected_fruit_ids": [
-          "tomato_27_fruit_1"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 4,
-        "total_fruit_count": 5,
-        "effective_near_fraction": 0.8,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_28",
-        "waypoint_id": "harvest_tomato_28",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 6.78,
-          "y": 0.16,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.16000000000008066,
-          "y": 0.7799999999999837,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000006204,
-          0.6000199999999837,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.4925373121056372e-05,
-        "distance_candidate_ids": [
-          "tomato_28_fruit_0",
-          "tomato_28_fruit_5",
-          "tomato_28_fruit_6",
-          "tomato_28_fruit_7"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_28_fruit_0"
-        ],
-        "original_fruit_count": 5,
-        "protected_fruit_ids": [
-          "tomato_28_fruit_1",
-          "tomato_28_fruit_2",
-          "tomato_28_fruit_3",
-          "tomato_28_fruit_4"
-        ],
-        "protected_fruit_count": 4,
-        "near_fruit_count": 4,
-        "total_fruit_count": 8,
-        "effective_near_fraction": 0.5,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_29",
-        "waypoint_id": "harvest_tomato_29",
-        "work_side": "left",
-        "nominal_base_pose_map": {
-          "x": 7.48,
-          "y": 0.16,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": -0.16000000000015305,
-          "y": 1.4799999999999838,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          -0.16000000000013442,
-          1.3000199999999837,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 1.4925373121057179e-05,
-        "distance_candidate_ids": [
-          "tomato_29_fruit_1",
-          "tomato_29_fruit_2"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_29_fruit_1",
-          "tomato_29_fruit_2"
-        ],
-        "original_fruit_count": 2,
-        "protected_fruit_ids": [
-          "tomato_29_fruit_0"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 2,
-        "total_fruit_count": 3,
-        "effective_near_fraction": 0.6666666666666666,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_39",
-        "waypoint_id": "harvest_tomato_39",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 7.48,
-          "y": -0.38,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.37999999999984696,
-          "y": 1.4800000000000397,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.37999999999986556,
-          1.3000200000000397,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415747964469025,
-        "distance_candidate_ids": [
-          "tomato_39_fruit_0",
-          "tomato_39_fruit_1"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_39_fruit_0",
-          "tomato_39_fruit_1"
-        ],
-        "original_fruit_count": 2,
-        "protected_fruit_ids": [],
-        "protected_fruit_count": 0,
-        "near_fruit_count": 2,
-        "total_fruit_count": 2,
-        "effective_near_fraction": 1.0,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_38",
-        "waypoint_id": "harvest_tomato_38",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 6.78,
-          "y": -0.33,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.32999999999991936,
-          "y": 0.7800000000000343,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.32999999999993795,
-          0.6000200000000343,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415755595726718,
-        "distance_candidate_ids": [
-          "tomato_38_fruit_0",
-          "tomato_38_fruit_1",
-          "tomato_38_fruit_2",
-          "tomato_38_fruit_3",
-          "tomato_38_fruit_4"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_38_fruit_0",
-          "tomato_38_fruit_1",
-          "tomato_38_fruit_4"
-        ],
-        "original_fruit_count": 6,
-        "protected_fruit_ids": [
-          "tomato_38_fruit_5"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 5,
-        "total_fruit_count": 6,
-        "effective_near_fraction": 0.8333333333333334,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_37",
-        "waypoint_id": "harvest_tomato_37",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 6.08,
-          "y": -0.33,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.32999999999999174,
-          "y": 0.0800000000000342,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.33000000000001034,
-          -0.0999799999999658,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415755595726718,
-        "distance_candidate_ids": [
-          "tomato_37_fruit_1",
-          "tomato_37_fruit_2",
-          "tomato_37_fruit_3",
-          "tomato_37_fruit_5"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_37_fruit_1",
-          "tomato_37_fruit_2",
-          "tomato_37_fruit_3",
-          "tomato_37_fruit_5"
-        ],
-        "original_fruit_count": 5,
-        "protected_fruit_ids": [
-          "tomato_37_fruit_0",
-          "tomato_37_fruit_4"
-        ],
-        "protected_fruit_count": 2,
-        "near_fruit_count": 4,
-        "total_fruit_count": 6,
-        "effective_near_fraction": 0.6666666666666666,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_36",
-        "waypoint_id": "harvest_tomato_36",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 5.38,
-          "y": -0.33,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.33000000000006413,
-          "y": -0.619999999999966,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000000827,
-          -0.799979999999966,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415755595726718,
-        "distance_candidate_ids": [
-          "tomato_36_fruit_0",
-          "tomato_36_fruit_3",
-          "tomato_36_fruit_4",
-          "tomato_36_fruit_5"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_36_fruit_0",
-          "tomato_36_fruit_3",
-          "tomato_36_fruit_4",
-          "tomato_36_fruit_5"
-        ],
-        "original_fruit_count": 5,
-        "protected_fruit_ids": [
-          "tomato_36_fruit_1",
-          "tomato_36_fruit_2"
-        ],
-        "protected_fruit_count": 2,
-        "near_fruit_count": 4,
-        "total_fruit_count": 6,
-        "effective_near_fraction": 0.6666666666666666,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_35",
-        "waypoint_id": "harvest_tomato_35",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 4.68,
-          "y": -0.33,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.3300000000001365,
-          "y": -1.319999999999966,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000001551,
-          -1.4999799999999661,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415755595726718,
-        "distance_candidate_ids": [
-          "tomato_35_fruit_1",
-          "tomato_35_fruit_2"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_35_fruit_1",
-          "tomato_35_fruit_2"
-        ],
-        "original_fruit_count": 2,
-        "protected_fruit_ids": [
-          "tomato_35_fruit_0"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 2,
-        "total_fruit_count": 3,
-        "effective_near_fraction": 0.6666666666666666,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_34",
-        "waypoint_id": "harvest_tomato_34",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 3.98,
-          "y": -0.33,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.3300000000002089,
-          "y": -2.019999999999966,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.3300000000002275,
-          -2.199979999999966,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415755595726718,
-        "distance_candidate_ids": [
-          "tomato_34_fruit_0",
-          "tomato_34_fruit_1"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_34_fruit_0",
-          "tomato_34_fruit_1"
-        ],
-        "original_fruit_count": 2,
-        "protected_fruit_ids": [],
-        "protected_fruit_count": 0,
-        "near_fruit_count": 2,
-        "total_fruit_count": 2,
-        "effective_near_fraction": 1.0,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_33",
-        "waypoint_id": "harvest_tomato_33",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 3.28,
-          "y": -0.28,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.2800000000002813,
-          "y": -2.7199999999999713,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000002999,
-          -2.8999799999999714,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415762601471484,
-        "distance_candidate_ids": [
-          "tomato_33_fruit_0",
-          "tomato_33_fruit_2",
-          "tomato_33_fruit_4",
-          "tomato_33_fruit_5",
-          "tomato_33_fruit_6"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_33_fruit_0",
-          "tomato_33_fruit_4",
-          "tomato_33_fruit_5",
-          "tomato_33_fruit_6"
-        ],
-        "original_fruit_count": 6,
-        "protected_fruit_ids": [
-          "tomato_33_fruit_1",
-          "tomato_33_fruit_3"
-        ],
-        "protected_fruit_count": 2,
-        "near_fruit_count": 5,
-        "total_fruit_count": 7,
-        "effective_near_fraction": 0.7142857142857143,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_32",
-        "waypoint_id": "harvest_tomato_32",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 2.58,
-          "y": -0.28,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.2800000000003537,
-          "y": -3.419999999999971,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.2800000000003723,
-          -3.599979999999971,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.141576260147148,
-        "distance_candidate_ids": [
-          "tomato_32_fruit_0",
-          "tomato_32_fruit_1",
-          "tomato_32_fruit_2"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_32_fruit_0"
-        ],
-        "original_fruit_count": 3,
-        "protected_fruit_ids": [],
-        "protected_fruit_count": 0,
-        "near_fruit_count": 3,
-        "total_fruit_count": 3,
-        "effective_near_fraction": 1.0,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_31",
-        "waypoint_id": "harvest_tomato_31",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 1.88,
-          "y": -0.28,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.2800000000004261,
-          "y": -4.119999999999971,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.28000000000044467,
-          -4.29997999999997,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415762601471475,
-        "distance_candidate_ids": [
-          "tomato_31_fruit_1",
-          "tomato_31_fruit_2",
-          "tomato_31_fruit_3"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_31_fruit_1",
-          "tomato_31_fruit_2",
-          "tomato_31_fruit_3"
-        ],
-        "original_fruit_count": 4,
-        "protected_fruit_ids": [
-          "tomato_31_fruit_0"
-        ],
-        "protected_fruit_count": 1,
-        "near_fruit_count": 3,
-        "total_fruit_count": 4,
-        "effective_near_fraction": 0.75,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      },
-      {
-        "plant_id": "tomato_30",
-        "waypoint_id": "harvest_tomato_30",
-        "work_side": "right",
-        "nominal_base_pose_map": {
-          "x": 1.18,
-          "y": -0.23,
-          "yaw": 0.0
-        },
-        "nominal_base_pose_world": {
-          "x": 0.23000000000049844,
-          "y": -4.819999999999976,
-          "yaw": 1.570796326795
-        },
-        "nominal_arm_reference_world_xyz_m": [
-          0.23000000000051707,
-          -4.999979999999976,
-          0.891556378129253
-        ],
-        "arm_reference_definition": "nominal_J1_axis_XY_with_assumed_J2_shoulder_world_Z",
-        "shoulder_horizontal_uncertainty_radius_m": 0.08,
-        "parking_horizontal_allowance_m": 0.11570123420857471,
-        "near_side_sector_center_world_rad": 3.1415769055582796,
-        "distance_candidate_ids": [
-          "tomato_30_fruit_0",
-          "tomato_30_fruit_2",
-          "tomato_30_fruit_4",
-          "tomato_30_fruit_5",
-          "tomato_30_fruit_6"
-        ],
-        "ripe_distance_candidate_ids": [
-          "tomato_30_fruit_0",
-          "tomato_30_fruit_2",
-          "tomato_30_fruit_4",
-          "tomato_30_fruit_5",
-          "tomato_30_fruit_6"
-        ],
-        "original_fruit_count": 6,
-        "protected_fruit_ids": [
-          "tomato_30_fruit_1",
-          "tomato_30_fruit_3"
-        ],
-        "protected_fruit_count": 2,
-        "near_fruit_count": 5,
-        "total_fruit_count": 7,
-        "effective_near_fraction": 0.7142857142857143,
-        "quota_basis": "round(original_fruit_count * profile_ratio), at least one"
-      }
-    ]
-  }
+  ]
 }

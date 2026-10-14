@@ -108,7 +108,7 @@ class FruitMeshTest(unittest.TestCase):
             self.assertGreater(high - low, 0.8)
             self.assertLess(high - low, 1)
 
-    def test_original_single_body_triangle_winding_normals_and_uv_are_preserved(self):
+    def test_original_single_body_positions_uv_and_corrected_normals_match(self):
         component = connected_vertex_sets(self.source["triangles"])[2]
         original_triangles = [triangle for triangle in self.source["triangles"]
                               if triangle[0][0] in component]
@@ -117,13 +117,14 @@ class FruitMeshTest(unittest.TestCase):
         center = tuple((min(position[axis] for position in original_positions)
                         + max(position[axis] for position in original_positions)) / 2 for axis in range(3))
         radius = max(math.dist(position, center) for position in original_positions)
-        # Compare expanded triangle corners so remapped UV seam indices cannot hide a mismatch.
+        # Reverse whole corners, retaining the UV seam at each physical vertex.
         for original, extracted in zip(original_triangles, self.fruit["triangles"]):
-            for original_corner, extracted_corner in zip(original, extracted):
+            outward_original = [original[0], original[2], original[1]]
+            for original_corner, extracted_corner in zip(outward_original, extracted):
                 for coordinate, axis in zip(self.fruit["VERTEX"][extracted_corner[0]], range(3)):
                     expected = (self.source["VERTEX"][original_corner[0]][axis] - center[axis]) / (2 * radius)
                     self.assertAlmostEqual(coordinate, expected, delta=1e-12)
-                self.assertEqual(self.source["NORMAL"][original_corner[1]],
+                self.assertEqual(tuple(-value for value in self.source["NORMAL"][original_corner[1]]),
                                  self.fruit["NORMAL"][extracted_corner[1]])
                 self.assertEqual(self.source["TEXCOORD"][original_corner[2]],
                                  self.fruit["TEXCOORD"][extracted_corner[2]])
@@ -133,6 +134,36 @@ class FruitMeshTest(unittest.TestCase):
         self.assertEqual(metadata["source_component_count"], 3)
         self.assertEqual(metadata["source_component_index"], 2)
         self.assertEqual(set(metadata["source_position_indices"]), component)
+        self.assertTrue(metadata["surface_orientation"]["triangle_winding_reversed"])
+        self.assertTrue(metadata["surface_orientation"]["normal_vectors_negated"])
+
+    def test_closed_fruit_faces_and_vertex_normals_point_outward(self):
+        def cross(a, b):
+            return (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2],
+                    a[0]*b[1]-a[1]*b[0])
+
+        def dot(a, b):
+            return sum(x*y for x, y in zip(a, b))
+
+        volume = 0.0
+        outward_faces = 0
+        for triangle in self.fruit["triangles"]:
+            a, b, c = [self.fruit["VERTEX"][corner[0]] for corner in triangle]
+            volume += dot(a, cross(b, c)) / 6
+            face = cross(tuple(y-x for x, y in zip(a, b)),
+                         tuple(y-x for x, y in zip(a, c)))
+            center = tuple((a[axis]+b[axis]+c[axis])/3 for axis in range(3))
+            if math.dist(face, (0, 0, 0)) > 1e-10:
+                # Every nondegenerate face must survive near-surface backface
+                # culling, not merely produce a positive aggregate volume.
+                self.assertGreater(dot(face, center), 0)
+                outward_faces += 1
+                for corner in triangle:
+                    self.assertGreater(dot(face, self.fruit["NORMAL"][corner[1]]), 0)
+            # Dimple normals can legitimately lean toward the bounding centre;
+            # their outward direction is determined against each local face.
+        self.assertEqual(outward_faces, 1044)
+        self.assertAlmostEqual(volume, 0.3881913908397447, delta=1e-12)
 
     def test_reextract_is_reproducible_and_matches_checked_in_asset(self):
         source_before = SOURCE.read_bytes()

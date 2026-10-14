@@ -1,12 +1,12 @@
 schema_version: 1
-mission_id: rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42_single_corridor_harvest
+mission_id: rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42_single_corridor_harvest
 description: Single-corridor mission with independent work-side stops; left-row outbound, headland side
   change, right-row reverse return, with the arm base aligned longitudinally to each plant.
 work_side_reference: base_footprint_at_goal
 field:
-  id: rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42
-  metadata_sha256: 9176179044aaf4a370de49fff820b827393122972380a058977155fcd789b770
-  sdf_sha256: 289d20a4a83239f7d48ab030c7e8b4dae8331d2af6c31724d9e0ac7f049c5d9f
+  id: rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_fh1p0p1p7_seed42
+  metadata_sha256: ab20a6cf6bed7a97caa20b6b3451c7d79c5a2a6a1e4dd40bd9992242ff507050
+  sdf_sha256: 7823a30c4cf3221495d4fef70c923509843a80387c86099a1b988e0efc5133f7
   seed: 42
   rows: 6
   plants_per_row: 10

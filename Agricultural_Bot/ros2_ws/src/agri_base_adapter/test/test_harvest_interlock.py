@@ -11,9 +11,9 @@ from rclpy.time import Time
 
 
 def _heartbeat(interlock, *, stamp=100.0, ros_now=100.0, wall_now=10.0,
-               stowed=True, phase='IDLE'):
+               stowed=True, phase='IDLE', identity=()):
     return interlock.observe(stamp=stamp, ros_now=ros_now, wall_now=wall_now,
-                             arm_stowed=stowed, phase=phase)
+                             arm_stowed=stowed, phase=phase, identity=identity)
 
 
 def test_no_feedback_is_not_unlock_permission():
@@ -52,8 +52,46 @@ def test_old_stowed_message_cannot_override_newer_deployed_feedback():
 def test_duplicate_heartbeats_cannot_extend_stowed_lease():
     interlock = HarvestInterlock()
     assert _heartbeat(interlock)
+    assert _heartbeat(interlock, wall_now=10.4)
+    assert interlock._received_at == 10.0
+    assert interlock.permits_unlock(ros_now=100.0, wall_now=10.4)
+    assert not _heartbeat(interlock, wall_now=10.76)
+    assert not _heartbeat(interlock, wall_now=10.8)
+    assert not interlock.permits_unlock(ros_now=100.0, wall_now=10.8)
+
+
+@pytest.mark.parametrize('stowed,phase,identity', [
+    (False, 'IDLE', ()), (True, 'DEPLOYING', ()),
+    (True, 'STOWED', ()), (True, 'IDLE', ('base_footprint', 'run', 'station', 'work')),
+])
+def test_same_stamp_changed_state_or_identity_revokes_without_replay_recovery(
+        stowed, phase, identity):
+    interlock = HarvestInterlock()
+    assert _heartbeat(interlock)
+    assert not _heartbeat(interlock, wall_now=10.1,
+                          stowed=stowed, phase=phase, identity=identity)
+    assert interlock.reason == 'worker state changed without timestamp increase'
+    # Neither a repeated changed report nor the original safe message may renew.
+    assert not _heartbeat(interlock, wall_now=10.2,
+                          stowed=stowed, phase=phase, identity=identity)
+    assert not _heartbeat(interlock, wall_now=10.3)
     assert not _heartbeat(interlock, wall_now=10.4)
-    assert not interlock.permits_unlock(ros_now=100.0, wall_now=10.4)
+    assert _heartbeat(interlock, stamp=100.1, ros_now=100.1, wall_now=10.5)
+
+
+def test_duplicate_cannot_restore_permission_revoked_by_a_stale_report():
+    interlock = HarvestInterlock()
+    assert _heartbeat(interlock)
+    assert not _heartbeat(interlock, stamp=99.0, wall_now=10.1)
+    assert not _heartbeat(interlock, wall_now=10.2)
+    assert _heartbeat(interlock, stamp=100.1, ros_now=100.1, wall_now=10.3)
+
+
+def test_duplicate_still_observes_wall_clock_rollback():
+    interlock = HarvestInterlock()
+    assert _heartbeat(interlock)
+    assert not _heartbeat(interlock, wall_now=9.9)
+    assert interlock.reason == 'local clock moved backwards'
 
 
 def test_receipt_watchdog_expires_while_ros_clock_is_paused():
@@ -106,10 +144,11 @@ def _node(monkeypatch, *, enabled=True):
     return node, clock
 
 
-def _worker(node, clock, *, stowed=True, phase='IDLE'):
+def _worker(node, clock, *, stowed=True, phase='IDLE', work_id=''):
     node._worker_state_callback(SimpleNamespace(
-        header=SimpleNamespace(stamp=Time(seconds=clock.ros).to_msg()),
-        arm_stowed=stowed, phase=phase))
+        header=SimpleNamespace(stamp=Time(seconds=clock.ros).to_msg(),
+                               frame_id='base_footprint'),
+        arm_stowed=stowed, phase=phase, run_id='', waypoint_id='', work_id=work_id))
 
 
 def _command(clock):
@@ -165,6 +204,46 @@ def test_periodic_watchdog_relocks_during_clock_pause(monkeypatch):
     assert node._core.locked
     assert node.outputs[-1].twist.linear.x == 0.0
     assert not node._set_locked(False)
+
+
+def test_duplicate_keeps_motion_only_until_original_receipt_lease_expires(monkeypatch):
+    node, clock = _node(monkeypatch)
+    _worker(node, clock)
+    assert node._set_locked(False)
+    node._on_command('manual', _command(clock))
+    clock.wall += 0.4
+    _worker(node, clock)
+    assert not node._core.locked
+    assert node.outputs[-1].twist.linear.x == 0.2
+    clock.wall += 0.4
+    _worker(node, clock)
+    assert node._core.locked
+    assert node.outputs[-1].twist.linear.x == 0.0
+    assert not node._set_locked(False)
+
+
+@pytest.mark.parametrize('kwargs', [
+    {'stowed': False}, {'phase': 'DEPLOYING'}, {'work_id': 'changed-work'},
+])
+def test_same_stamp_changed_worker_report_immediately_stops_motion(monkeypatch, kwargs):
+    node, clock = _node(monkeypatch)
+    _worker(node, clock)
+    assert node._set_locked(False)
+    node._on_command('navigation', _command(clock))
+    node._publish_selected()
+    assert node.outputs[-1].twist.linear.x == 0.2
+    clock.wall += 0.1
+    _worker(node, clock, **kwargs)
+    assert node._core.locked
+    assert node.outputs[-1].twist.linear.x == 0.0
+    _worker(node, clock)
+    assert not node._set_locked(False)
+    clock.ros += 0.1
+    _worker(node, clock)
+    assert node._core.locked  # A fresh report still requires explicit unlock.
+    assert node._set_locked(False)
+    node._publish_selected()
+    assert node.outputs[-1].twist.linear.x == 0.0
 
 
 def test_shutdown_rejects_unlock_and_drops_commands_even_with_stowed_worker(monkeypatch):

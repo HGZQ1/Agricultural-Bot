@@ -1,0 +1,19 @@
+# Simulation-only navigation observation. This is not a physical MID-360 mode.
+# Scene visuals: soft branch/leaf=4, hidden stem proxy=0x20000000.
+collision_scan:
+  frame_id: mid360_sensor_frame
+  gz_topic: /hard_obstacles
+  points_topic: /hard_obstacles/points
+  update_rate: 10.0
+  min_range: 0.10
+  max_range: 8.0
+  horizontal_samples: 720
+  vertical_samples: 16
+  horizontal_min_angle: -3.141592653589793
+  horizontal_max_angle: 3.141592653589793
+  # Same installed optical frame and tilt as MID-360, with more downward rays.
+  vertical_min_angle: -0.6108652381980153
+  vertical_max_angle: 0.9075712110370514
+  range_resolution: 0.01
+  noise_stddev: 0.0
+

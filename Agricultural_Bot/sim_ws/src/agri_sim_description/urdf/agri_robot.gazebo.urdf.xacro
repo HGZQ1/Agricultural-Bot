@@ -8,7 +8,22 @@
   <!-- Simulation steering authority for loaded tire contact. The canonical
        description keeps its original limit; this is not a motor rating. -->
   <xacro:arg name="steering_effort_limit" default="40.0" />
+  <xacro:arg name="wheel_collision_geometry" default="mesh" />
   <xacro:arg name="use_lidar" default="true" />
+  <xacro:arg name="use_collision_scan" default="false" />
+  <xacro:arg name="collision_scan_frame" default="mid360_sensor_frame" />
+  <xacro:arg name="collision_scan_topic" default="/hard_obstacles" />
+  <xacro:arg name="collision_scan_rate" default="10.0" />
+  <xacro:arg name="collision_scan_min_range" default="0.1" />
+  <xacro:arg name="collision_scan_max_range" default="8.0" />
+  <xacro:arg name="collision_scan_h_samples" default="720" />
+  <xacro:arg name="collision_scan_v_samples" default="16" />
+  <xacro:arg name="collision_scan_h_min" default="-3.141592653589793" />
+  <xacro:arg name="collision_scan_h_max" default="3.141592653589793" />
+  <xacro:arg name="collision_scan_v_min" default="-0.6108652381980153" />
+  <xacro:arg name="collision_scan_v_max" default="0.9075712110370514" />
+  <xacro:arg name="collision_scan_resolution" default="0.01" />
+  <xacro:arg name="collision_scan_noise" default="0.0" />
   <xacro:arg name="lidar_mode" default="gpu_lidar" />
   <xacro:arg name="mid360_frame" default="mid360_sensor_frame" />
   <xacro:arg name="mid360_topic" default="/mid360" />
@@ -45,6 +60,7 @@
   <xacro:include filename="$(find agri_robot_description)/urdf/agri_robot.urdf.xacro" />
   <xacro:include filename="$(find agri_sim_sensors)/urdf/mid360.gazebo.xacro" />
   <xacro:include filename="$(find agri_sim_sensors)/urdf/d405.gazebo.xacro" />
+  <xacro:include filename="$(find agri_sim_sensors)/urdf/collision_scan.gazebo.xacro" />
   <xacro:if value="$(arg use_lidar)">
     <xacro:agri_mid360_simulation
       mode="$(arg lidar_mode)" frame_id="$(arg mid360_frame)" topic="$(arg mid360_topic)"
@@ -54,6 +70,16 @@
       v_min="$(arg mid360_v_min)" v_max="$(arg mid360_v_max)"
       resolution="$(arg mid360_resolution)" noise="$(arg mid360_noise)"
       visualize="$(arg mid360_visualize)" preset="$(arg mid360_preset)" />
+  </xacro:if>
+
+  <xacro:if value="$(arg use_collision_scan)">
+    <xacro:agri_collision_scan_simulation
+      frame_id="$(arg collision_scan_frame)" topic="$(arg collision_scan_topic)"
+      rate="$(arg collision_scan_rate)" min_range="$(arg collision_scan_min_range)" max_range="$(arg collision_scan_max_range)"
+      h_samples="$(arg collision_scan_h_samples)" v_samples="$(arg collision_scan_v_samples)"
+      h_min="$(arg collision_scan_h_min)" h_max="$(arg collision_scan_h_max)"
+      v_min="$(arg collision_scan_v_min)" v_max="$(arg collision_scan_v_max)"
+      resolution="$(arg collision_scan_resolution)" noise="$(arg collision_scan_noise)" />
   </xacro:if>
 
   <xacro:if value="$(arg use_camera)">

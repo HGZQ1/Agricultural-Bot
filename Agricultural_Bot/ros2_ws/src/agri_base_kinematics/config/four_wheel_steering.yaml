@@ -18,6 +18,14 @@ four_wheel_steering_node:
     joint_state_timeout: 0.25
     wheel_radius: 0.127
     max_wheel_speed: 8.0
+    # Limit final wheel drive after steering alignment, in rad/s^2 of SIM time.
+    # 0.8 * 0.127 m gives about 0.10 m/s^2 for straight acceleration. Guarded
+    # zero/expired commands and missing feedback bypass the ramp and stop.
+    max_wheel_acceleration: 0.8
+    # Bound normal steering reference motion in SIM time. Raw desired headings
+    # still govern wheel alignment; a lock holds fresh measured headings.
+    max_steering_velocity: 0.5
+    max_steering_acceleration: 1.0
     steering_limits: [-3.14159265, 3.14159265]
     # Bounded joint coordinates, matching wheel_modules.xacro. The node maps
     # these through each module's sign/offset and intersects physical limits.

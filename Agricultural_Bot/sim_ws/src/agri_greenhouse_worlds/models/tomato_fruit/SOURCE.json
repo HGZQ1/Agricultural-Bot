@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "upstream_repository": "https://github.com/LCAS/aoc_tomato_farm",
   "upstream_revision": "d8243e48c92377fbd9754400e0ddb1fcffded9d7",
   "license": "Apache-2.0 (see package LICENSE and NOTICE)",
@@ -5521,9 +5521,15 @@
   ],
   "vertices": 576,
   "triangles": 1080,
-  "normal_and_uv_values": "Preserved; only index arrays are compacted/remapped",
+  "normal_and_uv_values": "UVs preserved at each vertex/corner; normals oriented outward",
+  "surface_orientation": {
+    "source_signed_volume_normalized": -0.3881913908397447,
+    "signed_volume_normalized": 0.3881913908397447,
+    "triangle_winding_reversed": true,
+    "normal_vectors_negated": true
+  },
   "ripe_texture": "model://tomato_0/materials/textures/AG15frt1.png",
   "unripe_texture": "model://tomato_0/materials/textures/AG15frt4.png",
   "output_asset": "models/tomato_fruit/meshes/fruit.dae",
-  "output_sha256": "0a6d546df5132c39481224f12d17f08883dbf72d4d8380f97f0a0e1ab8d8a90c"
+  "output_sha256": "d3a5a8f4fb69481f25748ef74ac5b28210d332e914fb2332d07b7a98fcddf52b"
 }

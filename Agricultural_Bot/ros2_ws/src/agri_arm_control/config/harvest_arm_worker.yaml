@@ -1,0 +1,92 @@
+harvest_arm_worker:
+  ros__parameters:
+    use_sim_time: true
+    # This worker is a simulation integration. Real hardware plugins are rejected.
+    backend_mode: gazebo
+    # Jazzy Gazebo may omit ListHardwareComponents.plugin_name. Only its empty
+    # field may use this live RSP URDF + exact active interfaces + SCENE_READY.
+    robot_description_service: /robot_state_publisher/get_parameters
+    work_action: /harvest_work
+    worker_state_topic: /harvest_worker/state
+    targets_topic: /agri_vision/tomato_targets_base
+    task_frame: base_footprint
+    planning_frame: base_link
+    tip_link: grasp_tcp
+    arm_group: arm
+    arm_controller: arm_controller
+    arm_action: /arm_controller/follow_joint_trajectory
+    gripper_controller: gripper_controller
+    gripper_action: /gripper_controller/follow_joint_trajectory
+    arm_joint_names: [arm_joint1, arm_joint2, arm_joint3, arm_joint4, arm_joint5, cr5_joint6]
+    gripper_joint_names: [gripper_left_finger_joint, gripper_right_finger_joint]
+    stow_joints: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # Collision-checked IK+OMPL against the actual 301-object scene.
+    # Optical +Z faces work side horizontally at [-0.18,+/-0.30,1.00].
+    # Read-only geometry/FOV evidence: artifacts/arm_integration_20261013/scan_fov_query.json.
+    # Each station still requires its fresh scene and collision-aware plan.
+    scan_left_joints: [2.5242934356, -1.3849108894, 2.4108923620, -0.9932271184, -2.5240441786, 0.0266981362]
+    scan_right_joints: [0.6494265272, 1.3844460264, -2.4110933418, 0.9953120544, 2.4919259038, -0.0249621682]
+    gripper_max_m: 0.035
+    gripper_open_m: 0.0
+    gripper_close_m: 0.012
+    # Rigid fruit contact may stop the two fingers at different positions.
+    # Every small step must succeed; real Gazebo double contact ends closure.
+    gripper_contact_step_m: 0.001
+    gripper_contact_step_s: 0.25
+    maximum_gripper_contact_steps: 50
+    gripper_contact_timeout_s: 120.0
+    gripper_move_s: 1.0
+    gripper_timeout_s: 4.0
+    gripper_position_tolerance_m: 0.002
+    gripper_velocity_tolerance_mps: 0.003
+    joint_position_tolerance_rad: 0.03
+    trajectory_start_tolerance_rad: 0.05
+    joint_velocity_tolerance_rps: 0.03
+    joint_settle_s: 0.25
+    feedback_max_age_s: 0.5
+    feedback_timeout_s: 3.0
+    velocity_scaling: 0.2
+    acceleration_scaling: 0.2
+    planning_attempts: 2
+    ik_timeout_s: 0.8
+    plan_timeout_s: 5.0
+    execute_timeout_s: 30.0
+    # trajectory time_from_start uses SIM/ROS seconds, independent of wall RTF.
+    # Deadline=min(30 SIM s, duration*1.25+2 SIM s); WALL and stopped-clock guards
+    # remain independent. Gripper uses its 4 SIM s bound with a 20 WALL s cap.
+    execute_wall_timeout_s: 120.0
+    gripper_wall_timeout_s: 20.0
+    execution_clock_stall_s: 5.0
+    execution_margin_factor: 1.25
+    execution_margin_s: 2.0
+    goal_response_timeout_s: 3.0
+    cancel_timeout_s: 5.0
+    work_deadline_s: 400.0
+    health_interval_s: 1.5
+    cartesian_step_m: 0.005
+    cartesian_joint_jump_rad: 0.35
+    maximum_ik_candidates: 9
+    pre_offset_m: 0.08
+    retreat_offset_m: 0.12
+    # Surface-depth point + nominal radius, not a calibrated fruit-centre estimate.
+    surface_centre_offset_m: 0.025
+    basket_drop_xyz_m: [0.17, 0.0, 0.60]
+    basket_clearance_m: 0.15
+    basket_quaternion_xyzw: [1.0, 0.0, 0.0, 0.0]
+    require_segmentation: true
+    minimum_confidence: 0.5
+    target_max_age_s: 0.5
+    target_longitudinal_offset_m: -0.17998
+    longitudinal_window_m: 0.30
+    maximum_target_distance_m: 1.25
+    selection_timeout_s: 20.0
+    scene_service_timeout_s: 30.0
+    # Only read-only ready retries BUSY/transport timeout within the total bound.
+    scene_ready_attempt_timeout_s: 12.0
+    scene_ready_retry_interval_s: 0.2
+    basket_verification_timeout_s: 8.0
+    route_status_topic: /field_route_executor/status
+    station_topic: /field_route_executor/current_harvest_point
+    motion_lock_topic: /base_motion/locked
+    odom_topic: /odom
+    joint_states_topic: /joint_states

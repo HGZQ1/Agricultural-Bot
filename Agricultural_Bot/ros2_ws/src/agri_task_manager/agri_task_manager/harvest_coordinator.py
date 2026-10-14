@@ -78,6 +78,7 @@ class HarvestCoordinator(Node):
         self.declare_parameter('work_report_topic', '/field_route_executor/work_report')
         self.declare_parameter('targets_topic', '/agri_vision/tomato_targets_base')
         self.declare_parameter('work_action', '/harvest_work')
+        self.declare_parameter('worker_select_targets_after_scan', False)
         self.declare_parameter('selection_frame', 'base_footprint')
         self.declare_parameter('target_max_age_s', 0.5)
         self.declare_parameter('minimum_confidence', 0.5)
@@ -318,20 +319,29 @@ class HarvestCoordinator(Node):
         # simulated time: paused /clock must not create an infinite wait.
         if self._request_started is None:
             self._request_started = time.monotonic()
-        target = self._select_target()
-        if target is not None and self._client.server_is_ready() and started_ns > 0:
+        worker_scan = bool(self.get_parameter('worker_select_targets_after_scan').value)
+        target = None if worker_scan else self._select_target()
+        if ((worker_scan or target is not None) and
+                self._client.server_is_ready() and started_ns > 0):
             goal = HarvestWork.Goal()
             goal.header.frame_id = str(self.get_parameter('selection_frame').value)
-            goal.header.stamp = self._targets.header.stamp
+            goal.header.stamp = (self.get_clock().now().to_msg() if worker_scan
+                                 else self._targets.header.stamp)
             goal.run_id, goal.waypoint_id, goal.work_id = self._work_context
             goal.plant_id = self._station['plant_id']
             goal.work_side = self._station['work_side']
-            goal.target = target
-            self._selected_target_id = target.target_id
-            self._target_history.setdefault(target.target_id, set()).add(self._work_context[:2])
+            goal.scan_before_selection = worker_scan
+            if target is not None:
+                goal.target = target
+                self._selected_target_id = target.target_id
+                self._target_history.setdefault(target.target_id, set()).add(
+                    self._work_context[:2])
+            else:
+                self._selected_target_id = ''
             self._phase = 'WAITING_FOR_EXECUTOR_ACK'
             self._blocking_reason = ''
-            self._report('STARTED', target_id=target.target_id)
+            self._report('STARTED', target_id=self._selected_target_id,
+                         scan_before_selection=worker_scan)
             self._request_started = time.monotonic()
             self._pending_goal = goal
         elif time.monotonic() - self._request_started > float(
@@ -380,11 +390,17 @@ class HarvestCoordinator(Node):
         try:
             wrapped = future.result()
             result = wrapped.result
+            if result.target_id:
+                self._selected_target_id = result.target_id
+                self._target_history.setdefault(result.target_id, set()).add(
+                    self._work_context[:2])
             succeeded = (wrapped.status == GoalStatus.STATUS_SUCCEEDED and
                          result.success and result.arm_stowed and
                          self._station_context(require_permission=False) == self._work_context)
             self._report('SUCCESS' if succeeded else 'FAILED',
                          success=bool(succeeded), arm_stowed=bool(result.arm_stowed),
+                         target_id=result.target_id,
+                         sim_fruit_verified=bool(succeeded and result.sim_fruit_verified),
                          terminal_confirmed=True, message=result.message)
         except Exception as exc:
             self._report('FAILED', terminal_confirmed=False, message=str(exc))

@@ -13,6 +13,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TomatoTargetArray.msg"
   "msg/HarvestWorkerState.msg"
   "action/HarvestWork.action"
+  "srv/SimFruitCommand.srv"
   DEPENDENCIES action_msgs builtin_interfaces geometry_msgs std_msgs
 )
 

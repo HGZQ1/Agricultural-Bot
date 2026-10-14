@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot name="agri_robot">
+
+  <group name="arm">
+    <chain base_link="base_link" tip_link="grasp_tcp"/>
+  </group>
+
+  <group name="gripper">
+    <link name="gripper_base_link"/>
+    <link name="gripper_left_finger_link"/>
+    <link name="gripper_right_finger_link"/>
+    <joint name="gripper_left_finger_joint"/>
+    <joint name="gripper_right_finger_joint"/>
+  </group>
+
+  <end_effector name="gripper_eef" parent_link="grasp_tcp" group="gripper"
+                parent_group="arm"/>
+
+  <!-- ============ 底盘与固定设备 ============ -->
+  <disable_collisions link1="base_link" link2="f1_steer_link" reason="Never"/>
+  <disable_collisions link1="base_link" link2="f2_steer_link" reason="Never"/>
+  <disable_collisions link1="base_link" link2="r1_steer_link" reason="Never"/>
+  <disable_collisions link1="base_link" link2="r2_steer_link" reason="Never"/>
+  <disable_collisions link1="base_link" link2="mid360_link" reason="Never"/>
+  <disable_collisions link1="base_link" link2="tomato_box_link" reason="Never"/>
+
+  <!-- ============ 轮子模块 ============ -->
+  <disable_collisions link1="f1_steer_link" link2="f1_wheel_link" reason="Adjacent"/>
+  <disable_collisions link1="f2_steer_link" link2="f2_wheel_link" reason="Adjacent"/>
+  <disable_collisions link1="r1_steer_link" link2="r1_wheel_link" reason="Adjacent"/>
+  <disable_collisions link1="r2_steer_link" link2="r2_wheel_link" reason="Adjacent"/>
+
+  <!-- ============ MID-360 内部 ============ -->
+  <disable_collisions link1="mid360_link" link2="mid360_sensor_frame" reason="Never"/>
+  <disable_collisions link1="mid360_sensor_frame" link2="mid360_scan_frame" reason="Never"/>
+
+  <!-- ============ 机械臂相邻连杆 ============ -->
+  <disable_collisions link1="base_link" link2="arm_link1" reason="Adjacent"/>
+  <disable_collisions link1="arm_link1" link2="arm_link2" reason="Adjacent"/>
+  <disable_collisions link1="arm_link2" link2="arm_link3" reason="Adjacent"/>
+  <disable_collisions link1="arm_link3" link2="arm_link4" reason="Adjacent"/>
+  <disable_collisions link1="arm_link4" link2="arm_link5" reason="Adjacent"/>
+  <disable_collisions link1="arm_link5" link2="gripper_base_link" reason="Adjacent"/>
+  <!-- The CAD camera mounting bracket shares the wrist mounting region.
+       Domain-194 checks at nine joint6 angles from -pi to pi found persistent
+       0.16 to 6.03 mm mounting overlap (5 mm at zero). Exempt this ONE mounting
+       pair; do not exempt camera housing/lens or
+       arm_link4. This is a simulation assembly allowance, not proof of safe
+       hardware clearance. Wrist/forearm collisions remain enabled. -->
+  <disable_collisions link1="arm_link5" link2="camera_link" reason="Default"/>
+
+  <!-- Fixed camera assembly and directly attached fingers only. The wrist
+       joints between arm_link4/arm_link5 and the camera DO move: collisions
+       across those joints remain enabled. -->
+  <disable_collisions link1="gripper_base_link" link2="tool0" reason="Never"/>
+  <disable_collisions link1="gripper_base_link" link2="camera_link" reason="Never"/>
+  <disable_collisions link1="gripper_base_link" link2="camera_lens_link" reason="Never"/>
+  <disable_collisions link1="gripper_base_link" link2="d405_sensor_frame" reason="Never"/>
+  <disable_collisions link1="gripper_base_link" link2="camera_optical_frame" reason="Never"/>
+  <disable_collisions link1="gripper_base_link" link2="gripper_left_finger_link" reason="Adjacent"/>
+  <disable_collisions link1="gripper_base_link" link2="gripper_right_finger_link" reason="Adjacent"/>
+
+  <disable_collisions link1="camera_link" link2="camera_lens_link" reason="Never"/>
+  <disable_collisions link1="camera_link" link2="d405_sensor_frame" reason="Never"/>
+  <disable_collisions link1="camera_link" link2="camera_optical_frame" reason="Never"/>
+  <disable_collisions link1="camera_link" link2="tool0" reason="Never"/>
+  <disable_collisions link1="camera_lens_link" link2="d405_sensor_frame" reason="Never"/>
+  <disable_collisions link1="camera_lens_link" link2="camera_optical_frame" reason="Never"/>
+  <disable_collisions link1="camera_lens_link" link2="tool0" reason="Never"/>
+  <disable_collisions link1="d405_sensor_frame" link2="camera_optical_frame" reason="Never"/>
+  <disable_collisions link1="d405_sensor_frame" link2="tool0" reason="Never"/>
+  <disable_collisions link1="camera_optical_frame" link2="tool0" reason="Never"/>
+
+  <!-- ============ 保留碰撞检测 ============ -->
+  <!-- 机械臂与篮子：保留 -->
+  <!-- 机械臂与底盘：保留 -->
+  <!-- 机械臂与 mid360：保留 -->
+
+</robot>

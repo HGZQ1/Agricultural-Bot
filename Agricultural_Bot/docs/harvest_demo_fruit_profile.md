@@ -1,11 +1,22 @@
 # 近侧果实演示场景：生成、检查与后续夹取验证
 
-当前默认场景采用 `harvest_demo_v1`：保留 6 行 × 10 株、3 m 行距、2.4 m 株高、
+## 当前使用说明
+
+用户已选择保留原始自然果实分布。默认场景及匹配任务已恢复到施加下述演示果实配置前的
+版本：60 株、224 个果实，保留原位置、半径和成熟度，不再使用长绿色支梗。
+本文下述外伸果实配置保留为历史方案，不再是默认场景。
+
+靠近植株的替代方案与验证入口见 [harvest_preflight.md](harvest_preflight.md) 第 10 节。
+该方案使用独立的仿真物理碰撞导航图及扫描，保留原定位地图。最新小果实候选保留
+自然果位，将全部直径缩至 50–60 mm，并已准备完整 20 点复测任务，见该文档第 10.7 节。
+实际导航及采摘验收分别记录，不能据此保证每株都有可见、可达的红果。
+
+历史演示场景采用 `harvest_demo_v1`：保留 6 行 × 10 株、3 m 行距、2.4 m 株高、
 1 m 冠幅和 0.06 m 茎杆碰撞宽度，在中央通道两侧的 20 株上生成近侧候选果实。
 20 个底盘停车位、3 个中转点、home、占据地图和 keepout 沿用已经验收的侧偏路线。
 这次完成的是场景准备和离线距离筛选；IK、完整机械臂碰撞、相机视场和实际夹取仍待协作者验证。
 
-## 1. 当前参数与结果
+## 1. 历史方案参数与结果
 
 | 参数 | 当前值 | 含义 |
 | --- | --- | --- |
@@ -65,10 +76,10 @@ Dmax(P) = hypot(norm(Pxy - J1xy) + 0.08 + e, Pz - 0.891556378)
 
 ## 3. 文件与可复现生成
 
-- 默认世界和标注：`sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_default.sdf/.json`。
+- 历史方案使用的默认世界和标注：`sim_ws/src/agri_greenhouse_worlds/worlds/tomato_field_default.sdf/.json`。
 - 果实生成用停车几何快照：同目录 `tomato_field_harvest_stations.yaml`。
-- 默认任务：`ros2_ws/src/agri_task_manager/config/missions/tomato_field_default_single_corridor.yaml`。
-- 当前场景版本：`rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42`。
+- 历史方案使用的默认任务：`ros2_ws/src/agri_task_manager/config/missions/tomato_field_default_single_corridor.yaml`。
+- 历史场景版本：`rows6_n10_row3p0_plant0p7_h2p4_w1p0_c0p06_harvest_demo_v1_seed42`。
 - 原默认场景备份：`artifacts/harvest_demo_profile_20261013/previous_default/`。
 
 停车几何快照不含场景哈希，避免“生成元数据记录 mission 哈希，mission 又绑定元数据哈希”的

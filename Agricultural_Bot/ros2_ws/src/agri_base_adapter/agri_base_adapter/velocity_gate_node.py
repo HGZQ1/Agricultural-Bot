@@ -160,7 +160,9 @@ class VelocityGateNode(Node):
             message.header.stamp.nanosec) / 1e9
         self._harvest_interlock.observe(
             stamp=stamp, ros_now=self._now_seconds(), wall_now=time.monotonic(),
-            arm_stowed=message.arm_stowed, phase=message.phase)
+            arm_stowed=message.arm_stowed, phase=message.phase,
+            identity=(message.header.frame_id, message.run_id,
+                      message.waypoint_id, message.work_id))
         # Deployment revokes motion immediately, without waiting for a timer.
         self._publish_selected()
 

@@ -1,0 +1,15 @@
+# Simulation / planning scene interaction for one frozen visual observation.
+# target_id is the detector ID, never a Gazebo entity ID.
+std_msgs/Header header
+string target_id
+string work_id
+string plant_id
+geometry_msgs/Point position
+# /harvest_sim/command: attach, release, status
+# /harvest_scene/contact: ready (work_id only), select, clear
+string operation
+---
+bool success
+string state
+string entity_id
+string message

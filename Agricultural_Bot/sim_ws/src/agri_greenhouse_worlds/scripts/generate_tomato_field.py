@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.util
 import json
 import math
 from pathlib import Path
@@ -157,6 +158,8 @@ def validate_args(args: argparse.Namespace) -> None:
                 f"({geometry['stem_size'][0] / 2:.6g} m) + "
                 "fruit-diameter-max / 2 + fruit-min-clearance"
             )
+    if args.harvestable_fruits and not args.randomize_fruits:
+        raise ValueError("harvestable-fruits requires --randomize-fruits")
     if args.harvest_mission is not None:
         if not args.randomize_fruits:
             raise ValueError("harvest-mission requires --randomize-fruits")
@@ -227,6 +230,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--randomize-fruits", action="store_true",
         help="Use the fruit-free tomato_plant asset and add separate static fruit targets.",
+    )
+    parser.add_argument(
+        "--harvestable-fruits", action="store_true",
+        help="Generate dynamic fruit attached to plant stems using agri_harvest_sim. "
+             "Requires that plugin package and explicit simulation harvest verification.",
     )
     parser.add_argument(
         "--fruit-visual", choices=("mesh", "sphere"), default="mesh",
@@ -867,7 +875,19 @@ def build_world(args: argparse.Namespace, fruits: list[dict] | None = None) -> s
         lines.extend(['      </link>', '    </model>'])
 
     lines.extend(['  </world>', '</sdf>', ''])
-    return "\n".join(lines)
+    world_xml = "\n".join(lines)
+    if args.harvestable_fruits:
+        converter = package_root().parent / "agri_harvest_sim" / "scripts" / "make_harvestable_world.py"
+        if not converter.is_file():
+            from ament_index_python.packages import get_package_prefix
+            converter = Path(get_package_prefix("agri_harvest_sim")) / "lib" / "agri_harvest_sim" / "make_harvestable_world.py"
+        spec = importlib.util.spec_from_file_location("agri_harvest_world_converter", converter)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        root = module.convert(ET.fromstring(world_xml), {"fruits": fruits})
+        ET.indent(root, space="  ")
+        world_xml = '<?xml version="1.0"?>\n' + ET.tostring(root, encoding="unicode") + "\n"
+    return world_xml
 
 
 def main() -> None:
@@ -905,7 +925,8 @@ def main() -> None:
         f"{args.output.resolve()}"
     )
     if args.randomize_fruits:
-        print(f"Generated {len(fruits)} static fruit targets with seed {args.seed}")
+        mode = "dynamic harvestable" if args.harvestable_fruits else "static"
+        print(f"Generated {len(fruits)} {mode} fruit targets with seed {args.seed}")
 
 
 if __name__ == "__main__":

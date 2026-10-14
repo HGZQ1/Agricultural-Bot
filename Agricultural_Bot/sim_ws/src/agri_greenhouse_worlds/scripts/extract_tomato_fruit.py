@@ -2,7 +2,8 @@
 """Extract one textured fruit body from the bundled, licensed tomato mesh.
 
 The COLLADA remains material-free, like the source asset. The SDF visual uses
-the original albedo texture; UV coordinates and normals are retained here.
+the original albedo texture; UV coordinates are retained. Triangle winding
+and normals are oriented outward so rendering exposes the near fruit surface.
 This asset preparation tool needs only the Python standard library.
 """
 
@@ -83,6 +84,60 @@ def make_source(mesh, identifier, source_template, values):
         accessor.append(copy.deepcopy(param))
 
 
+def cross(a, b):
+    return (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2],
+            a[0]*b[1]-a[1]*b[0])
+
+
+def dot(a, b):
+    return sum(x*y for x, y in zip(a, b))
+
+
+def orient_surface(points, corners, sources, semantics):
+    """Orient a closed fruit without changing vertex positions or UV seams.
+
+    The bundled fruit body's upstream winding and normals point inward.
+    Preserving them makes Ogre cull the near surface and report the far skin
+    as RGB-D depth. Signed volume determines winding independently of normals;
+    area-weighted face/normal agreement determines any normal sign correction.
+    """
+    def triangle_points(triangle):
+        offset = int(semantics["VERTEX"].get("offset"))
+        return [points[sources["VERTEX"][2][corner[offset]]] for corner in triangle]
+
+    triangles = [corners[start:start+3] for start in range(0, len(corners), 3)]
+    volume = sum(dot(a, cross(b, c)) for a, b, c in
+                 (triangle_points(triangle) for triangle in triangles)) / 6
+    if not math.isfinite(volume) or abs(volume) < 1e-12:
+        raise ValueError("Source fruit must have a finite nonzero signed volume")
+    reverse = volume < 0
+    if reverse:
+        triangles = [[triangle[0], triangle[2], triangle[1]] for triangle in triangles]
+    normal_offset = int(semantics["NORMAL"].get("offset"))
+    normal_values = sources["NORMAL"][1]
+    agreement = 0.0
+    for triangle in triangles:
+        a, b, c = triangle_points(triangle)
+        face = cross(tuple(y-x for x, y in zip(a, b)),
+                     tuple(y-x for x, y in zip(a, c)))
+        for corner in triangle:
+            normal = normal_values[sources["NORMAL"][2][corner[normal_offset]]]
+            agreement += dot(face, normal)
+    if not math.isfinite(agreement) or abs(agreement) < 1e-12:
+        raise ValueError("Source fruit normals must agree with a consistent surface orientation")
+    negate_normals = agreement < 0
+    if negate_normals:
+        template, values, remapping = sources["NORMAL"]
+        sources["NORMAL"] = (template, [tuple(-value for value in normal)
+                                         for normal in values], remapping)
+    return [corner for triangle in triangles for corner in triangle], {
+        "source_signed_volume_normalized": volume,
+        "signed_volume_normalized": abs(volume),
+        "triangle_winding_reversed": reverse,
+        "normal_vectors_negated": negate_normals,
+    }
+
+
 def extract(source_path, output_path, node_name="Fruit1", component_index=2):
     document = ET.parse(source_path).getroot()
     node = document.find(
@@ -150,6 +205,8 @@ def extract(source_path, output_path, node_name="Fruit1", component_index=2):
     multiplier = 0.5 / radius
     normalized = [tuple((point[axis] - center[axis]) * multiplier for axis in range(3))
                   for point in original_points]
+    selected_corners, orientation = orient_surface(
+        normalized, selected_corners, sources, semantics)
 
     output = ET.Element(tag("COLLADA"), {"version": "1.4.1"})
     asset = copy.deepcopy(document.find(tag("asset")))
@@ -192,7 +249,7 @@ def extract(source_path, output_path, node_name="Fruit1", component_index=2):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_bytes(output_bytes)
     metadata = {
-        "schema_version": 1,
+        "schema_version": 2,
         "upstream_repository": "https://github.com/LCAS/aoc_tomato_farm",
         "upstream_revision": "d8243e48c92377fbd9754400e0ddb1fcffded9d7",
         "license": "Apache-2.0 (see package LICENSE and NOTICE)",
@@ -219,7 +276,8 @@ def extract(source_path, output_path, node_name="Fruit1", component_index=2):
         "normalized_bbox_max": [max(point[axis] for point in normalized) for axis in range(3)],
         "vertices": len(normalized),
         "triangles": len(selected_corners) // 3,
-        "normal_and_uv_values": "Preserved; only index arrays are compacted/remapped",
+        "normal_and_uv_values": "UVs preserved at each vertex/corner; normals oriented outward",
+        "surface_orientation": orientation,
         "ripe_texture": "model://tomato_0/materials/textures/AG15frt1.png",
         "unripe_texture": "model://tomato_0/materials/textures/AG15frt4.png",
         "output_asset": "models/tomato_fruit/meshes/fruit.dae",

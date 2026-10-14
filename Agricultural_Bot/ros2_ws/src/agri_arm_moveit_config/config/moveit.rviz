@@ -1,0 +1,29 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Displays:
+    - Class: rviz_default_plugins/RobotModel
+      Description Topic: {Value: /robot_description}
+      Enabled: true
+      Name: RobotModel
+      Visual Enabled: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Name: TF
+  Global Options:
+    Fixed Frame: base_footprint
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 2.0
+      Focal Point: {X: 0, Y: 0, Z: 0.5}
+      Name: Current View
+      Target Frame: base_footprint
+Window Geometry:
+  Height: 800
+  Width: 1200

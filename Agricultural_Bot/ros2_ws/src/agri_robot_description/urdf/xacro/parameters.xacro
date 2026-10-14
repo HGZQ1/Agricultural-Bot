@@ -4,9 +4,29 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="agri_robot_parameters">
   <xacro:property name="mesh_package" value="$(arg mesh_package)" />
   <xacro:property name="wheel_radius" value="0.127" />
+  <xacro:property name="wheel_width" value="0.100" />
+  <xacro:property name="wheel_collision_geometry" value="$(arg wheel_collision_geometry)" />
+  <!-- Lookup rejects unsupported names instead of silently removing collisions. -->
+  <xacro:property name="wheel_collision_is_cylinder"
+                  value="${dict(mesh=False, cylinder=True)[wheel_collision_geometry]}" />
   <xacro:property name="steer_link_mass" value="15.0" />
   <xacro:property name="steer_limit" value="3.1416" />
   <xacro:property name="wheel_velocity_limit" value="2.0" />
+
+  <!-- CAD gripper: equal positive finger travel CLOSES the jaws. At q=0
+       the minimum mesh-to-mesh aperture is 74.0815 mm. Limiting each jaw
+       to 35 mm leaves 4.0815 mm clearance, instead of the former 0.8 m
+       limit which made the fingers pass through each other. These are
+       conservative simulation geometry limits, not a hardware stroke rating. -->
+  <xacro:property name="gripper_finger_stroke" value="0.035" />
+  <xacro:property name="gripper_finger_velocity" value="0.04" />
+  <!-- Geometric simulation grasp center between the tapered finger tips,
+       clear of the motor housing. Replace after physical TCP calibration.
+       grasp_tcp +Z points out along gripper_base_link -X; +X is the jaw axis. -->
+  <xacro:property name="grasp_tcp_x" value="-0.18" />
+  <xacro:property name="grasp_tcp_y" value="0.0" />
+  <xacro:property name="grasp_tcp_z" value="0.0" />
+  <xacro:property name="grasp_tcp_pitch" value="-1.5707963267948966" />
 
   <!--
     The MID-360 mesh was exported in the assembly (CAD) coordinate system,

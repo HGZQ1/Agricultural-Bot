@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="agri_collision_scan_simulation" params="frame_id topic rate min_range max_range h_samples v_samples h_min h_max v_min v_max resolution noise">
+    <!-- This second observation is simulation-only, not a MID-360 hardware mode.
+         It shares the canonical optical link and sensor pose. No additional TF
+         publisher or virtual robot is used. Keep the massive housing link so
+         adding this sensor cannot change fixed-joint reduction of the robot. -->
+    <gazebo reference="mid360_joint">
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+    <gazebo reference="${frame_id}">
+      <sensor name="hard_obstacle_lidar" type="gpu_lidar">
+        <pose>0 0 0 0 0 0</pose>
+        <gz_frame_id>${frame_id}</gz_frame_id>
+        <topic>${topic}</topic>
+        <update_rate>${rate}</update_rate>
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <lidar>
+          <!-- 0x2FFFFFFB: ordinary visuals + hidden hard stem proxies;
+               exclude soft branch/leaf visuals explicitly flagged as 4. -->
+          <visibility_mask>805306363</visibility_mask>
+          <scan>
+            <horizontal>
+              <samples>${h_samples}</samples><resolution>1</resolution>
+              <min_angle>${h_min}</min_angle><max_angle>${h_max}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>${v_samples}</samples><resolution>1</resolution>
+              <min_angle>${v_min}</min_angle><max_angle>${v_max}</max_angle>
+            </vertical>
+          </scan>
+          <range><min>${min_range}</min><max>${max_range}</max><resolution>${resolution}</resolution></range>
+          <noise><type>gaussian</type><mean>0</mean><stddev>${noise}</stddev></noise>
+        </lidar>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>

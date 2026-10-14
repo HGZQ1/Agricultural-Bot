@@ -24,7 +24,7 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     gripper_controller:
-      type: forward_command_controller/ForwardCommandController
+      type: joint_trajectory_controller/JointTrajectoryController
 
 steering_controller:
   ros__parameters:
@@ -71,4 +71,21 @@ gripper_controller:
     joints:
       - gripper_left_finger_joint
       - gripper_right_finger_joint
-    interface_name: position
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    open_loop_control: false
+    constraints:
+      stopped_velocity_tolerance: 0.005
+      goal_time: 1.0
+      gripper_left_finger_joint:
+        trajectory: 0.01
+        goal: 0.002
+      gripper_right_finger_joint:
+        trajectory: 0.01
+        goal: 0.002

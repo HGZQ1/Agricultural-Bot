@@ -1,0 +1,36 @@
+# Opt-in companion for nav2_close_harvest_omni.yaml; not the default gate.
+# Only the accepted lateral command bound changes to +/-0.08 m/s.
+# Nav2 also limits X to +/-0.12 m/s (combined XY <=0.1443 m/s).
+# Locks, freshness, harvest interlock, source arbitration and all other bounds
+# stay identical to base_adapter.yaml.  Use velocity_smoothing:=false.
+base_velocity_gate:
+  ros__parameters:
+    manual_topic: /cmd_vel
+    navigation_topic: /cmd_vel_nav
+    output_topic: /cmd_vel_safe
+    lock_command_topic: /base_motion/lock_cmd
+    lock_state_topic: /base_motion/locked
+    active_source_topic: /base_motion/active_source
+    lock_service: /base_motion/set_lock
+    frame_id: base_footprint
+    publish_rate: 50.0
+    manual_timeout: 0.35
+    navigation_timeout: 0.35
+    maximum_input_age: 0.5
+    maximum_future_skew: 0.05
+    max_linear_x: 0.3
+    max_linear_y: 0.08
+    max_angular_z: 0.5
+    require_harvest_interlock: false
+    harvest_worker_state_topic: /harvest_worker/state
+    harvest_worker_timeout_s: 0.75
+    harvest_worker_max_age_s: 0.5
+    harvest_worker_future_skew_s: 0.05
+base_odom_adapter:
+  ros__parameters:
+    input_topic: /wheel/odom
+    output_topic: /odom
+    odom_frame: odom
+    base_frame: base_footprint
+    maximum_age: 0.5
+    maximum_future_skew: 0.05

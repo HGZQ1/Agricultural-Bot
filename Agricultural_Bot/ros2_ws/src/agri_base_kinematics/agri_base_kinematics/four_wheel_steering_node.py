@@ -20,6 +20,8 @@ from .kinematics import (
     steering_alignment_scale,
     steering_feedback_to_physical,
 )
+from .wheel_drive import WheelDriveLimiter
+from .steering_reference import SteeringReferenceLimiter
 
 
 class FourWheelSteeringNode(Node):
@@ -43,6 +45,9 @@ class FourWheelSteeringNode(Node):
         self.declare_parameter('joint_state_timeout', 0.25)
         self.declare_parameter('wheel_radius', 0.127)
         self.declare_parameter('max_wheel_speed', 8.0)
+        self.declare_parameter('max_wheel_acceleration', 0.8)
+        self.declare_parameter('max_steering_velocity', 0.5)
+        self.declare_parameter('max_steering_acceleration', 1.0)
         self.declare_parameter('steering_limits', [-pi, pi])
         self.declare_parameter('steering_joint_limits', [-pi, pi])
         self.declare_parameter('steering_full_speed_error', 0.05)
@@ -128,6 +133,17 @@ class FourWheelSteeringNode(Node):
             float(self.get_parameter('max_wheel_speed').value),
             physical_limits,
             steering_limits_by_wheel=dict(zip(names, wheel_limits)),
+        )
+        self._drive_limiter = WheelDriveLimiter(
+            wheel_count=len(names),
+            max_acceleration=float(self.get_parameter('max_wheel_acceleration').value),
+            maximum_interval=min(self._command_timeout, self._joint_state_timeout),
+        )
+        self._steering_limiter = SteeringReferenceLimiter(
+            limits=wheel_limits,
+            max_velocity=float(self.get_parameter('max_steering_velocity').value),
+            max_acceleration=float(self.get_parameter('max_steering_acceleration').value),
+            maximum_interval=min(self._command_timeout, self._joint_state_timeout),
         )
         self._steering: Dict[str, float] = {name: 0.0 for name in names}
         self._wheel_velocity: Dict[str, float] = {name: 0.0 for name in names}
@@ -256,8 +272,9 @@ class FourWheelSteeringNode(Node):
             self._last_odom_time = now
         self._last_clock_ns = now.nanoseconds
         command_age = (now - self._last_command_time).nanoseconds / 1e9
-        if (not self._command_received or command_age < 0.0 or
-                command_age > self._command_timeout):
+        command_fresh = (self._command_received and
+                         0.0 <= command_age <= self._command_timeout)
+        if not command_fresh:
             twist = (0.0, 0.0, 0.0)
         else:
             twist = self._twist
@@ -273,13 +290,26 @@ class FourWheelSteeringNode(Node):
                 self._alignment_full_speed_error,
                 self._alignment_stop_error,
             )
-        steering_msg = Float64MultiArray(data=physical_steering_to_joint(
+        steering_reference = self._steering_limiter.step(
             [commands[name].steering for name in self._wheel_names],
-            self._steering_signs, self._steering_offsets))
+            [self._steering[name] for name in self._wheel_names],
+            now.nanoseconds, enabled=joint_state_fresh,
+            hold=not command_fresh or not any(twist))
+        # Limit the final drive output: steering alignment can recover from
+        # zero after the body command has already reached its requested speed.
+        # Locked zero commands and failed freshness gates stop immediately.
+        permitted_velocity = [commands[name].velocity * alignment_scale
+                              for name in self._wheel_names]
+        wheel_velocity = self._drive_limiter.step(
+            permitted_velocity, now.nanoseconds,
+            enabled=command_fresh and joint_state_fresh and steering_reference is not None,
+            maximum_magnitudes=[abs(value) for value in permitted_velocity])
         wheel_msg = Float64MultiArray(data=apply_joint_signs(
-            [commands[name].velocity * alignment_scale for name in self._wheel_names],
-            self._wheel_signs))
-        self._steering_pub.publish(steering_msg)
+            wheel_velocity, self._wheel_signs))
+        if steering_reference is not None:
+            steering_msg = Float64MultiArray(data=physical_steering_to_joint(
+                steering_reference, self._steering_signs, self._steering_offsets))
+            self._steering_pub.publish(steering_msg)
         self._wheel_pub.publish(wheel_msg)
 
         dt = (now - self._last_odom_time).nanoseconds / 1e9

@@ -1,5 +1,7 @@
 # Goal binds one observation to one station/work transaction.
-# header matches the target's observation time/frame. No world truth input.
+# Direct mode: header matches target observation time/frame. No world truth input.
+# Scan mode: header is the request time; worker selects a fresh post-scan
+# TomatoTargetArray observation under the same parked work transaction.
 std_msgs/Header header
 string work_id
 string run_id
@@ -7,11 +9,15 @@ string waypoint_id
 string plant_id
 string work_side
 TomatoTarget target
+bool scan_before_selection
 ---
 # Success alone cannot unlock: fresh matching worker stow feedback is required.
 bool success
 bool arm_stowed
 string message
+string target_id
+# Only verified simulated attachment/release/basket state; not a real fruit claim.
+bool sim_fruit_verified
 ---
 string phase
 bool arm_stowed
