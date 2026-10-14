@@ -106,7 +106,7 @@ def bridge(monkeypatch):
                                    nanosec=node.clock.ros % 10**9))
         node.states['locked'] = Message(True)
         node.states['odom'] = NS(header=header(), twist=NS(twist=NS(
-            linear=NS(x=0., y=0.), angular=NS(z=0.))))
+            linear=NS(x=0., y=0., z=0.), angular=NS(z=0.))))
         # Place r2 at index 1 deliberately: feedback lookup must use its name.
         node.states['joints'] = NS(header=header(),
             name=['arm_joint1', 'r2_steer_joint', 'f1_steer_joint'],
@@ -180,7 +180,7 @@ def test_stow_restored_watchdog_waits_for_new_matching_reference(bridge):
 
 
 @pytest.mark.parametrize('lost_condition', ['locked', 'stopped'])
-def test_resume_callback_cannot_clear_pending_after_unlock_or_motion(bridge, lost_condition):
+def test_resume_callback_waits_boundedly_after_unlock_or_motion(bridge, lost_condition):
     _module, node = bridge
     suspend(node)
     advance(node)
@@ -190,9 +190,20 @@ def test_resume_callback_cannot_clear_pending_after_unlock_or_motion(bridge, los
         node.states['odom'].twist.twist.linear.x = .02
     # Callback arrives before the 20 ms watchdog, the important DDS ordering.
     reference(node)
-    assert node.failed and not node.armed
+    assert node.armed and not node.failed
+    assert node.suspended and node.resume_pending and not node.validator.active
     assert node.sent == 1
-    assert node.lock_publisher.messages[-1].data is True
+    assert [message.data for message in node.lock_publisher.messages] == [True]
+    advance(node, 2.01)
+    # Refresh every required message before checking the transition deadline:
+    # this must fail for absent parking acknowledgement, not stale feedback.
+    if lost_condition == 'locked':
+        node.states['locked'].data = False
+    else:
+        node.states['odom'].twist.twist.linear.x = .02
+    reference(node)
+    assert node.failed and not node.armed
+    assert node.sent == 1 and 'parking deadline' in node.reason
 
 
 def test_reclaim_discontinuity_faults_and_requests_lock(bridge):
@@ -205,7 +216,7 @@ def test_reclaim_discontinuity_faults_and_requests_lock(bridge):
 
 
 @pytest.mark.parametrize('lost_condition', ['locked', 'stopped'])
-def test_worker_not_stowed_during_motion_faults_instead_of_suspending(bridge, lost_condition):
+def test_worker_not_stowed_during_motion_suspends_then_faults_on_parking_timeout(bridge, lost_condition):
     _module, node = bridge
     reference(node)
     advance(node)
@@ -216,20 +227,140 @@ def test_worker_not_stowed_during_motion_faults_instead_of_suspending(bridge, lo
     else:
         node.states['odom'].twist.twist.linear.y = .02
     reference(node)
+    assert node.armed and not node.failed
+    assert node.suspended and node.resume_pending and not node.validator.active
+    assert node.sent == 1
+    assert [message.data for message in node.lock_publisher.messages] == [True]
+    advance(node, 2.01)
+    node.states['worker'].phase = 'WORKING'
+    node.states['worker'].arm_stowed = False
+    if lost_condition == 'locked':
+        node.states['locked'].data = False
+    else:
+        node.states['odom'].twist.twist.linear.y = .02
+    reference(node)
     assert node.failed and not node.armed
     assert node.sent == 1 and node.lock_publisher.messages[-1].data is True
+    assert 'parking deadline' in node.reason
 
 
-@pytest.mark.parametrize('component', ['x', 'y', 'z'])
-def test_nonfinite_odometry_is_never_treated_as_parked(bridge, component):
+@pytest.mark.parametrize('vector,component', [('linear', 'x'), ('linear', 'y'),
+                                             ('linear', 'z'), ('angular', 'z')])
+@pytest.mark.parametrize('invalid', [float('nan'), float('inf'), -float('inf')])
+def test_nonfinite_odometry_is_never_a_normal_parking_transition(bridge, vector, component, invalid):
     _module, node = bridge
     twist = node.states['odom'].twist.twist
-    setattr(twist.angular if component == 'z' else twist.linear, component, float('nan'))
+    setattr(getattr(twist, vector), component, invalid)
     assert not node.stopped()
     node.states['worker'].phase = 'WORKING'
     node.states['worker'].arm_stowed = False
     reference(node)
     assert node.failed and not node.gz_publisher.messages
+
+
+@pytest.mark.parametrize('linear_xyz,angular_z,parked', [
+    ((.009, .009, 0.), 0., False),
+    ((0., 0., .010001), 0., False),
+    ((.01, 0., 0.), 0., False),
+    ((0., 0., 0.), .015, True),
+    ((0., 0., 0.), .02, False),
+    ((.004, .004, .004), -.019, True),
+])
+def test_parking_uses_worker_total_linear_and_angular_bounds(bridge, linear_xyz, angular_z, parked):
+    _module, node = bridge
+    twist = node.states['odom'].twist.twist
+    twist.linear.x, twist.linear.y, twist.linear.z = linear_xyz
+    twist.angular.z = angular_z
+    assert node.stopped() is parked
+
+
+def test_repeated_nonstow_reports_cannot_renew_parking_deadline_or_repeat_lock(bridge):
+    _module, node = bridge
+    reference(node)
+    advance(node)
+    node.states['locked'].data = False
+    node.states['odom'].twist.twist.linear.x = .1
+    node.states['worker'].arm_stowed = False
+    node.states['worker'].phase = 'WORKING'
+    reference(node)
+    original_deadline = node._parking_transition_deadline
+    for _ in range(3):
+        advance(node, .1)
+        node.states['locked'].data = False
+        node.states['odom'].twist.twist.linear.x = .1
+        node.states['worker'].arm_stowed = False
+        node.states['worker'].phase = 'WORKING'
+        reference(node)
+        node.watchdog()
+        assert node._parking_transition_deadline == original_deadline
+        assert node.sent == 1 and node.armed and not node.failed
+    assert [message.data for message in node.lock_publisher.messages] == [True]
+
+
+def test_stow_returns_before_parking_cannot_reclaim_until_fresh_parked_reference(bridge):
+    _module, node = bridge
+    reference(node)
+    advance(node)
+    node.states['locked'].data = False
+    node.states['odom'].twist.twist.linear.x = .05
+    node.states['worker'].arm_stowed = False
+    node.states['worker'].phase = 'WORKING'
+    reference(node)
+    deadline = node._parking_transition_deadline
+    advance(node, .1)  # Stow recovers first; braking and lock receipt lag behind.
+    node.states['locked'].data = False
+    node.states['odom'].twist.twist.linear.x = .03
+    reference(node)
+    assert node.sent == 1 and node.resume_pending and not node.failed
+    assert node._parking_transition_deadline == deadline
+    advance(node, .1)
+    node.states['odom'].twist.twist.angular.z = .015
+    node.watchdog()
+    assert node.armed and node.resume_pending and not node.validator.active
+    assert node._parking_transition_deadline is None
+    assert node.sent == 1
+    reference(node)
+    assert node.armed and not node.failed and not node.resume_pending
+    assert node.sent == 2
+    # Compensation never issues an unlock after suspension or reclamation.
+    assert [message.data for message in node.lock_publisher.messages] == [True]
+
+
+def test_late_parking_acknowledgement_cannot_bypass_elapsed_deadline(bridge):
+    _module, node = bridge
+    reference(node)
+    advance(node)
+    node.states['locked'].data = False
+    node.states['worker'].arm_stowed = False
+    node.states['worker'].phase = 'WORKING'
+    reference(node)
+    assert node.armed and node.resume_pending
+    advance(node, 2.01)  # First observed parking acknowledgement is already late.
+    reference(node)
+    assert node.failed and not node.armed
+    assert node.sent == 1 and 'parking deadline' in node.reason
+
+
+def test_completed_parking_transaction_does_not_carry_old_deadline_to_next_work(bridge):
+    _module, node = bridge
+    reference(node)
+    advance(node)
+    node.states['locked'].data = False
+    node.states['worker'].arm_stowed = False
+    node.states['worker'].phase = 'WORKING'
+    reference(node)
+    first_deadline = node._parking_transition_deadline
+    advance(node, .1)
+    reference(node)
+    assert node.sent == 2 and node._parking_transition_deadline is None
+    advance(node, .1)
+    node.states['locked'].data = False
+    node.states['worker'].arm_stowed = False
+    node.states['worker'].phase = 'WORKING'
+    reference(node)
+    assert node.armed and node.resume_pending and node.sent == 2
+    assert node._parking_transition_deadline > first_deadline
+    assert [message.data for message in node.lock_publisher.messages] == [True, True]
 
 
 def test_missing_reference_stream_faults_even_with_fresh_feedback(bridge):
@@ -443,3 +574,157 @@ def test_startup_wait_timeout_keeps_real_fault_nonstow_or_missing_permit_rejecte
         node.wait_for_parked_stow_startup()
     assert not node.armed and not node.failed
     assert not node.gz_publisher.messages and not node.lock_publisher.messages
+
+
+def enable_ideal(node):
+    node.args.ideal_simulation = True
+    node._ideal_limits = (-3.1416, 3.1416)
+    node.ideal_error_count = 0
+
+
+def test_ideal_new_source_reference_ignores_worker_fault_and_base_motion(bridge):
+    _module, node = bridge
+    enable_ideal(node)
+    node.states['worker'].arm_stowed = False
+    node.states['worker'].phase = 'FAULT'
+    node.states['locked'].data = False
+    node.states['odom'].twist.twist.linear.x = .15
+    reference(node, ACTUAL+.5)  # No parked-joint continuity admission in ideal mode.
+    assert node.armed and not node.failed and node.sent == 1
+    assert node.gz_publisher.messages[-1].data == ACTUAL+.5
+    assert not node.lock_publisher.messages
+
+
+@pytest.mark.parametrize('condition', ['missing', 'stale'])
+def test_ideal_packets_do_not_require_joint_odometry_or_worker_leases(bridge, condition):
+    _module, node = bridge
+    enable_ideal(node)
+    if condition == 'missing':
+        node.states.clear()
+        node.receipts.clear()
+    else:
+        node.clock.ros += 10_000_000_000
+        node.clock.wall += 10.
+    reference(node)
+    assert node.sent == 1 and node.armed and not node.failed
+    assert not node.lock_publisher.messages
+
+
+def test_ideal_watchdog_neither_queries_native_status_nor_republishes_cached_target(bridge):
+    _module, node = bridge
+    enable_ideal(node)
+    reference(node)
+    node.status_process = AsyncStatusFixture(error=RuntimeError('unused native IPC deadline'))
+    node.poll_native_status = lambda: pytest.fail('ideal mode must not poll native IPC')
+    node.feedback = lambda: pytest.fail('ideal mode must not enforce feedback leases')
+    node.movement_permission = lambda: pytest.fail('ideal mode must not request parked/stow lease')
+    node.next_status_at = 0.
+    node.clock.ros += 10_000_000_000
+    node.clock.wall += 10.
+    node.watchdog()
+    report = json.loads(node.status_publisher.messages[-1].data)
+    assert report['ideal_simulation'] and not report['automatic_base_locks_enabled']
+    assert node.armed and not node.failed and node.sent == 1
+    assert not node.status_process.submissions and not node.status_process.closed
+    assert not node.lock_publisher.messages
+
+
+@pytest.mark.parametrize('values', [None, [], [0., 0., 0.],
+                                  [0., 0., 0., float('nan')],
+                                  [0., float('inf'), 0., ACTUAL],
+                                  [0., 0., 0., 3.2]])
+def test_ideal_invalid_packet_retains_last_valid_target_without_lock_or_permanent_fault(bridge, values):
+    _module, node = bridge
+    enable_ideal(node)
+    reference(node)
+    node.reference(Message(values))
+    assert node.sent == 1 and node.gz_publisher.messages[-1].data == ACTUAL
+    assert node.ideal_error_count == 1
+    assert node.armed and not node.failed and not node.lock_publisher.messages
+    reference(node, ACTUAL+.2)
+    assert node.sent == 2 and node.gz_publisher.messages[-1].data == ACTUAL+.2
+
+
+def test_ideal_publication_failure_is_visible_but_does_not_lock_base(bridge):
+    _module, node = bridge
+    enable_ideal(node)
+    node.gz_publisher.success = False
+    reference(node)
+    assert node.armed and not node.failed and node.sent == 0
+    assert node.ideal_error_count == 1 and 'publication failed' in node.reason
+    assert not node.lock_publisher.messages
+
+
+def test_ideal_shutdown_does_not_send_lock_or_cached_steering(bridge):
+    _module, node = bridge
+    enable_ideal(node)
+    reference(node)
+    node.stop()
+    assert not node.armed and node.sent == 1
+    assert not node.lock_publisher.messages
+
+
+def ideal_start_fixture(node, hardware_plugin):
+    """Replace read-only startup RPCs, not their production admission checks."""
+    node.armed = node.ever_armed = False
+    enable_ideal(node)
+    node.args.load_system = False
+    node.args.plugin_path = ''
+    node.states.clear()
+    node.receipts.clear()
+    urdf = ('<robot><ros2_control name="sim"><hardware><plugin>'
+            'gz_ros2_control/GazeboSimSystem</plugin></hardware></ros2_control>'
+            '<joint name="r2_steer_joint"><limit lower="-3.1416" upper="3.1416"/>'
+            '</joint></robot>')
+
+    def parameters(name, names):
+        if name == '/robot_state_publisher':
+            assert names == ['robot_description']
+            return [NS(string_value=urdf)]
+        assert name == '/steering_controller', 'ideal start must not ask for harvest/base gates'
+        assert names == ['joints', 'interface_name']
+        return [NS(string_array_value=['f1_steer_joint', 'f2_steer_joint',
+                                       'r1_steer_joint', 'r2_steer_joint']),
+                NS(string_value='position')]
+
+    node.parameters = parameters
+    response = NS(component=[NS(name='sim', plugin_name=hardware_plugin)])
+    future = NS(done=lambda: True, result=lambda: response)
+    node.create_client = lambda _kind, topic: NS(
+        wait_for_service=lambda **_kwargs: topic == '/controller_manager/list_hardware_components',
+        call_async=lambda _request: future)
+    node.spin_until = lambda predicate, _timeout: predicate() or pytest.fail('startup RPC not ready')
+    node.wait_for_parked_stow_startup = lambda: pytest.fail('ideal start must not require parking/stow')
+    node.feedback = lambda: pytest.fail('ideal start must not require joint/odom lease')
+    node.owned_source = lambda: pytest.fail('ideal start must not enforce source-count motion lock')
+    snapshot = status_packet(node)['data']
+    snapshot['ideal_simulation'] = True
+    node.gz = NS(request=lambda *_args: (True, Message(json.dumps(snapshot))))
+
+
+def test_ideal_start_needs_no_parking_samples_but_keeps_actual_gazebo_identity(bridge):
+    _module, node = bridge
+    ideal_start_fixture(node, 'gz_ros2_control/GazeboSimSystem')
+    node.start()
+    assert node.armed and node.ever_armed and not node.failed
+    assert node.requires_worker is False and node.status_process is None
+    assert not node.lock_publisher.messages and not node.gz_publisher.messages
+    assert node._ideal_limits == (-3.1416, 3.1416)
+
+
+@pytest.mark.parametrize('hardware_plugin', ['mock_components/GenericSystem', 'physical_robot/Hardware'])
+def test_ideal_start_still_rejects_non_gazebo_hardware_before_actuation(bridge, hardware_plugin):
+    _module, node = bridge
+    ideal_start_fixture(node, hardware_plugin)
+    with pytest.raises(RuntimeError, match='non-Gazebo hardware'):
+        node.start()
+    assert not node.armed and not node.gz_publisher.messages and not node.lock_publisher.messages
+
+
+def test_ideal_start_requires_native_plugin_mode_to_match_this_terminal(bridge):
+    _module, node = bridge
+    enable_ideal(node)
+    snapshot = status_packet(node)['data']
+    snapshot['ideal_simulation'] = False
+    with pytest.raises(RuntimeError, match='restart Gazebo'):
+        node.validate_native_status(snapshot)

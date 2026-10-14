@@ -7,6 +7,7 @@ source "$AGRI_PROJECT_ROOT/sim_ws/install/setup.bash" || return 1
 
 export ROS_DOMAIN_ID=185
 export GZ_PARTITION=agri_close_harvest_user_20261014
+export AGRI_IDEAL_SIMULATION=1
 export OMP_NUM_THREADS=2
 export OPENBLAS_NUM_THREADS=2
 export AGRI_DETECTOR_DEVICE=0

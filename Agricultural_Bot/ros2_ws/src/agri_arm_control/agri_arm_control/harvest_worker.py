@@ -3,6 +3,7 @@
 import copy
 import json
 import math
+import os
 import threading
 import time
 from pathlib import Path
@@ -32,6 +33,7 @@ import yaml
 from .controller import ArmController, MotionError, WorkCanceled
 from .geometry import transform_pose
 from .grasp_executor import GraspExecutor
+from .observation_scan import camera_pose, descending_heights, tcp_pose_for_camera
 from .safety import JointEvidence, fresh, station_matches
 
 
@@ -49,6 +51,9 @@ class HarvestArmWorker(Node):
             descriptor = ParameterDescriptor(dynamic_typing=isinstance(default, list) and not default)
             self.declare_parameter(name, default, descriptor)
             self.p[name] = self.get_parameter(name).value
+        self.declare_parameter('ideal_simulation', os.getenv('AGRI_IDEAL_SIMULATION') == '1')
+        self._ideal_simulation = (bool(self.get_parameter('ideal_simulation').value) and
+                                  bool(self.get_parameter('use_sim_time').value))
         self._validate_parameters()
         self.group = ReentrantCallbackGroup()
         # A single feedback stream must not run concurrently on the six worker
@@ -68,8 +73,13 @@ class HarvestArmWorker(Node):
         self._route = self._station = None
         self._route_wall = self._lock_wall = None
         self._locked = False
+        self._base_velocity = None
         self._targets, self._targets_wall = None, None
         self._observation = None
+        self._scan_diagnostics = {}
+        self._selected_target = {}
+        self._last_error = ''
+        self._last_health_error = ''
         self._scene_ready_diagnostics = {}
         self._grasp_diagnostics = []
         self._contact_diagnostics = {}
@@ -133,6 +143,17 @@ class HarvestArmWorker(Node):
                 self.p[name] = []
             if len(self.p[name]) not in {0, 6}:
                 raise ValueError(f'{name} must be empty or contain six measured joint positions')
+        if self.p['scan_mode'] not in {'vertical', 'preset'}:
+            raise ValueError('scan_mode must be vertical or preset')
+        if not self.p['scan_camera_frame'] or not all(math.isfinite(self.p[name]) for name in
+                ('scan_camera_x_m', 'scan_camera_lateral_m', 'target_minimum_height_m',
+                 'target_maximum_height_m')):
+            raise ValueError('finite camera scan geometry and target height bounds required')
+        if (self.p['scan_camera_lateral_m'] <= 0 or
+                not 0 <= self.p['target_minimum_height_m'] < self.p['target_maximum_height_m']):
+            raise ValueError('positive scan lateral distance and ordered target heights required')
+        descending_heights(self.p['scan_top_height_m'], self.p['scan_bottom_height_m'],
+                           self.p['scan_height_step_m'])
         for name in ('joint_settle_s', 'feedback_max_age_s', 'feedback_timeout_s', 'ik_timeout_s',
                      'plan_timeout_s', 'execute_timeout_s', 'goal_response_timeout_s',
                      'execute_wall_timeout_s', 'gripper_wall_timeout_s',
@@ -141,6 +162,7 @@ class HarvestArmWorker(Node):
                      'gripper_contact_timeout_s', 'gripper_contact_step_s',
                      'cancel_timeout_s', 'work_deadline_s', 'target_max_age_s',
                      'cartesian_step_m', 'cartesian_joint_jump_rad', 'selection_timeout_s',
+                     'scan_dwell_s',
                      'scene_service_timeout_s', 'basket_verification_timeout_s'):
             if not math.isfinite(self.p[name]) or self.p[name] <= 0:
                 raise ValueError(f'{name} must be finite and positive')
@@ -153,6 +175,10 @@ class HarvestArmWorker(Node):
             raise ValueError('gripper stroke or surface-offset geometric bound exceeded')
         if any(not 0 < self.p[name] <= 0.5 for name in ('velocity_scaling', 'acceleration_scaling')):
             raise ValueError('arm scaling must be in (0,0.5]')
+        if (not math.isfinite(self.p['navigation_stow_velocity_tolerance_rps']) or
+                not self.p['joint_velocity_tolerance_rps'] <=
+                self.p['navigation_stow_velocity_tolerance_rps'] <= .25):
+            raise ValueError('navigation stow velocity tolerance must be within strict limit and 0.25 rad/s')
         if (not math.isfinite(self.p['gripper_contact_step_m']) or
                 not 0 < self.p['gripper_contact_step_m'] <= .001 or
                 not 1 <= self.p['maximum_gripper_contact_steps'] <= 100 or
@@ -167,17 +193,19 @@ class HarvestArmWorker(Node):
                 continue
             try:
                 self.arm.ready()
-                # The single work transaction refreshes the scene before every
-                # planning operation. Health must not race those scene commands.
-                if not self._busy:
-                    self._environment_ready(check=False)
+                # Scene readiness belongs to initialization and actual work /
+                # planning operations. Repeated whole-scene RPCs while driving
+                # must not revoke an otherwise healthy measured stow lease.
                 with self._mutex:
                     self._healthy = True
+                    self._last_health_error = ''
                 self._detect_startup_pose()
                 last_error = None
             except Exception as exc:
                 with self._mutex:
                     self._healthy = False
+                    self._last_health_error = str(exc)
+                    self.arm.reset_navigation_stow()
                 if str(exc) != last_error:
                     self.get_logger().warning('arm backend not ready: '+str(exc))
                     last_error = str(exc)
@@ -238,26 +266,44 @@ class HarvestArmWorker(Node):
 
     def _odom_callback(self, message):
         velocity = message.twist.twist
+        self._base_velocity = (velocity.linear.x, velocity.linear.y, velocity.linear.z,
+                               velocity.angular.z)
         self.motion.update(stamp_ns(message.header.stamp), self.get_clock().now().nanoseconds,
                            time.monotonic(), (velocity.linear.x, velocity.linear.y, velocity.linear.z),
                            velocity.angular.z)
 
     def _joint_callback(self, message):
-        self.evidence.update(message.name, message.position, message.velocity,
-                             stamp_ns(message.header.stamp), self.get_clock().now().nanoseconds,
-                             time.monotonic())
+        accepted = self.evidence.update(message.name, message.position, message.velocity,
+                                        stamp_ns(message.header.stamp), self.get_clock().now().nanoseconds,
+                                        time.monotonic())
+        # update() releases the evidence lock before acquiring the controller
+        # lock here, avoiding an evidence/controller lock-order inversion.
+        if not accepted and not self.evidence.last_update.get('ignored_exact_duplicate', False):
+            self.arm.reset_navigation_stow(clear_settlement=True)
+        elif self.arm.navigation_stow_latched and not self.arm.navigation_stow_report()['envelope_valid']:
+            self.arm.reset_navigation_stow(clear_settlement=True)
 
     def _targets_callback(self, message):
         with self._mutex:
             self._targets, self._targets_wall = message, time.monotonic()
 
     def _parked(self):
+        if getattr(self, '_ideal_simulation', False):
+            values = getattr(self, '_base_velocity', None)
+            return bool(values is not None and all(math.isfinite(value) for value in values) and
+                        math.sqrt(sum(value*value for value in values[:3])) < .01 and
+                        abs(values[3]) < .02)
         wall = time.monotonic()
         return (self._locked and self._lock_wall is not None and wall-self._lock_wall <= 0.35 and
                 self.motion.ready(self.get_clock().now().nanoseconds, wall))
 
     def _permit(self):
         with self._mutex:
+            if getattr(self, '_ideal_simulation', False):
+                request = self._request
+                return bool(request is not None and self._parked() and
+                            (request.run_id, request.waypoint_id, request.work_id) ==
+                            self._work_context)
             return (self._healthy and self._parked() and self._request is not None and
                     (self._started_wall is None or time.monotonic()-self._started_wall <
                      self.p['work_deadline_s']) and
@@ -265,17 +311,39 @@ class HarvestArmWorker(Node):
                                     self.get_clock().now().nanoseconds, self._route_wall,
                                     time.monotonic()))
 
+    def _ideal_station_matches(self, request):
+        """Keep station/work identity, without heartbeat or stow leases."""
+        route, station = self._route, self._station
+        if not isinstance(route, dict) or not isinstance(station, dict):
+            return False
+        current = route.get('current')
+        return bool(isinstance(current, dict) and route.get('require_harvest_handshake') and
+                    route.get('state') == 'AT_STATION' and station.get('active') and
+                    route.get('work_phase') == 'WORKING' and
+                    route.get('work_terminal_confirmed') is False and
+                    current.get('waypoint_id') == request.waypoint_id and
+                    route.get('run_id') == request.run_id and
+                    route.get('work_id') == request.work_id and
+                    all(station.get(name) == getattr(request, name) for name in
+                        ('run_id', 'waypoint_id', 'work_id', 'plant_id', 'work_side')))
+
     def _goal(self, request):
         with self._mutex:
             scan = bool(getattr(request, 'scan_before_selection', False))
-            if (self._busy or self._fault or not self._healthy or not self.arm.stowed() or
+            ideal = getattr(self, '_ideal_simulation', False)
+            identity_matches = (self._ideal_station_matches(request) if ideal else
+                station_matches(self._route, self._station, request,
+                    self.get_clock().now().nanoseconds, self._route_wall,
+                    time.monotonic(), accepting=True))
+            if (self._busy or
+                    (not ideal and (self._fault or not self._healthy or not self.arm.stowed())) or
                     not self._parked() or
                     not all((request.run_id, request.work_id, request.waypoint_id, request.plant_id)) or
                     request.work_id in self._used_work_ids or
-                    not station_matches(self._route, self._station, request,
-                                        self.get_clock().now().nanoseconds, self._route_wall,
-                                        time.monotonic(), accepting=True) or
-                    (scan and not self.p[f'scan_{request.work_side}_joints'])):
+                    not identity_matches or
+                    request.work_side not in {'left', 'right'} or
+                    (scan and self.p['scan_mode'] == 'preset' and
+                     not self.p[f'scan_{request.work_side}_joints'])):
                 return GoalResponse.REJECT
             if not scan:
                 try:
@@ -284,11 +352,14 @@ class HarvestArmWorker(Node):
                     return GoalResponse.REJECT
             # Reserve before ACCEPT so simultaneous goals cannot both leave stow.
             self._busy = True
+            if ideal:
+                self._fault = False
             self._request = request
             self._work_context = (request.run_id, request.waypoint_id, request.work_id)
             self._used_work_ids.add(request.work_id)
             self._cancel.clear()
             self._phase = 'DEPLOYING'
+            self.arm.reset_navigation_stow()
             self._started_wall = time.monotonic()
             return GoalResponse.ACCEPT
 
@@ -298,7 +369,12 @@ class HarvestArmWorker(Node):
 
     def _set_phase(self, phase):
         with self._mutex:
+            previous = self._phase
             self._phase = phase
+            if phase not in {'IDLE', 'STOWED'}:
+                self.arm.reset_navigation_stow()
+        if phase != previous:
+            self.get_logger().info('harvest phase: '+phase)
         handle = self._handle
         if handle is not None and handle.is_active:
             handle.publish_feedback(HarvestWork.Feedback(phase=phase, arm_stowed=False))
@@ -322,7 +398,8 @@ class HarvestArmWorker(Node):
         except Exception as exc:
             raise MotionError(f'observation-time target TF unavailable: {exc}') from exc
         if not side_and_window(xyz, side, self.p['target_longitudinal_offset_m'],
-                               self.p['longitudinal_window_m'], self.p['maximum_target_distance_m']):
+                               self.p['longitudinal_window_m'], self.p['maximum_target_distance_m'],
+                               self.p['target_minimum_height_m'], self.p['target_maximum_height_m']):
             raise MotionError('target outside current work-side/window')
         output = copy.deepcopy(target)
         output.position.x, output.position.y, output.position.z = xyz
@@ -332,9 +409,77 @@ class HarvestArmWorker(Node):
 
     def _select_after_scan(self, request):
         self._set_phase('SCANNING')
-        self.arm.move_joints(self.p[f'scan_{request.work_side}_joints'])
+        if self.p['scan_mode'] == 'preset':
+            self.arm.move_joints(self.p[f'scan_{request.work_side}_joints'])
+            self._scan_diagnostics = {'mode': 'preset', 'work_side': request.work_side}
+            target = self._wait_scan_target(request, self.p['selection_timeout_s'])
+            if target is not None:
+                return target
+            raise MotionError('no new acceptable target after scan pose settled')
+        # Both frames share a rigid wrist mount. Compose in the standard task
+        # frame first: CAD base_link does not use task +Z as its vertical axis.
+        try:
+            relative = self.tf.lookup_transform(self.p['scan_camera_frame'],
+                                                self.p['tip_link'], Time())
+            t, q = relative.transform.translation, relative.transform.rotation
+            camera_to_tcp = ((t.x, t.y, t.z), (q.x, q.y, q.z, q.w))
+        except Exception as exc:
+            raise MotionError(f'camera-to-TCP scan TF unavailable: {exc}') from exc
+        heights = descending_heights(self.p['scan_top_height_m'], self.p['scan_bottom_height_m'],
+                                     self.p['scan_height_step_m'])
+        self._scan_diagnostics = {'mode': 'vertical', 'frame_id': self.p['task_frame'],
+                                  'work_side': request.work_side, 'heights_m': heights,
+                                  'levels': [], 'selected_target_id': ''}
+        started = False
+        for height in heights:
+            self.arm._check()
+            optical = camera_pose(request.work_side, self.p['scan_camera_x_m'],
+                                  self.p['scan_camera_lateral_m'], height)
+            tcp = tcp_pose_for_camera(*optical, *camera_to_tcp)
+            planning = self._to_planning(*tcp)
+            entry = {'camera_xyz_m': list(optical[0]), 'height_m': height,
+                     'state': 'PLANNING'}
+            self._scan_diagnostics['levels'].append(entry)
+            if not started:
+                solution = self.arm.ik(*planning)
+                if solution is None:
+                    entry.update(state='SKIPPED_UNREACHABLE_ENTRY',
+                                 ik=getattr(self.arm, 'last_ik_status', {}))
+                    continue
+                values = dict(zip(solution.joint_state.name, solution.joint_state.position))
+                try:
+                    planned = self.arm.plan_joints([values[name] for name in self.arm.joints])
+                except MotionError as exc:
+                    # Only a rejected, unexecuted candidate can be skipped.
+                    # A lost permit, service/scene error or executed motion
+                    # must propagate instead of continuing the search.
+                    self.arm._check()
+                    if (not self.arm.terminal_confirmed or not str(exc).startswith(
+                            ('joint plan failed:', 'planned endpoint near physical bound'))):
+                        raise
+                    entry.update(state='SKIPPED_UNREACHABLE_ENTRY', reason=str(exc))
+                    continue
+                self.get_logger().info(f'vertical scan entry: camera z={height:.2f} m')
+                self.arm.move_pose(*planning, solution=solution, planned=planned)
+                started = True
+            else:
+                self.get_logger().info(f'vertical scan descending: camera z={height:.2f} m')
+                self.arm.cartesian(*planning)
+            entry['state'] = 'OBSERVING'
+            target = self._wait_scan_target(request, self.p['scan_dwell_s'])
+            if target is not None:
+                entry['state'] = 'TARGET_FOUND'
+                self._scan_diagnostics['selected_target_id'] = target[0].target_id
+                return target
+            entry['state'] = 'NO_ACCEPTABLE_TARGET'
+        raise MotionError('vertical scan found no new stable mature target' if started else
+                          'no reachable vertical scan entry pose')
+
+    def _wait_scan_target(self, request, timeout_s):
+        # Every level starts its own post-settlement image-time window. Never
+        # use an observation captured during the previous camera movement.
         earliest_ns = self.get_clock().now().nanoseconds
-        deadline = time.monotonic()+self.p['selection_timeout_s']
+        deadline = time.monotonic()+timeout_s
         while time.monotonic() < deadline:
             self.arm._check()
             with self._mutex:
@@ -357,7 +502,7 @@ class HarvestArmWorker(Node):
                 if candidates:
                     return max(candidates, key=lambda candidate: candidate[0].confidence)
             time.sleep(0.05)
-        raise MotionError('no new acceptable target after scan pose settled')
+        return None
 
     def _to_planning(self, position, orientation):
         # The task frame is chassis-fixed. Image-time TF was already applied to
@@ -458,7 +603,17 @@ class HarvestArmWorker(Node):
         verified = False
         self._grasp_diagnostics = []
         self._contact_diagnostics = {}
+        self._scan_diagnostics = {}
+        self._selected_target = {}
+        self._last_error = ''
         try:
+            # An accepted work starts from measured stow. A failed new scan
+            # must not report the target from a previous completed station.
+            self._observation = None
+            if getattr(self, '_ideal_simulation', False):
+                # Actual backend/controller readiness remains a work-start
+                # check, not a continuous condition that locks the chassis.
+                self.arm.ready()
             self._environment_ready()
             request = handle.request
             if getattr(request, 'scan_before_selection', False):
@@ -467,24 +622,36 @@ class HarvestArmWorker(Node):
                 self._observation = self._validate_target(
                     request.target, request.header, request.work_side,
                     int(self._station['station_started_ns']))
-            target, _header = self._observation
+            target, header = self._observation
             self._target_history.setdefault(target.target_id, set()).add(self._work_context[:2])
             xyz = (target.position.x, target.position.y, target.position.z)
+            self._selected_target = {
+                'frame_id': header.frame_id, 'position_xyz_m': list(xyz),
+                'target_id': target.target_id, 'class_name': target.class_name,
+                'confidence': target.confidence, 'mature': target.mature,
+                'observation_stamp_ns': stamp_ns(header.stamp),
+                'continuous_visual_detection_required': False,
+            }
             chain = GraspExecutor(self.arm, self.p, self._to_planning, self._scene,
                                   self._set_phase, self._record_grasp_diagnostics,
                                   self._record_contact_diagnostics)
             verified = chain.execute(xyz, request.work_side)
             self.arm._check()
             self._set_phase('STOWED')
-            result.success = bool(verified and self.arm.stowed())
-            result.arm_stowed = result.success
+            measured_stowed = self.arm.stowed()
+            ideal = getattr(self, '_ideal_simulation', False)
+            result.success = bool(verified and (ideal or measured_stowed))
+            result.arm_stowed = bool(measured_stowed)
             result.sim_fruit_verified = bool(verified)
             result.target_id = target.target_id
-            result.message = 'simulation fruit IN_BASKET and measured six-joint STOWED confirmed'
+            result.message = ('simulation fruit IN_BASKET confirmed; ideal simulation does not gate '
+                              'base movement on arm stow' if ideal else
+                              'simulation fruit IN_BASKET and measured six-joint STOWED confirmed')
             if not result.success:
                 raise MotionError('fruit or measured arm stow verification failed')
             handle.succeed()
         except Exception as exc:
+            self._last_error = str(exc)
             terminal = self.arm.cancel_and_confirm()
             # Retraction needs an explicit guarded recovery request after fault;
             # never plan over an unconfirmed active trajectory or auto-unlock.
@@ -494,7 +661,9 @@ class HarvestArmWorker(Node):
             result.arm_stowed = False
             result.sim_fruit_verified = bool(verified)
             result.target_id = self._observation[0].target_id if self._observation else ''
-            result.message = f'{exc}; base lock retained; measured guarded recovery required'
+            result.message = (f'{exc}; ideal simulation does not request a protective base lock'
+                if getattr(self, '_ideal_simulation', False) else
+                f'{exc}; base lock retained; measured guarded recovery required')
             self.get_logger().error(result.message)
             if handle.is_cancel_requested and terminal:
                 handle.canceled()
@@ -518,7 +687,9 @@ class HarvestArmWorker(Node):
 
     def _recover(self, _request, response):
         with self._mutex:
-            if self._busy or not self._fault or not self._healthy or not self._parked():
+            if (self._busy or not self._fault or
+                    (not getattr(self, '_ideal_simulation', False) and not self._healthy) or
+                    not self._parked()):
                 response.success = False
                 response.message = ('recovery needs idle FAULT and measured locked/stopped base; '
                                     f'busy={self._busy}, fault={self._fault}, '
@@ -532,7 +703,8 @@ class HarvestArmWorker(Node):
         old_permit = self.arm.check_permit
         # FAILED route may no longer offer a work permit. Recovery may move only
         # with independently fresh lock+zero-velocity evidence and healthy state.
-        self.arm.check_permit = lambda: self._healthy and self._parked()
+        self.arm.check_permit = lambda: (getattr(self, '_ideal_simulation', False) or
+                                       self._healthy) and self._parked()
         try:
             self._set_phase('RECOVERING_STOW')
             if self._observation is not None:
@@ -634,8 +806,24 @@ class HarvestArmWorker(Node):
             # STEADY timers and execute-finally can run between /clock updates.
             # Keep the real sample time; never manufacture increasing stamps.
             now = self.get_clock().now()
-            stowed = (self._healthy and not self._fault and not self._busy and
-                      self._phase in {'IDLE', 'STOWED'} and self.arm.stowed())
+            if not self._healthy:
+                denial = 'backend_unhealthy'
+            elif self._fault:
+                denial = 'worker_fault'
+            elif self._busy:
+                denial = 'worker_busy'
+            elif self._phase not in {'IDLE', 'STOWED'}:
+                denial = 'active_arm_phase'
+            else:
+                denial = ''
+            if denial:
+                self.arm.reset_navigation_stow()
+                stowed = False
+            else:
+                stowed = self.arm.navigation_stowed()
+            navigation_report = self.arm.navigation_stow_report()
+            if not stowed and not denial:
+                denial = ','.join(navigation_report['reasons'])
             payload = (self.p['task_frame'], *self._work_context,
                        self._phase, bool(stowed))
             heartbeat = (now.nanoseconds, payload)
@@ -652,13 +840,20 @@ class HarvestArmWorker(Node):
             self._last_heartbeat = heartbeat
             self._status_pub.publish(String(data=json.dumps({
                 'phase': self._phase, 'busy': self._busy, 'fault': self._fault,
+                'ideal_simulation': getattr(self, '_ideal_simulation', False),
                 'startup_pose_checked': self._startup_checked,
                 'backend_ready': self._healthy, 'measured_stowed': bool(stowed),
+                'last_health_error': self._last_health_error,
+                'stow_denial_reason': denial,
                 'stow_evidence': self.arm.stow_report(),
+                'navigation_stow_evidence': navigation_report,
                 'motion_terminal_confirmed': self.arm.terminal_confirmed,
                 'motion': self.arm.execution_status,
                 'grasp_candidates': self._grasp_diagnostics,
                 'grip_closure': self._contact_diagnostics,
+                'scan': self._scan_diagnostics,
+                'selected_target': self._selected_target,
+                'last_error': self._last_error,
                 'scene_readiness': self._scene_ready_diagnostics,
                 'context': self._work_context, 'actual_grasp_verified': False,
                 'tcp_calibration': 'geometric_candidate_pending_physical_calibration',

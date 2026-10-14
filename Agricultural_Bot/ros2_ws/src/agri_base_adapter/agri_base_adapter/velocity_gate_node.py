@@ -1,5 +1,6 @@
 """ROS 2 TwistStamped arbitration, watchdog, limit and lock node."""
 
+import os
 import time
 
 from geometry_msgs.msg import TwistStamped
@@ -10,7 +11,7 @@ from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import Bool, String
 from std_srvs.srv import SetBool
 
-from .velocity_gate import timestamp_is_current, VelocityGateCore
+from .velocity_gate import timestamp_is_current, VelocityGateCore, ZERO_TWIST
 from .harvest_interlock import HarvestInterlock
 
 
@@ -35,11 +36,16 @@ class VelocityGateNode(Node):
         self.declare_parameter('max_linear_x', 0.30)
         self.declare_parameter('max_linear_y', 0.0)
         self.declare_parameter('max_angular_z', 0.50)
+        self.declare_parameter('ideal_simulation', os.environ.get('AGRI_IDEAL_SIMULATION') == '1')
         self.declare_parameter('require_harvest_interlock', False)
         self.declare_parameter('harvest_worker_state_topic', '/harvest_worker/state')
         self.declare_parameter('harvest_worker_timeout_s', 0.75)
         self.declare_parameter('harvest_worker_max_age_s', 0.5)
         self.declare_parameter('harvest_worker_future_skew_s', 0.05)
+
+        self._ideal_simulation = bool(self.get_parameter('ideal_simulation').value)
+        if self._ideal_simulation and not bool(self.get_parameter('use_sim_time').value):
+            raise ValueError('ideal_simulation requires use_sim_time=true')
 
         publish_rate = float(self.get_parameter('publish_rate').value)
         if publish_rate <= 0.0:
@@ -62,6 +68,7 @@ class VelocityGateNode(Node):
                 float(self.get_parameter('max_linear_y').value),
                 float(self.get_parameter('max_angular_z').value),
             ),
+            ideal_simulation=self._ideal_simulation,
         )
         self._frame_id = str(self.get_parameter('frame_id').value)
         self._maximum_input_age = float(
@@ -75,7 +82,8 @@ class VelocityGateNode(Node):
         self._stopping = False
         self._interlock_reason = None
         self._harvest_interlock = None
-        if bool(self.get_parameter('require_harvest_interlock').value):
+        if (not self._ideal_simulation and
+                bool(self.get_parameter('require_harvest_interlock').value)):
             self._harvest_interlock = HarvestInterlock(
                 receipt_timeout=float(self.get_parameter('harvest_worker_timeout_s').value),
                 maximum_age=float(self.get_parameter('harvest_worker_max_age_s').value),
@@ -123,6 +131,10 @@ class VelocityGateNode(Node):
             1.0 / publish_rate, self._publish_selected, clock=self._timer_clock)
         self._publish_selected()
 
+    @property
+    def ideal_simulation(self) -> bool:
+        return bool(getattr(self, '_ideal_simulation', False))
+
     def _now_seconds(self) -> float:
         return self.get_clock().now().nanoseconds / 1e9
 
@@ -131,7 +143,8 @@ class VelocityGateNode(Node):
             self._core.clear_source(source)
             return
         if message.header.frame_id != self._frame_id:
-            self._core.clear_source(source)
+            if not self.ideal_simulation:
+                self._core.clear_source(source)
             self.get_logger().warning(
                 f'rejected {source} velocity in frame '
                 f'{message.header.frame_id!r}; expected {self._frame_id!r}')
@@ -139,7 +152,7 @@ class VelocityGateNode(Node):
         now = self._now_seconds()
         stamp = float(message.header.stamp.sec) + float(
             message.header.stamp.nanosec) / 1e9
-        if not timestamp_is_current(
+        if not self.ideal_simulation and not timestamp_is_current(
                 stamp, now, self._maximum_input_age,
                 self._maximum_future_skew):
             self._core.clear_source(source)
@@ -152,10 +165,13 @@ class VelocityGateNode(Node):
             now,
         )
         if not accepted:
-            self._core.clear_source(source)
+            if not self.ideal_simulation:
+                self._core.clear_source(source)
             self.get_logger().warning(f'rejected nonfinite {source} velocity command')
 
     def _worker_state_callback(self, message) -> None:
+        if self._harvest_interlock is None:
+            return
         stamp = float(message.header.stamp.sec) + float(
             message.header.stamp.nanosec) / 1e9
         self._harvest_interlock.observe(
@@ -168,7 +184,10 @@ class VelocityGateNode(Node):
 
     def _enforce_harvest_interlock(self) -> bool:
         if self._stopping:
-            self._core.set_locked(True)
+            if self.ideal_simulation:
+                self._core.clear()
+            else:
+                self._core.set_locked(True)
             return False
         if self._harvest_interlock is None:
             return True
@@ -213,6 +232,7 @@ class VelocityGateNode(Node):
         now = self.get_clock().now()
         twist, source = self._core.select(now.nanoseconds / 1e9)
         if not permitted:
+            twist = ZERO_TWIST
             source = 'harvest_interlock' if not self._stopping else 'shutdown'
         message = TwistStamped()
         message.header.stamp = now.to_msg()
@@ -226,7 +246,10 @@ class VelocityGateNode(Node):
     def stop(self) -> None:
         """Best-effort locked zero output during orderly shutdown."""
         self._stopping = True
-        self._core.set_locked(True)
+        if self.ideal_simulation:
+            self._core.clear()
+        else:
+            self._core.set_locked(True)
         for _ in range(3):
             self._publish_selected()
 

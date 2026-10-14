@@ -11,6 +11,7 @@ from action_msgs.msg import GoalStatus, GoalStatusArray
 from action_msgs.srv import CancelGoal
 from builtin_interfaces.msg import Duration, Time as TimeMessage
 from control_msgs.action import FollowJointTrajectory
+from control_msgs.msg import JointTolerance
 from controller_manager_msgs.srv import ListControllers, ListHardwareComponents
 from geometry_msgs.msg import Pose, PoseStamped
 from moveit_msgs.msg import Constraints, JointConstraint, RobotState
@@ -29,6 +30,19 @@ from .safety import ControllerGoalEvidence, clamp_gripper_measurement
 
 class MotionError(RuntimeError):
     """A rejected, failed, stale or unconfirmed movement is never success."""
+
+
+class ControllerToleranceError(MotionError):
+    """A real terminal controller tolerance abort, not evidence of a grasp."""
+
+    def __init__(self, controller, status, error_code, message=None):
+        self.controller, self.status, self.error_code = controller, status, error_code
+        super().__init__(message or f'{controller} did not succeed: status={status}, '
+                         f'error_code={error_code}')
+
+
+class JointSettlementTimeout(MotionError):
+    """A terminal trajectory did not reach the requested measured settlement."""
 
 
 class WorkCanceled(MotionError):
@@ -69,6 +83,7 @@ class ArmController:
         self._runtime_description = None
         self._planning_joint_bounds = None
         self._reported_bounds_roundoff = set()
+        self._navigation_stow_latched = False
         self.environment_check = None
         self.clients = {
             'plan': node.create_client(GetMotionPlan, '/plan_kinematic_path',
@@ -424,7 +439,25 @@ class ArmController:
         except ValueError as exc:
             raise MotionError(str(exc)) from exc
 
-    def gripper_positions(self, positions, move_s=None, deadline_wall=None):
+    def wait_gripper_stopped(self, deadline_wall):
+        """Require fresh stopped fingers before interpreting a closure obstruction."""
+        if not math.isfinite(deadline_wall):
+            raise MotionError('finite gripper settlement deadline required')
+        deadline = min(deadline_wall, time.monotonic()+self.p['feedback_timeout_s'])
+        velocity = min(self.p['gripper_velocity_tolerance_mps'], .002)
+        while time.monotonic() < deadline:
+            self._check()
+            if not self.terminal_confirmed:
+                raise MotionError('gripper obstruction recovery lacks terminal controller evidence')
+            if self.evidence.stationary(self.gripper_joints,
+                    self.node.get_clock().now().nanoseconds, time.monotonic(),
+                    velocity, self.p['joint_settle_s']):
+                return self.measured_gripper_positions()
+            time.sleep(.02)
+        raise MotionError('fresh stopped dual-finger feedback unconfirmed after closure obstruction')
+
+    def gripper_positions(self, positions, move_s=None, deadline_wall=None,
+                          position_tolerance_m=None):
         if (len(positions) != len(self.gripper_joints) or
                 not all(math.isfinite(value) and 0 <= value <= self.p['gripper_max_m']
                         for value in positions)):
@@ -432,6 +465,11 @@ class ArmController:
         seconds = self.p['gripper_move_s'] if move_s is None else move_s
         if not math.isfinite(seconds) or not 0 < seconds <= self.p['gripper_timeout_s']:
             raise MotionError('gripper trajectory duration outside configured bound')
+        tolerance = (self.p['gripper_position_tolerance_m'] if position_tolerance_m is None
+                     else position_tolerance_m)
+        if (not math.isfinite(tolerance) or
+                not 0 < tolerance <= self.p['gripper_position_tolerance_m']):
+            raise MotionError('gripper position tolerance must be positive and within configured bound')
         goal = FollowJointTrajectory.Goal()
         goal.trajectory.joint_names = self.gripper_joints
         point = JointTrajectoryPoint()
@@ -439,6 +477,10 @@ class ArmController:
         point.time_from_start = duration(seconds)
         goal.trajectory.points = [point]
         goal.goal_time_tolerance = duration(0.5)
+        # A 1 mm contact step cannot use the normal 2 mm position tolerance:
+        # that can acknowledge the goal without advancing either finger.
+        goal.goal_tolerance = [JointTolerance(name=name, position=tolerance,
+            velocity=self.p['gripper_velocity_tolerance_mps']) for name in self.gripper_joints]
         remaining = (self.p['gripper_wall_timeout_s'] if deadline_wall is None else
                      min(self.p['gripper_wall_timeout_s'], deadline_wall-time.monotonic()))
         if remaining <= 0:
@@ -452,7 +494,7 @@ class ArmController:
         if remaining <= 0:
             raise MotionError('contact closure wall deadline expired before finger feedback')
         self.wait_joints(self.gripper_joints, point.positions, remaining,
-                         position_tolerance=self.p['gripper_position_tolerance_m'],
+                         position_tolerance=tolerance,
                          velocity_tolerance=self.p['gripper_velocity_tolerance_mps'])
 
     def _late_submission(self, future):
@@ -659,10 +701,17 @@ class ArmController:
         self._check()
         with self._mutex:
             self._execution_status.update(phase='TERMINAL', terminal_status=wrapped.status,
-                                          terminal_confirmed=True)
+                                          terminal_confirmed=True,
+                                          error_code=getattr(wrapped.result, 'error_code', None),
+                                          error_string=getattr(wrapped.result, 'error_string', ''))
         if wrapped.status != GoalStatus.STATUS_SUCCEEDED or not successful(wrapped.result):
-            raise MotionError(f'{label} did not succeed: status={wrapped.status}, '
-                              f'result={wrapped.result}')
+            message = f'{label} did not succeed: status={wrapped.status}, result={wrapped.result}'
+            if (label == 'gripper' and wrapped.status == GoalStatus.STATUS_ABORTED and
+                    getattr(wrapped.result, 'error_code', None) in {
+                        FollowJointTrajectory.Result.PATH_TOLERANCE_VIOLATED,
+                        FollowJointTrajectory.Result.GOAL_TOLERANCE_VIOLATED}):
+                raise ControllerToleranceError(label, wrapped.status, wrapped.result.error_code, message)
+            raise MotionError(message)
 
     def wait_joints(self, names, positions, timeout, position_tolerance=None,
                     velocity_tolerance=None):
@@ -676,13 +725,68 @@ class ArmController:
                                 self.p['joint_settle_s']):
                 return
             time.sleep(0.02)
-        raise MotionError('measured joint position/velocity settlement timed out')
+        raise JointSettlementTimeout('measured joint position/velocity settlement timed out')
 
     def stowed(self):
         return self.terminal_confirmed and self.evidence.at(
             self.joints, self.p['stow_joints'], self.node.get_clock().now().nanoseconds,
             time.monotonic(), self.p['joint_position_tolerance_rad'],
             self.p['joint_velocity_tolerance_rps'], self.p['joint_settle_s'])
+
+    @property
+    def navigation_stow_latched(self):
+        with self._mutex:
+            return bool(getattr(self, '_navigation_stow_latched', False))
+
+    def reset_navigation_stow(self, clear_settlement=False):
+        """Reacquire strict stow after revocation, without replaying feedback."""
+        with self._mutex:
+            latched = bool(getattr(self, '_navigation_stow_latched', False))
+            self._navigation_stow_latched = False
+            # A busy heartbeat must not repeatedly erase the settlement used
+            # by the actual retract action. Withdraw it once when the lease
+            # is revoked, or immediately for invalid/out-of-envelope feedback.
+            if latched or clear_settlement:
+                self.evidence.reset_settlement(self.joints, self.p['stow_joints'],
+                    self.p['joint_position_tolerance_rad'], self.p['joint_velocity_tolerance_rps'])
+
+    def navigation_stow_report(self):
+        """Describe a fresh transit envelope after an initial strict stow."""
+        with self._mutex:
+            velocity = self.p.get('navigation_stow_velocity_tolerance_rps',
+                                  self.p['joint_velocity_tolerance_rps'])
+            report = self.evidence.pose_report(self.joints, self.p['stow_joints'],
+                self.node.get_clock().now().nanoseconds, time.monotonic(),
+                self.p['joint_position_tolerance_rad'], velocity, 0.)
+            # Transit renewal checks the current sample, not a second stopped
+            # settlement interval. The original strict interval acquired the
+            # latch and is required again after any revocation.
+            report['reasons'] = [reason for reason in report['reasons']
+                                 if reason != 'settlement_not_confirmed']
+            terminal = self.terminal_confirmed
+            if not terminal:
+                report['reasons'].append('controller_goal_not_confirmed_terminal')
+            envelope_valid = not report['reasons']
+            latched = bool(getattr(self, '_navigation_stow_latched', False))
+            if not latched:
+                report['reasons'].append('strict_stow_latch_not_acquired')
+            report.update(passed=bool(envelope_valid and latched),
+                envelope_valid=bool(envelope_valid), strict_stow_latch_acquired=latched,
+                controller_terminal_confirmed=terminal,
+                initial_strict_velocity_tolerance_rps=self.p['joint_velocity_tolerance_rps'],
+                initial_strict_settlement_wall_s=self.p['joint_settle_s'],
+                renewal_basis='fresh six-joint stow position envelope and bounded transit velocity')
+            return report
+
+    def navigation_stowed(self):
+        """Keep a verified stow through bounded chassis-induced vibration."""
+        with self._mutex:
+            if not self.navigation_stow_report()['envelope_valid']:
+                self.reset_navigation_stow(clear_settlement=True)
+                return False
+            if not getattr(self, '_navigation_stow_latched', False):
+                self._navigation_stow_latched = bool(self.stowed())
+            return bool(self._navigation_stow_latched)
 
     def stow_report(self):
         report = self.evidence.pose_report(

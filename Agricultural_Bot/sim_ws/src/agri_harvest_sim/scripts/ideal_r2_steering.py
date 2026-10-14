@@ -15,6 +15,7 @@ from agri_harvest_interfaces.msg import HarvestWorkerState
 from controller_manager_msgs.srv import ListHardwareComponents
 from gz.msgs10.boolean_pb2 import Boolean
 from gz.msgs10.double_pb2 import Double
+from gz.msgs10.double_v_pb2 import Double_V
 from gz.msgs10.entity_pb2 import Entity
 from gz.msgs10.entity_plugin_v_pb2 import EntityPlugin_V
 from gz.msgs10.stringmsg_pb2 import StringMsg
@@ -37,6 +38,10 @@ class NativeStatusUnavailable(RuntimeError):
     """Only an absent status service permits loading a new system."""
 
 
+class NativeStatusPending(RuntimeError):
+    """An advertised plugin has not published its first full update yet."""
+
+
 class IdealR2Steering(Node):
     def __init__(self, args):
         super().__init__('ideal_r2_steering_compensator', parameter_overrides=[
@@ -50,15 +55,22 @@ class IdealR2Steering(Node):
         self.gz = GzNode(options)
         if self.gz.options.partition != args.gz_partition:
             raise RuntimeError('Gazebo transport partition mismatch')
-        self.command_topic = f'/world/{args.world_name}/ideal_steering/r2_command'
-        self.status_service = f'/world/{args.world_name}/ideal_steering/status'
-        self.gz_publisher = self.gz.advertise(self.command_topic, Double)
+        if args.ideal_simulation:
+            self.command_topic = f'/world/{args.world_name}/ideal_steering/four_wheel_commands'
+            self.status_service = f'/world/{args.world_name}/ideal_steering/four_wheel_status'
+            self.gz_publisher = self.gz.advertise(self.command_topic, Double_V)
+        else:
+            self.command_topic = f'/world/{args.world_name}/ideal_steering/r2_command'
+            self.status_service = f'/world/{args.world_name}/ideal_steering/status'
+            self.gz_publisher = self.gz.advertise(self.command_topic, Double)
         self.states, self.receipts = {}, {}
         self.validator = None
         self.armed = False
         self.ever_armed = False
         self.suspended = False
         self.resume_pending = False
+        self._parking_transition_deadline = None
+        self._parking_lock_requested = False
         self.failed = False
         self.reason = 'checking parked simulation and command ownership'
         self.requires_worker = True
@@ -68,6 +80,12 @@ class IdealR2Steering(Node):
         self.native_receipt_wall = None
         self.reference_ns = 0
         self.next_status_at = 0.
+        self.ideal_error_count = 0
+        self._ideal_startup_pending = False
+        self._ideal_startup_error = ''
+        self._ideal_startup_next_poll = 0.
+        self._ideal_startup_next_log = 0.
+        self._ideal_load_attempted = False
         self.status_publisher = self.create_publisher(String, '~/status', 10)
         self.lock_publisher = self.create_publisher(Bool, '/base_motion/lock_cmd', 10)
         transient = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE,
@@ -105,6 +123,10 @@ class IdealR2Steering(Node):
     def ns(stamp):return stamp.sec*10**9+stamp.nanosec
 
     @property
+    def ideal_simulation(self):
+        return bool(getattr(self.args, 'ideal_simulation', False))
+
+    @property
     def wall_feedback_timeout(self):
         return getattr(self.args, 'wall_feedback_timeout', .5)
 
@@ -117,6 +139,10 @@ class IdealR2Steering(Node):
             stamp = self.ns(self.states[key].header.stamp)
             if stamp <= 0 or not -.05 <= (now-stamp)/1e9 <= .25:
                 raise RuntimeError(key+' feedback is stale, future or zero')
+        twist = self.states['odom'].twist.twist
+        if not all(math.isfinite(v) for v in
+                   (twist.linear.x, twist.linear.y, twist.linear.z, twist.angular.z)):
+            raise RuntimeError('nonfinite real odometry feedback')
         joint = self.states['joints']
         if joint.name.count('r2_steer_joint') != 1:
             raise RuntimeError('unambiguous real r2 joint feedback required')
@@ -129,8 +155,46 @@ class IdealR2Steering(Node):
 
     def stopped(self):
         t = self.states['odom'].twist.twist
-        speeds = (t.linear.x, t.linear.y, t.angular.z)
-        return all(math.isfinite(v) and abs(v) < .01 for v in speeds)
+        # Match the worker's StoppedMotion criteria, including total linear
+        # speed and its angular bound. A different threshold creates a race
+        # where the worker accepts parked work but compensation faults on it.
+        speeds = (t.linear.x, t.linear.y, t.linear.z, t.angular.z)
+        return (all(math.isfinite(v) for v in speeds) and
+                math.sqrt(sum(v*v for v in speeds[:3])) < .01 and abs(speeds[3]) < .02)
+
+    @property
+    def parking_transition_timeout(self):
+        return getattr(self.args, 'parking_transition_timeout', 2.)
+
+    def movement_state(self):
+        worker, locked, odom = (self.states.get(key) for key in ('worker', 'locked', 'odom'))
+        t = None if odom is None else odom.twist.twist
+        return {'worker_phase': None if worker is None else worker.phase,
+                'worker_arm_stowed': None if worker is None else bool(worker.arm_stowed),
+                'base_locked': None if locked is None else bool(locked.data),
+                'base_linear_xyz_mps': None if t is None else [t.linear.x, t.linear.y, t.linear.z],
+                'base_angular_z_rps': None if t is None else t.angular.z}
+
+    def park_for_transition(self):
+        if self.ideal_simulation:
+            return True
+        wall = time.monotonic()
+        deadline = getattr(self, '_parking_transition_deadline', None)
+        if deadline is not None and wall >= deadline:
+            raise RuntimeError('arm interlock transition did not reach a locked/stopped base '
+                               'within the parking deadline')
+        if self.states['locked'].data and self.stopped():
+            self._parking_transition_deadline = None
+            self._parking_lock_requested = False
+            return True
+        if deadline is None:
+            deadline = wall+self.parking_transition_timeout
+            self._parking_transition_deadline = deadline
+        if not getattr(self, '_parking_lock_requested', False):
+            self.lock_publisher.publish(Bool(data=True))
+            self._parking_lock_requested = True
+        self.reason = 'ideal steering suspended; waiting for fresh locked/stopped base acknowledgement'
+        return False
 
     def reference_fresh(self):
         age = (self.get_clock().now().nanoseconds-self.reference_ns)/1e9
@@ -138,37 +202,65 @@ class IdealR2Steering(Node):
                 time.monotonic()-self.receipts.get('reference',0) <= self.wall_feedback_timeout)
 
     def movement_permission(self):
+        if self.ideal_simulation:
+            return True
         if not self.requires_worker:
             return True
         w = self.states['worker']
         if w.arm_stowed and w.phase in {'IDLE','STOWED'}:
+            # Independent ROS topics can arrive in different callback order.
+            # Once permission was withdrawn, never reclaim before the lock and
+            # stopped feedback catch up, even if stow has already returned.
+            if self.resume_pending and not self.park_for_transition():
+                return False
             if self.suspended:
                 self.reason = 'measured stow restored; fresh matching reference required'
             self.suspended = False
             return True
-        if not self.states['locked'].data or not self.stopped():
-            raise RuntimeError('measured stow unavailable while base is not parked and locked')
         # Parked arm work yields control to the normal actuator. Resume requires
         # a fresh target matching actual position, rather than replaying a cache.
         self.suspended = True
         self.resume_pending = True
         self.reason = 'parked arm work: ideal steering suspended until measured stow'
         self.validator.invalidate(self.reason)
+        # Suspend before requesting a lock: do not send or renew an ideal
+        # reference while normal braking and lock acknowledgement complete.
+        self.park_for_transition()
         return False
 
     def owned_source(self):
         sources = self.get_publishers_info_by_topic('/steering_controller/commands')
         return len(sources)==1 and sources[0].node_name=='four_wheel_steering_node'
 
-    def validate_native_status(self, result):
+    def validate_native_status(self, result, require_ready=None):
+        if (isinstance(result, dict) and result.get('idealized') is True and
+                result.get('ready') is False and
+                set(result) <= {'idealized', 'ready', 'active'}):
+            raise NativeStatusPending('plugin advertised; waiting for its first simulation update')
+        if not isinstance(result, dict):
+            raise RuntimeError('native steering status must identify a Gazebo plugin')
+        ideal_identity = self.ideal_simulation and (
+            result.get('system') == 'agri::IdealFourWheelSteeringSystem' and
+            result.get('version') == 'four_wheel_ideal_steering_v1' and
+            result.get('joint_names') == ['f1_steer_joint', 'f2_steer_joint',
+                                          'r1_steer_joint', 'r2_steer_joint'])
+        strict_identity = (not self.ideal_simulation and
+            result.get('system') == 'agri::IdealSteeringSystem' and
+            result.get('version') == 'r2_ideal_steering_v1' and
+            result.get('joint_name') == 'r2_steer_joint')
         if (result.get('idealized') is not True or
-                result.get('system') != 'agri::IdealSteeringSystem' or
-                result.get('version') != 'r2_ideal_steering_v1' or
-                result.get('enabled') is not True or result.get('ready') is not True or
-                result.get('joint_name') != 'r2_steer_joint' or
+                (not ideal_identity and not strict_identity) or
+                result.get('enabled') is not True or
                 result.get('robot_name') != self.args.robot_name or
                 result.get('command_topic') != self.command_topic):
-            raise RuntimeError('Gazebo ideal steering identity/readiness mismatch')
+            raise RuntimeError('Gazebo ideal steering identity mismatch')
+        if bool(result.get('ideal_simulation', False)) != self.ideal_simulation:
+            raise RuntimeError('native steering mode differs from this terminal; restart Gazebo '
+                               'with the current harvest_demo_env.bash')
+        if require_ready is None:
+            require_ready = not self.ideal_simulation
+        if require_ready and result.get('ready') is not True:
+            raise NativeStatusPending('native steering is not ready: '+str(result.get('expiry_reason')))
         return result
 
     def native_status(self):
@@ -262,6 +354,10 @@ class IdealR2Steering(Node):
             raise RuntimeError('ideal compensation refuses non-Gazebo hardware')
         limit=model.find("joint[@name='r2_steer_joint']/limit")
         if limit is None:raise RuntimeError('runtime r2 URDF limits missing')
+        self._ideal_limits = (float(limit.get('lower')), float(limit.get('upper')))
+        if self.ideal_simulation:
+            self.start_ideal_operation()
+            return
         self.validator=IdealSteeringCommand(float(limit.get('lower')),float(limit.get('upper')),
                                           wall_timeout=self.wall_feedback_timeout)
         self.requires_worker=self.parameters('/base_velocity_gate',
@@ -294,7 +390,8 @@ class IdealR2Steering(Node):
             plugin=request.plugins.add();plugin.name='agri::IdealSteeringSystem'
             plugin.filename=str(library.resolve())
             plugin.innerxml=(f'<enabled>true</enabled><robot_name>{self.args.robot_name}</robot_name>'
-                             '<joint_name>r2_steer_joint</joint_name>')
+                             '<joint_name>r2_steer_joint</joint_name>'
+                             '<ideal_simulation>false</ideal_simulation>')
             ok,reply=self.gz.request(f'/world/{self.args.world_name}/entity/system/add',
                                      request, EntityPlugin_V, Boolean,3000)
             if not ok or not reply.data:raise RuntimeError('explicit ideal steering plugin load failed')
@@ -320,6 +417,155 @@ class IdealR2Steering(Node):
         self.reason='explicit simulation-only ideal r2 mode enabled'
         self.get_logger().warning(self.reason+'; torque and tire scrub are idealized for this joint')
 
+    def start_ideal_operation(self):
+        """Enable ideal actuation without arm, parking or feedback leases."""
+        self.requires_worker = False
+        result = None
+        missing = False
+        # A first 250 ms discovery miss is not proof that a plugin is absent.
+        # Probe a few times before the one allowed add request.
+        for _attempt in range(3):
+            try:
+                result = self.native_status()
+                missing = False
+                break
+            except NativeStatusPending as error:
+                self.reason = str(error)
+                missing = False
+                break
+            except NativeStatusUnavailable as error:
+                self.reason = str(error)
+                missing = True
+                rclpy.spin_once(self, timeout_sec=.05)
+        if missing and self.args.load_system:
+            library = Path(self.args.plugin_path) if self.args.plugin_path else (
+                Path(get_package_prefix('agri_harvest_sim'))/
+                'lib/libagri_ideal_four_wheel_steering_system.so')
+            if not library.is_file():
+                raise RuntimeError('build agri_harvest_sim before loading ideal steering')
+            request=EntityPlugin_V();request.entity.name=self.args.world_name
+            request.entity.type=Entity.WORLD
+            plugin=request.plugins.add();plugin.name='agri::IdealFourWheelSteeringSystem'
+            plugin.filename=str(library.resolve())
+            plugin.innerxml=(f'<enabled>true</enabled><robot_name>{self.args.robot_name}</robot_name>'
+                             '<ideal_simulation>true</ideal_simulation>')
+            self._ideal_load_attempted = True
+            ok,reply=self.gz.request(f'/world/{self.args.world_name}/entity/system/add',
+                                     request, EntityPlugin_V, Boolean,3000)
+            self.reason = ('native plugin load requested; waiting for actual readiness' if ok and reply.data
+                           else 'native plugin load acknowledgement unavailable; waiting for its status service')
+        if result is not None and result.get('ready') is True:
+            self.enable_ideal_operation()
+            return
+        # Keep the ROS executor responsive while the read-only child retries.
+        # Loading is attempted at most once; there is no overall 5 s deadline.
+        self._ideal_startup_pending = True
+        self._ideal_startup_next_poll = 0.
+        self._ideal_startup_next_log = 0.
+        self.get_logger().warning(self.reason)
+
+    def enable_ideal_operation(self):
+        self._ideal_startup_pending = False
+        process = getattr(self, 'status_process', None)
+        if process is not None:
+            process.close()
+            self.status_process = None
+        # No periodic status watchdog: the native simulation actuator retains
+        # the last real source target without a communication lease.
+        self.armed = self.ever_armed = True
+        self.reason = 'ideal simulation enabled; automatic base-lock protections disabled'
+        self.get_logger().warning(self.reason)
+        if 'reference' in self.states:
+            self.publish_ideal_reference(self.states['reference'])
+
+    def poll_ideal_startup(self):
+        wall = time.monotonic()
+        if wall < getattr(self, '_ideal_startup_next_poll', 0.):
+            return
+        process = getattr(self, 'status_process', None)
+        if process is None:
+            try:
+                self.status_process = process = NativeStatusProcess(
+                    self.args.gz_partition, self.status_service)
+            except (RuntimeError, OSError) as error:
+                self._ideal_startup_next_poll = wall + 1.
+                self.reason = 'waiting for native steering service: ' + str(error)
+                process = None
+        if process is None:
+            if wall >= getattr(self, '_ideal_startup_next_log', 0.):
+                self._ideal_startup_next_log = wall + 2.
+                self.get_logger().warning(self.reason)
+            return
+        try:
+            packet = process.poll()
+        except RuntimeError as error:
+            process.close()
+            self.status_process = None
+            self._ideal_startup_next_poll = wall+1.
+            self.reason = 'waiting for native steering service: '+str(error)
+        else:
+            if packet is not None:
+                try:
+                    result = self.validate_native_status(packet['data'], require_ready=False)
+                except NativeStatusPending as error:
+                    self.reason = str(error)
+                except RuntimeError as error:
+                    # Configuration errors are not discovery delays. Display
+                    # the real reason and do not add a competing second plugin.
+                    self._ideal_startup_pending = False
+                    self._ideal_startup_error = str(error)
+                    self.reason = str(error)
+                    process.close()
+                    self.status_process = None
+                    self.get_logger().error(self.reason)
+                    return
+                else:
+                    self.last_native = result
+                    self.native_receipt_wall = packet['completed_wall']
+                    if result.get('ready') is True:
+                        self.enable_ideal_operation()
+                        return
+                    self.reason = ('waiting for native steering readiness: '
+                        f'paused={result.get("paused")}; reason={result.get("expiry_reason")}; '
+                        'components='+json.dumps(result.get('ready_components', {}), sort_keys=True))
+                self._ideal_startup_next_poll = wall+.5
+            elif process.ready and process.inflight is None:
+                try:
+                    process.submit(self.get_clock().now().nanoseconds, wall)
+                except (RuntimeError, OSError) as error:
+                    process.close()
+                    self.status_process = None
+                    self._ideal_startup_next_poll = wall + 1.
+                    self.reason = 'waiting for native steering service: ' + str(error)
+        if wall >= getattr(self, '_ideal_startup_next_log', 0.):
+            self._ideal_startup_next_log = wall+2.
+            self.get_logger().warning(self.reason)
+
+    def publish_ideal_reference(self, message):
+        """Only new source packets change the held native steering target."""
+        try:
+            values = list(message.data)
+            if len(values) != 4 or not all(math.isfinite(v) for v in values):
+                raise ValueError('four finite steering targets required')
+            stamp = self.reference_ns
+            if self.ideal_simulation:
+                native = Double_V()
+                native.data.extend(values)
+            else:
+                lower, upper = self._ideal_limits
+                angle = float(values[3])
+                if not lower <= angle <= upper:
+                    raise ValueError('r2 target outside runtime joint limits')
+                native=Double();native.data=angle
+                native.header.stamp.sec=stamp//10**9
+                native.header.stamp.nsec=stamp%10**9
+            if not self.gz_publisher.publish(native):
+                raise RuntimeError('native Gazebo publication failed')
+            self.sent += 1
+            self.reason = 'ideal steering holds the last valid source target; automatic locks disabled'
+        except Exception as error:
+            self.fail(str(error))
+
     def system_ready(self):
         try:self.native_status();return True
         except RuntimeError:return False
@@ -328,6 +574,9 @@ class IdealR2Steering(Node):
         self.receive('reference',message)
         self.reference_ns=self.get_clock().now().nanoseconds
         if not self.armed or self.failed:return
+        if self.ideal_simulation:
+            self.publish_ideal_reference(message)
+            return
         try:
             actual,feedback_stamp=self.feedback()
             if not self.owned_source():raise RuntimeError('steering publisher ownership changed')
@@ -351,8 +600,17 @@ class IdealR2Steering(Node):
         except Exception as error:self.fail(str(error))
 
     def fail(self, reason):
+        if self.ideal_simulation:
+            self.ideal_error_count = getattr(self, 'ideal_error_count', 0)+1
+            report = ('ideal simulation: '+reason+
+                      '; base lock not requested; last native target retained')
+            if report != self.reason:
+                self.get_logger().warning(report)
+            self.reason = report
+            return
         self.failed=True;self.armed=False
         self.reason=(reason+'; wall_feedback_timeout_s='+str(self.wall_feedback_timeout)+
+                     '; interlock='+json.dumps(self.movement_state(),sort_keys=True)+
                      '; feedback_ages='+json.dumps(self.feedback_ages(),sort_keys=True))
         process=getattr(self,'status_process',None)
         if process is not None:process.close()
@@ -361,7 +619,9 @@ class IdealR2Steering(Node):
         self.get_logger().error('ideal r2 compensation stopped; lock requested: '+self.reason)
 
     def watchdog(self):
-        if self.armed:
+        if self.ideal_simulation and getattr(self, '_ideal_startup_pending', False):
+            self.poll_ideal_startup()
+        if self.armed and not self.ideal_simulation:
             try:
                 self.poll_native_status()
                 self.feedback()
@@ -378,7 +638,7 @@ class IdealR2Steering(Node):
         wall=time.monotonic()
         if wall>=self.next_status_at:
             self.next_status_at=wall+.5
-            if self.armed:
+            if self.armed and not self.ideal_simulation:
                 try:
                     process=getattr(self,'status_process',None)
                     if process is None:raise RuntimeError('native status subprocess missing')
@@ -386,12 +646,19 @@ class IdealR2Steering(Node):
                 except Exception as error:self.fail(str(error))
             self.status_publisher.publish(String(data=json.dumps({
                 'simulation_only':True,'idealized':True,'armed':self.armed,
+                'ideal_simulation':self.ideal_simulation,
+                'waiting_for_native_startup':getattr(self, '_ideal_startup_pending', False),
+                'native_startup_error':getattr(self, '_ideal_startup_error', ''),
+                'automatic_base_locks_enabled':not self.ideal_simulation,
+                'ideal_packet_errors':getattr(self, 'ideal_error_count', 0),
                 'suspended_for_arm_work':self.suspended,
                 'awaiting_continuous_reclaim':self.resume_pending,
                 'fault':self.failed,'reason':self.reason,'joint_name':'r2_steer_joint',
                 'gz_partition':self.args.gz_partition,'ros_domain_id':os.getenv('ROS_DOMAIN_ID'),
                 'sent_references':self.sent,'reference_time':'real ROS receipt; source array has no header',
                 'wall_feedback_timeout_s':self.wall_feedback_timeout,
+                'parking_transition_timeout_s':self.parking_transition_timeout,
+                'interlock':self.movement_state(),
                 'feedback_ages':self.feedback_ages(),
                 'native_receipt_age_wall_s':None if getattr(self,'native_receipt_wall',None) is None
                     else wall-self.native_receipt_wall,
@@ -405,6 +672,8 @@ class IdealR2Steering(Node):
         self.armed=False
         process=getattr(self,'status_process',None)
         if process is not None:process.close()
+        if self.ideal_simulation:
+            return
         if not self.ever_armed:
             if process is not None:process.close(wait=True)
             return
@@ -426,12 +695,21 @@ def main():
     parser.add_argument('--load-system',action='store_true',
                         help='Explicitly allow adding the opt-in Gazebo system')
     parser.add_argument('--plugin-path',default='')
+    parser.add_argument('--ideal-simulation',action=argparse.BooleanOptionalAction,
+                        default=os.getenv('AGRI_IDEAL_SIMULATION') == '1',
+                        help='Gazebo ideal operation: no automatic base lock or command leases')
     parser.add_argument('--wall-feedback-timeout',type=float,default=1.5,
                         help='Python feedback/reference receipt timeout in wall seconds '
                              '(default: 1.5; native steering lease remains unchanged)')
+    parser.add_argument('--parking-transition-timeout',type=float,default=2.,
+                        help='Bounded wall seconds for lock/stopped acknowledgement after stow '
+                             'permission is withdrawn; ideal references are suspended immediately')
     args,ros_args=parser.parse_known_args()
     if not math.isfinite(args.wall_feedback_timeout) or not .5 <= args.wall_feedback_timeout <= 5.:
         parser.error('--wall-feedback-timeout must be finite and between 0.5 and 5 seconds')
+    if (not math.isfinite(args.parking_transition_timeout) or
+            not .1 <= args.parking_transition_timeout <= 5.):
+        parser.error('--parking-transition-timeout must be finite and between 0.1 and 5 seconds')
     for value in (args.gz_partition,args.world_name,args.robot_name):
         if not re.fullmatch(r'[A-Za-z0-9_.-]+',value):parser.error('simple explicit Gazebo names required')
     rclpy.init(args=ros_args,signal_handler_options=SignalHandlerOptions.NO)

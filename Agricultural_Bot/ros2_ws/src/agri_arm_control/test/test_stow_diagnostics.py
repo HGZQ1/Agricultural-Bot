@@ -25,6 +25,19 @@ def test_read_only_pose_diagnostic_does_not_begin_or_reset_settlement():
     assert evidence._settled == settled
 
 
+def test_revoking_one_pose_settlement_keeps_other_pose_and_real_feedback():
+    evidence = JointEvidence(.5)
+    evidence.update(['arm', 'gripper'], [0., .01], [0., 0.],
+                    1_000_000_000, 1_000_000_000, 0.)
+    evidence.at(['arm'], [0.], 1_000_000_000, 0.)
+    evidence.at(['gripper'], [.01], 1_000_000_000, 0., .002, .003)
+    original = dict(evidence.values), evidence.stamp, evidence.wall
+    evidence.reset_settlement(['arm'], [0.])
+    assert evidence.at(['gripper'], [.01], 1_300_000_000, .3, .002, .003)
+    assert not evidence.at(['arm'], [0.], 1_300_000_000, .3)
+    assert (evidence.values, evidence.stamp, evidence.wall) == original
+
+
 @pytest.mark.parametrize('position,velocity,reason', [
     (.04, 0., 'position_outside_stow_tolerance'),
     (0., .04, 'velocity_above_stopped_tolerance')])

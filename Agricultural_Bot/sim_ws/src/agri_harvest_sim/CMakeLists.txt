@@ -27,6 +27,10 @@ add_library(agri_ideal_steering_system SHARED src/IdealSteeringSystem.cc)
 target_compile_features(agri_ideal_steering_system PRIVATE cxx_std_17)
 target_link_libraries(agri_ideal_steering_system PRIVATE gz-sim8::gz-sim8
   gz-transport13::gz-transport13 gz-msgs10::gz-msgs10 gz-plugin2::register nlohmann_json::nlohmann_json)
+add_library(agri_ideal_four_wheel_steering_system SHARED src/IdealFourWheelSteeringSystem.cc)
+target_compile_features(agri_ideal_four_wheel_steering_system PRIVATE cxx_std_17)
+target_link_libraries(agri_ideal_four_wheel_steering_system PRIVATE gz-sim8::gz-sim8
+  gz-transport13::gz-transport13 gz-msgs10::gz-msgs10 gz-plugin2::register nlohmann_json::nlohmann_json)
 add_library(agri_fruit_arm_pass_through SHARED src/FruitArmPassThroughSystem.cc)
 target_compile_features(agri_fruit_arm_pass_through PRIVATE cxx_std_17)
 target_link_libraries(agri_fruit_arm_pass_through PRIVATE gz-sim8::gz-sim8
@@ -36,6 +40,7 @@ target_compile_features(agri_native_joint_limit_roundoff_recovery PRIVATE cxx_st
 target_link_libraries(agri_native_joint_limit_roundoff_recovery PRIVATE gz-sim8::gz-sim8
   gz-transport13::gz-transport13 gz-msgs10::gz-msgs10 gz-plugin2::register nlohmann_json::nlohmann_json)
 install(TARGETS agri_harvest_system agri_motion_diagnostics agri_ideal_steering_system
+  agri_ideal_four_wheel_steering_system
   agri_fruit_arm_pass_through agri_arm_joint_diagnostics_v1
   agri_native_joint_limit_roundoff_recovery LIBRARY DESTINATION lib)
 install(PROGRAMS scripts/harvest_scene.py scripts/make_harvestable_world.py scripts/ideal_r2_steering.py

@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import math
+import os
 import time
 
 from action_msgs.msg import GoalStatus
@@ -58,14 +59,22 @@ def target_quality(target, minimum_confidence=0.5, require_segmentation=True) ->
 
 
 def side_and_window(position, side, longitudinal_offset=-0.17998,
-                    longitudinal_window=0.30, maximum_distance=1.25) -> bool:
+                    longitudinal_window=0.30, maximum_distance=1.25,
+                    minimum_height=0.2, maximum_height=1.5) -> bool:
     """Restrict task selection; this envelope is not an IK reach certificate."""
-    x, y, z = position
+    try:
+        x, y, z = position
+        if (not all(math.isfinite(value) for value in
+                    (x, y, z, minimum_height, maximum_height)) or
+                not 0 <= minimum_height < maximum_height):
+            return False
+    except (TypeError, ValueError):
+        return False
     correct_side = ((side == 'left' and y > 0.1) or
                     (side == 'right' and y < -0.1))
     return bool(correct_side and abs(x - longitudinal_offset) <= longitudinal_window and
                 0.15 <= math.hypot(x - longitudinal_offset, y) <= maximum_distance and
-                0.2 <= z <= 1.5)
+                minimum_height <= z <= maximum_height)
 
 
 class HarvestCoordinator(Node):
@@ -73,6 +82,9 @@ class HarvestCoordinator(Node):
 
     def __init__(self):
         super().__init__('harvest_coordinator')
+        self.declare_parameter('ideal_simulation', os.getenv('AGRI_IDEAL_SIMULATION') == '1')
+        self._ideal_simulation = (bool(self.get_parameter('ideal_simulation').value) and
+                                  bool(self.get_parameter('use_sim_time').value))
         self.declare_parameter('route_status_topic', '/field_route_executor/status')
         self.declare_parameter('station_topic', '/field_route_executor/current_harvest_point')
         self.declare_parameter('work_report_topic', '/field_route_executor/work_report')
@@ -173,9 +185,10 @@ class HarvestCoordinator(Node):
                     for name in ('run_id', 'waypoint_id', 'work_id', 'plant_id'))):
             return None
         now = self.get_clock().now().nanoseconds
-        if (self._route_received is None or
-                time.monotonic() - self._route_received > 0.5 or
-                not fresh_stamp(status_stamp, now, 0.5) or
+        if ((not getattr(self, '_ideal_simulation', False) and
+             (self._route_received is None or
+              time.monotonic() - self._route_received > 0.5 or
+              not fresh_stamp(status_stamp, now, 0.5))) or
                 not route.get('require_harvest_handshake') or
                 route.get('state') != 'AT_STATION' or not station.get('active') or
                 route.get('run_id') != station.get('run_id') or
@@ -251,6 +264,7 @@ class HarvestCoordinator(Node):
 
     def _publish_status(self):
         self._status_pub.publish(String(data=json.dumps({
+            'ideal_simulation': getattr(self, '_ideal_simulation', False),
             'phase': self._phase, 'blocking_reason': self._blocking_reason,
             'context': self._work_context, 'selected_target_id': self._selected_target_id,
             'plant_identity_verified': False, 'actual_grasp_verified': False,
@@ -394,13 +408,15 @@ class HarvestCoordinator(Node):
                 self._selected_target_id = result.target_id
                 self._target_history.setdefault(result.target_id, set()).add(
                     self._work_context[:2])
+            ideal = getattr(self, '_ideal_simulation', False)
             succeeded = (wrapped.status == GoalStatus.STATUS_SUCCEEDED and
-                         result.success and result.arm_stowed and
+                         result.success and (result.sim_fruit_verified if ideal else result.arm_stowed) and
                          self._station_context(require_permission=False) == self._work_context)
             self._report('SUCCESS' if succeeded else 'FAILED',
                          success=bool(succeeded), arm_stowed=bool(result.arm_stowed),
                          target_id=result.target_id,
-                         sim_fruit_verified=bool(succeeded and result.sim_fruit_verified),
+                         sim_fruit_verified=bool(result.sim_fruit_verified if ideal else
+                                                 succeeded and result.sim_fruit_verified),
                          terminal_confirmed=True, message=result.message)
         except Exception as exc:
             self._report('FAILED', terminal_confirmed=False, message=str(exc))
@@ -409,7 +425,8 @@ class HarvestCoordinator(Node):
         self._send_future = None
         self._request_started = None
         self._cancel_requested = False
-        self._phase = 'WAITING_FOR_STOW_ACK'
+        self._phase = ('WAITING_FOR_STATION' if getattr(self, '_ideal_simulation', False)
+                       else 'WAITING_FOR_STOW_ACK')
 
 
 def main(args=None):

@@ -130,6 +130,13 @@ class JointEvidence:
             since = self._settled.setdefault(key, wall)
             return wall-since >= settle
 
+    def reset_settlement(self, names, positions, position_tolerance=0.03,
+                         velocity_tolerance=0.03):
+        """Withdraw one pose's settlement without changing measured feedback."""
+        key = (tuple(names), tuple(positions), position_tolerance, velocity_tolerance)
+        with self._lock:
+            self._settled.pop(key, None)
+
     def snapshot(self, now, wall):
         with self._lock:
             if not self.available(tuple(self.values), now, wall):

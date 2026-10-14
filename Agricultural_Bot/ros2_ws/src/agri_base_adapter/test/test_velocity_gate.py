@@ -73,3 +73,54 @@ def test_required_timestamp_window():
     assert not timestamp_is_current(0.0, 10.0, 0.5, 0.05)
     assert not timestamp_is_current(9.4, 10.0, 0.5, 0.05)
     assert not timestamp_is_current(10.06, 10.0, 0.5, 0.05)
+
+
+@pytest.fixture
+def ideal_gate():
+    return VelocityGateCore(
+        ('manual', 'navigation'),
+        {'manual': 0.5, 'navigation': 1.0},
+        (0.3, 0.0, 0.5),
+        ideal_simulation=True,
+    )
+
+
+def test_ideal_command_survives_long_pause_and_clock_rollback(ideal_gate):
+    assert ideal_gate.select(100.0) == (ZERO_TWIST, 'idle')
+    assert ideal_gate.update('navigation', (0.2, 0.0, 0.1), 100.0)
+    assert ideal_gate.select(10000.0) == ((0.2, 0.0, 0.1), 'navigation')
+    assert ideal_gate.select(1.0) == ((0.2, 0.0, 0.1), 'navigation')
+    assert ideal_gate.update('navigation', (0.1, 0.0, 0.0), 0.0)
+    assert ideal_gate.select(0.0) == ((0.1, 0.0, 0.0), 'navigation')
+
+
+def test_ideal_arrival_order_wins_even_at_the_same_simulation_time(ideal_gate):
+    ideal_gate.update('manual', (0.1, 0.0, 0.0), 1.0)
+    ideal_gate.update('navigation', (0.2, 0.0, 0.0), 1.0)
+    assert ideal_gate.select(1.0) == ((0.2, 0.0, 0.0), 'navigation')
+
+
+def test_ideal_explicit_zero_stops_all_cached_sources_and_does_not_block_navigation(ideal_gate):
+    ideal_gate.update('navigation', (0.2, 0.0, 0.0), 1.0)
+    ideal_gate.update('manual', (0.1, 0.0, 0.0), 1.0)
+    ideal_gate.update('manual', ZERO_TWIST, 1.0)
+    assert ideal_gate.select(100.0) == (ZERO_TWIST, 'manual')
+    assert ideal_gate.sources['navigation'].updated_at is None
+    ideal_gate.update('navigation', (0.2, 0.0, 0.0), 1.0)
+    assert ideal_gate.select(1.0) == ((0.2, 0.0, 0.0), 'navigation')
+
+
+def test_ideal_explicit_lock_unlock_clears_cached_motion(ideal_gate):
+    ideal_gate.update('navigation', (0.2, 0.0, 0.0), 1.0)
+    ideal_gate.set_locked(True)
+    assert ideal_gate.select(100.0) == (ZERO_TWIST, 'locked')
+    ideal_gate.update('manual', (0.1, 0.0, 0.0), 100.0)
+    ideal_gate.set_locked(False)
+    assert ideal_gate.select(100.0) == (ZERO_TWIST, 'idle')
+
+
+@pytest.mark.parametrize('invalid', [math.nan, math.inf, -math.inf])
+def test_ideal_invalid_packet_does_not_erase_last_valid_command(ideal_gate, invalid):
+    ideal_gate.update('navigation', (0.2, 0.0, 0.0), 1.0)
+    assert not ideal_gate.update('navigation', (invalid, 0.0, 0.0), 100.0)
+    assert ideal_gate.select(100.0) == ((0.2, 0.0, 0.0), 'navigation')

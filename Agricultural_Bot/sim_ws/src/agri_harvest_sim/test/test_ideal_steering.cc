@@ -10,8 +10,9 @@
 
 namespace agri {
 struct IdealSteeringSystemTestAccess {
-  static void Enable(IdealSteeringSystem &s, gz::sim::Entity world) {
+  static void Enable(IdealSteeringSystem &s, gz::sim::Entity world, bool ideal=false) {
     s.enabled=true; s.configured=true; s.world=world;
+    s.idealSimulation=ideal;
     s.commandTopic="offline_fixture_no_transport"; s.statusService="offline_fixture_no_transport";
   }
   static void Input(IdealSteeringSystem &s, double angle, int64_t ns, bool header=true) {
@@ -82,5 +83,43 @@ int main() {
  assert(Access::Status(s,"{\"op\":17}")["success"]==false);assert(Access::Status(s,"{\"op\":\"enable\"}")["success"]==false);
  agri::IdealSteeringSystem disabled;gz::sim::EventManager events;auto config=std::make_shared<sdf::Element>();config->SetName("plugin");disabled.Configure(world,config,e,events);gz::sim::UpdateInfo info;info.simTime=std::chrono::seconds(2);info.dt=std::chrono::milliseconds(1);Access::Input(disabled,-.79,2000000000);disabled.PreUpdate(info,e);assert(!e.Component<comp::JointPositionReset>(r2));
  auto wrongJoint=std::make_shared<sdf::Element>();wrongJoint->SetName("plugin");auto jointElement=std::make_shared<sdf::Element>();jointElement->SetName("joint_name");jointElement->AddValue("string","f1_steer_joint",false);wrongJoint->InsertElement(jointElement);agri::IdealSteeringSystem forbidden;forbidden.Configure(world,wrongJoint,e,events);forbidden.PostUpdate(info,e);assert(Access::Status(forbidden)["expiry_reason"]=="ONLY_R2_STEER_JOINT_ALLOWED");assert(Access::Status(forbidden)["enabled"]==false);
- std::cout<<"PASS ideal steering: r2-only native reset/control handoff; no fake feedback/base/other-joint changes; limits, startup guard, dual-clock leases, replay/future/NaN/clockback/pause/conflict fail closed; status read only.\n";
+ // Explicit ideal mode keeps a finite in-bounds target without timing leases.
+ e.CreateComponent(r2,comp::JointVelocityCmd({1.2}));
+ agri::IdealSteeringSystem ideal;Access::Enable(ideal,world,true);
+ auto idealStep=[&](int64_t ns,bool paused=false){gz::sim::UpdateInfo update;update.iterations=ns/1000000;update.simTime=std::chrono::nanoseconds(ns);update.dt=std::chrono::milliseconds(1);update.paused=paused;ideal.PreUpdate(update,e);ideal.PostUpdate(update,e);return Access::Status(ideal);};
+ state=idealStep(1000000000);assert(state["ideal_simulation"]==true);assert(state["command_policy"]=="last_finite_target_held");assert(state["active"]==false);assert(state["target_rad"].is_null());assert(!e.Component<comp::JointPositionReset>(r2));
+ // Missing/zero stamps and a large initial difference from actual are allowed.
+ Access::Input(ideal,.7,0,false);state=idealStep(1000000000);assert(state["active"]==true);assert(state["max_sim_age_ns"].is_null());assert(consume()==.7);untouched();
+ Access::MakeWallStale(ideal);state=idealStep(1000000000000LL);assert(state["active"]==true);assert(consume()==.7);untouched();
+ // A clock rollback or paused step retains the target and resumes without a
+ // new packet. Real position/velocity readback and the base pose stay intact.
+ state=idealStep(5000000000LL);assert(state["active"]==false);assert(state["target_rad"]==.7);assert(!e.Component<comp::JointPositionReset>(r2));
+ state=idealStep(5001000000LL);assert(state["active"]==true);assert(consume()==.7);
+ state=idealStep(5002000000LL,true);assert(state["active"]==false);assert(state["target_rad"]==.7);assert(!e.Component<comp::JointPositionReset>(r2));
+ state=idealStep(5003000000LL);assert(state["active"]==true);assert(consume()==.7);
+ // A malformed or out-of-bounds packet is rejected without losing the last
+ // good command; no NaN or impossible joint angle reaches the physics request.
+ Access::Input(ideal,std::numeric_limits<double>::quiet_NaN(),0,false);state=idealStep(5004000000LL);assert(state["active"]==true);assert(state["rejected_count"]==1);assert(consume()==.7);
+ Access::Input(ideal,4,0,false);state=idealStep(5005000000LL);assert(state["active"]==true);assert(state["rejected_count"]==2);assert(consume()==.7);untouched();
+ Access::Input(ideal,2.1,0);state=idealStep(5006000000LL);assert(state["active"]==true);assert(consume()==2.1);
+ Access::Input(ideal,.2,9990000000000LL);state=idealStep(5007000000LL);assert(state["active"]==true);assert(consume()==.2);
+ Access::Input(ideal,-.4,1);state=idealStep(5008000000LL);assert(state["active"]==true);assert(consume()==-.4);
+ // Ideal override touches only the selected r2 actuator command components.
+ e.CreateComponent(r2,comp::JointForceCmd({7}));e.CreateComponent(r2,comp::JointVelocityReset({.13}));e.CreateComponent(r2,comp::JointPositionReset({-.1}));
+ state=idealStep(5009000000LL);assert(state["active"]==true);assert(consume()==-.4);assert(e.Component<comp::JointForceCmd>(r2)->Data()==std::vector<double>{0});assert(e.Component<comp::JointVelocityReset>(r2)->Data()==std::vector<double>{0});
+ e.RemoveComponent<comp::JointForceCmd>(r2);e.RemoveComponent<comp::JointVelocityReset>(r2);untouched();
+ // Missing native command components are prepared from a validated real
+ // joint, including while paused; this does not fabricate sensor readbacks.
+ e.RemoveComponent<comp::JointVelocityCmd>(r2);state=idealStep(5010000000LL,true);assert(state["active"]==false);assert(state["ready"]==true);assert(state["target_rad"]==-.4);assert(!e.Component<comp::JointPositionReset>(r2));assert(e.Component<comp::JointVelocityCmd>(r2)->Data()==std::vector<double>{0});assert(state["ready_components"]["joint_velocity_command_available"]==true);untouched();
+ state=idealStep(5011000000LL);assert(state["active"]==true);assert(consume()==-.4);untouched();
+ e.Component<comp::JointVelocityCmd>(r2)->Data().clear();state=idealStep(5012000000LL,true);assert(state["ready"]==true);assert(state["active"]==false);assert(e.Component<comp::JointVelocityCmd>(r2)->Data()==std::vector<double>{0});assert(!e.Component<comp::JointPositionReset>(r2));untouched();
+ // Missing actual position/axis data still blocks command creation. Restoring
+ // real components resumes the retained target without another ROS packet.
+ e.RemoveComponent<comp::JointPosition>(r2);e.RemoveComponent<comp::JointVelocityCmd>(r2);state=idealStep(5013000000LL);assert(state["active"]==false);assert(state["ready"]==false);assert(state["expiry_reason"]=="ACTUAL_JOINT_POSITION_UNAVAILABLE");assert(state["ready_components"]["joint_position_available"]==false);assert(!e.Component<comp::JointPosition>(r2));assert(!e.Component<comp::JointVelocityCmd>(r2));assert(!e.Component<comp::JointPositionReset>(r2));
+ e.CreateComponent(r2,comp::JointPosition({-.8}));e.RemoveComponent<comp::JointAxis>(r2);state=idealStep(5014000000LL);assert(state["ready"]==false);assert(state["expiry_reason"]=="IMPORTED_JOINT_AXIS_OR_LIMITS_INVALID");assert(!e.Component<comp::JointVelocityCmd>(r2));
+ e.CreateComponent(r2,comp::JointAxis(axis));state=idealStep(5015000000LL);assert(state["active"]==true);assert(state["ready"]==true);assert(consume()==-.4);untouched();
+ // A newly added plugin can report readiness on its first paused update,
+ // while no target exists and no position reset has been requested.
+ e.RemoveComponent<comp::JointVelocityCmd>(r2);agri::IdealSteeringSystem pausedStart;Access::Enable(pausedStart,world,true);info.paused=true;pausedStart.PreUpdate(info,e);pausedStart.PostUpdate(info,e);state=Access::Status(pausedStart);assert(state["ready"]==true);assert(state["active"]==false);assert(state["target_rad"].is_null());assert(state["paused"]==true);assert(state["ready_components"]["model_found"]==true);assert(state["ready_components"]["joint_found"]==true);assert(!e.Component<comp::JointPositionReset>(r2));untouched();
+ std::cout<<"PASS ideal steering: r2-only native control; strict leases and startup guards; explicit ideal mode holds last finite in-bounds target across timing interruptions; no fake feedback/base/other-joint changes; status read only.\n";
 }

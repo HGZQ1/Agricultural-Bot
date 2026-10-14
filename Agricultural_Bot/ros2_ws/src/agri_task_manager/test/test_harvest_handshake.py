@@ -112,6 +112,32 @@ def test_side_selection_uses_transformed_rep_axes_and_rejects_adjacent_plant_win
     assert not side_and_window((0.52, 0.65, 1.0), 'left')
 
 
+def test_high_natural_fruit_needs_an_explicit_extended_height_envelope():
+    position = (-0.18, 0.65, 1.7)
+    assert not side_and_window(position, 'left')
+    assert side_and_window(position, 'left', maximum_height=1.8)
+    assert not side_and_window(position, 'right', maximum_height=1.8)
+
+
+@pytest.mark.parametrize('height,accepted', [
+    (0.29999, False), (0.3, True), (1.8, True), (1.80001, False),
+    (float('nan'), False), (float('inf'), False), (float('-inf'), False),
+])
+def test_configured_target_height_bounds_are_inclusive_and_finite(height, accepted):
+    assert side_and_window((-0.18, 0.65, height), 'left',
+                           minimum_height=0.3, maximum_height=1.8) is accepted
+
+
+@pytest.mark.parametrize('minimum,maximum', [
+    (float('nan'), 1.8), (0.2, float('nan')),
+    (float('-inf'), 1.8), (0.2, float('inf')),
+    (1.8, 0.2), (0.2, 0.2), (-0.1, 1.8), (None, 1.8),
+])
+def test_invalid_target_height_envelope_rejects_without_authorizing_work(minimum, maximum):
+    assert not side_and_window((-0.18, 0.65, 1.0), 'left',
+                               minimum_height=minimum, maximum_height=maximum)
+
+
 def _guarded_executor(monkeypatch):
     executor = object.__new__(FieldRouteExecutor)
     executor._require_harvest = True

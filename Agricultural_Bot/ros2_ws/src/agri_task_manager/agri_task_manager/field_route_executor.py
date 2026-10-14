@@ -57,6 +57,9 @@ class FieldRouteExecutor(Node):
     def __init__(self) -> None:
         """Load the bound mission and expose its ROS control interface."""
         super().__init__('field_route_executor')
+        self.declare_parameter('ideal_simulation', os.getenv('AGRI_IDEAL_SIMULATION') == '1')
+        self._ideal_simulation = (bool(self.get_parameter('ideal_simulation').value) and
+                                  bool(self.get_parameter('use_sim_time').value))
         self._shutting_down = False
         share = Path(get_package_share_directory('agri_task_manager'))
         default_mission = (
@@ -162,6 +165,7 @@ class FieldRouteExecutor(Node):
             raise ValueError('worker and work timeouts must be positive')
         self._worker_lease = WorkerLease(worker_timeout)
         self._motion_evidence = StoppedMotion()
+        self._base_velocity = None
         self._lock_received_wall_s = None
         self._lock_observation_count = 0
         self._lock_request_observation_count = 0
@@ -510,6 +514,13 @@ class FieldRouteExecutor(Node):
         if (self._shutting_down or not self._require_lock or
                 not hasattr(self, '_state')):
             return
+        if getattr(self, '_ideal_simulation', False):
+            if self._lock_pending:
+                self._maybe_complete_lock_transition()
+            if previous != self._base_lock_observed:
+                self._record('motion_lock_observed', {'locked': self._base_lock_observed})
+                self._publish_status()
+            return
         if self._lock_recovery:
             self._maybe_finish_lock_recovery()
         elif self._lock_pending:
@@ -534,12 +545,21 @@ class FieldRouteExecutor(Node):
     def _odom_callback(self, message: Odometry) -> None:
         """Measure stop evidence; a lock command is not zero velocity evidence."""
         velocity = message.twist.twist
+        self._base_velocity = (velocity.linear.x, velocity.linear.y, velocity.linear.z,
+                               velocity.angular.z)
         self._motion_evidence.update(
             int(message.header.stamp.sec) * 1_000_000_000 +
             int(message.header.stamp.nanosec),
             self.get_clock().now().nanoseconds, time.monotonic(),
             (velocity.linear.x, velocity.linear.y, velocity.linear.z),
             velocity.angular.z)
+
+    def _actual_stopped(self) -> bool:
+        """Use received physical velocity; ideal mode does not invent fresh zeros."""
+        values = getattr(self, '_base_velocity', None)
+        return bool(values is not None and all(math.isfinite(value) for value in values) and
+                    math.sqrt(sum(value*value for value in values[:3])) < .01 and
+                    abs(values[3]) < .02)
 
     def _worker_callback(self, message: HarvestWorkerState) -> None:
         """Track a worker lease separately from its matching terminal result."""
@@ -552,6 +572,8 @@ class FieldRouteExecutor(Node):
             return None
         if not self._work_terminal:
             return 'harvest action is active or its terminal result is unconfirmed'
+        if getattr(self, '_ideal_simulation', False):
+            return None
         if not self._worker_lease.stowed(
                 self.get_clock().now().nanoseconds, time.monotonic(),
                 self._work_context):
@@ -560,6 +582,10 @@ class FieldRouteExecutor(Node):
 
     def _harvest_work_ready(self) -> bool:
         """Issue permission only while all live parking observations agree."""
+        if getattr(self, '_ideal_simulation', False):
+            return bool(self._state == 'AT_STATION' and not self._work_started and
+                        self._work_result_pending is None and self._work_terminal and
+                        self._actual_stopped())
         if (self._state != 'AT_STATION' or self._work_started or
                 self._work_result_pending is not None or
                 self._base_lock_observed is not True or
@@ -585,7 +611,8 @@ class FieldRouteExecutor(Node):
             expected = (self._run_id, point.waypoint_id, self._work_id)
             if (context != expected or stamp < self._work_station_started_ns or
                     stamp <= self._work_last_report_ns or
-                    not fresh_stamp(stamp, self.get_clock().now().nanoseconds, 0.75)):
+                    (not getattr(self, '_ideal_simulation', False) and
+                     not fresh_stamp(stamp, self.get_clock().now().nanoseconds, 0.75))):
                 self._record('work_report_rejected', {'reason': 'identity or freshness'})
                 return
             phase = payload['phase']
@@ -606,12 +633,15 @@ class FieldRouteExecutor(Node):
         elif phase == 'SUCCESS':
             if (not self._work_started or self._state != 'AT_STATION' or
                     payload.get('success') is not True or
-                    payload.get('arm_stowed') is not True):
+                    (payload.get('sim_fruit_verified') is not True if
+                     getattr(self, '_ideal_simulation', False) else
+                     payload.get('arm_stowed') is not True)):
                 self._fail('work success requires an active matching action and stowed result')
                 return
             self._work_terminal = True
             self._work_result_pending = payload
-            self._work_phase = 'WAITING_FOR_STOW_ACK'
+            self._work_phase = ('WORK_COMPLETED' if getattr(self, '_ideal_simulation', False)
+                                else 'WAITING_FOR_STOW_ACK')
         elif phase == 'FAILED':
             self._work_terminal = payload.get('terminal_confirmed') is True
             if payload.get('action_accepted') is False and self._work_terminal:
@@ -630,6 +660,28 @@ class FieldRouteExecutor(Node):
     def _check_harvest(self, now: float) -> None:
         """Hold the base through scan/work/retraction and reject lease loss."""
         if not getattr(self, '_require_harvest', False):
+            return
+        if getattr(self, '_ideal_simulation', False):
+            if self._state != 'AT_STATION':
+                return
+            if self._work_started and not self._actual_stopped():
+                self._fail('actual base velocity is nonzero during harvest')
+                return
+            if not self._work_started:
+                self._work_permission = self._harvest_work_ready()
+            if self._work_result_pending is not None and self._work_terminal:
+                self._record('harvest_work_verified', {'work_id': self._work_id,
+                    'arm_validation': 'actual simulation result; no stow movement interlock',
+                    'actual_grasp_verified': False})
+                self._work_result_pending = None
+                self._work_started = False
+                self._work_phase = 'COMPLETED'
+                self._finish_station()
+                return
+            if (self._work_station_started_wall is not None and
+                    now-self._work_station_started_wall > self._work_timeout):
+                self._fail('harvest action timed out; no protective base lock requested')
+            self._publish_status()
             return
         if self._state in {'SENDING_GOAL', 'NAVIGATING', 'RETURNING', 'ADVANCING'}:
             error = self._work_movement_error()
@@ -711,6 +763,7 @@ class FieldRouteExecutor(Node):
         point = self._current_point()
         payload = {
             'mission_id': self._mission.mission_id,
+            'ideal_simulation': getattr(self, '_ideal_simulation', False),
             'field_id': self._mission.field.field_id,
             'state': self._state,
             'detail': self._detail,
@@ -767,7 +820,7 @@ class FieldRouteExecutor(Node):
         if self._lock_pending:
             return self._service_reply(
                 response, False, 'motion-lock transition is still active')
-        if self._unsafe_active_goal:
+        if self._unsafe_active_goal and not getattr(self, '_ideal_simulation', False):
             return self._service_reply(
                 response, False,
                 'a Nav2 goal or motion-lock transition is unconfirmed; '
@@ -958,6 +1011,10 @@ class FieldRouteExecutor(Node):
     def _servers_ready(self) -> bool:
         if self._work_movement_error() is not None:
             return False
+        if getattr(self, '_ideal_simulation', False):
+            for future in (self._goal_send_future, self._goal_result_future):
+                if future is not None and not future.done():
+                    return False  # Actual owned Nav2 operation, not a protective fault latch.
         if ((self._require_live_map and not self._live_map_valid) or
                 (self._require_live_keepout and
                  not self._live_keepout_valid)):
@@ -1019,6 +1076,7 @@ class FieldRouteExecutor(Node):
             return
         target = bool(self._lock_target)
         if (getattr(self, '_require_harvest', False) and
+                not getattr(self, '_ideal_simulation', False) and
                 self._lock_observation_count <= self._lock_request_observation_count):
             return
         if not target:
@@ -1101,6 +1159,9 @@ class FieldRouteExecutor(Node):
 
     def _start_lock_recovery(self, detail: str) -> None:
         """Fail closed and issue a compensating lock request."""
+        if getattr(self, '_ideal_simulation', False):
+            self._fail(detail)
+            return
         if not self._require_lock:
             self._unsafe_active_goal = True
             self._terminal_after_lock('FAILED', detail)
@@ -1212,7 +1273,8 @@ class FieldRouteExecutor(Node):
     def _advance_from_locked(self) -> None:
         if self._shutting_down:
             return
-        if self._require_lock and self._base_lock_observed is not True:
+        if (self._require_lock and not getattr(self, '_ideal_simulation', False) and
+                self._base_lock_observed is not True):
             self._start_lock_recovery(
                 'cannot advance while base lock state is unconfirmed')
             return
@@ -1250,7 +1312,8 @@ class FieldRouteExecutor(Node):
     def _start_return_from_locked(self) -> None:
         if self._shutting_down:
             return
-        if self._require_lock and self._base_lock_observed is not True:
+        if (self._require_lock and not getattr(self, '_ideal_simulation', False) and
+                self._base_lock_observed is not True):
             self._start_lock_recovery(
                 'cannot return while base lock state is unconfirmed')
             return
@@ -1341,6 +1404,13 @@ class FieldRouteExecutor(Node):
             return
         if generation != self._goal_generation:
             if handle.accepted:
+                if getattr(self, '_ideal_simulation', False):
+                    # Retain only actual ownership until this old action is
+                    # terminal. Its late result cannot revive a failed mission.
+                    self._goal_handle = handle
+                    self._goal_result_future = handle.get_result_async()
+                    self._goal_result_future.add_done_callback(
+                        lambda completed: self._goal_result(completed, generation, label))
                 try:
                     handle.cancel_goal_async()
                 except Exception as exc:
@@ -1376,18 +1446,24 @@ class FieldRouteExecutor(Node):
         self._set_state(state, f'goal {label} accepted')
 
     def _feedback_callback(self, feedback_message) -> None:
-        if self._shutting_down:
+        if self._shutting_down or self._state not in {'NAVIGATING', 'RETURNING'}:
             return
         feedback = feedback_message.feedback
         if hasattr(feedback, 'distance_remaining'):
             self._detail = (
                 'distance remaining '
                 f'{float(feedback.distance_remaining):.2f} m')
+            # Refresh the retained status as feedback arrives; otherwise a
+            # one-shot reader sees only "goal accepted" for the whole trip.
+            self._publish_status()
 
     def _goal_result(self, future, generation: int, label: str) -> None:
-        if self._goal_result_future is future:
+        owned = self._goal_result_future is future
+        if owned:
             self._goal_result_future = None
         if generation != self._goal_generation:
+            if owned and getattr(self, '_ideal_simulation', False):
+                self._goal_handle = None
             return
         try:
             wrapped = future.result()
@@ -1406,7 +1482,21 @@ class FieldRouteExecutor(Node):
             self._maybe_finish_cancel()
             return
         if status != GoalStatus.STATUS_SUCCEEDED:
-            self._fail(f'NavigateToPose {label} ended with status {status}')
+            result = getattr(wrapped, 'result', None)
+            error_code = getattr(result, 'error_code', None)
+            error_msg = getattr(result, 'error_msg', '') or ''
+            self._record('goal_failed', {
+                'label': label,
+                'status': status,
+                'error_code': error_code,
+                'error_msg': error_msg,
+            })
+            detail = f'NavigateToPose {label} ended with status {status}'
+            if error_code is not None:
+                detail += f'; error_code={error_code}'
+            if error_msg:
+                detail += f'; error_msg={error_msg}'
+            self._fail(detail)
             return
         self._record('goal_succeeded', {'label': label})
         if self._active_transit is not None:
@@ -1445,7 +1535,8 @@ class FieldRouteExecutor(Node):
         """Verify fresh, stable map localization after confirmed locking."""
         if self._shutting_down:
             return
-        if self._require_lock and self._base_lock_observed is not True:
+        if (self._require_lock and not getattr(self, '_ideal_simulation', False) and
+                self._base_lock_observed is not True):
             self._start_lock_recovery('parked-pose verification requires a confirmed lock')
             return
         self._publish_point_tombstone('verifying_parked_pose')
@@ -1492,6 +1583,17 @@ class FieldRouteExecutor(Node):
 
     def _check_parked_pose(self, now: float) -> None:
         """Accept stable parking or retry its unchanged goal within a bound."""
+        if getattr(self, '_ideal_simulation', False):
+            self._parking_report = {'status': 'measured_zero_velocity' if self._actual_stopped()
+                                    else 'base_moving_or_unknown', 'tf_required': False}
+            if self._actual_stopped():
+                self._record('parked_velocity_verified', self._parking_report)
+                self._parking_started_at = None
+                self._finish_parking_check()
+            elif (self._parking_started_at is not None and
+                  now-self._parking_started_at > self._parking_timeout_s):
+                self._fail('actual base has not stopped after navigation arrival')
+            return
         if self._require_lock and self._base_lock_observed is not True:
             self._start_lock_recovery('base unlocked during parked-pose verification')
             return
@@ -1630,7 +1732,8 @@ class FieldRouteExecutor(Node):
         if error is not None:
             self._fail('station completion blocked: ' + error)
             return
-        if self._require_lock and self._base_lock_observed is not True:
+        if (self._require_lock and not getattr(self, '_ideal_simulation', False) and
+                self._base_lock_observed is not True):
             self._start_lock_recovery(
                 'cannot finish harvest point while base lock state is '
                 'unconfirmed')
@@ -1660,7 +1763,13 @@ class FieldRouteExecutor(Node):
         self._cancel_lock_confirmed = not self._require_lock
         self._cancel_request_generation = None
         self._set_state('CANCELING', f'canceling goal for {command}')
-        self._lock_then(self._cancel_lock_ready)
+        if (getattr(self, '_ideal_simulation', False) and
+                command not in {'pause', 'cancel', 'skip', 'return_home'}):
+            # Automatic action failure cancels its real Nav2 goal, without
+            # adding a protective chassis lock. Manual stop commands retain it.
+            self._cancel_lock_confirmed = True
+        else:
+            self._lock_then(self._cancel_lock_ready)
         if self._goal_handle is not None:
             self._cancel_accepted_goal()
 
@@ -1742,6 +1851,10 @@ class FieldRouteExecutor(Node):
         future.add_done_callback(done)
 
     def _after_locked_cancel(self, command: str) -> None:
+        if (getattr(self, '_ideal_simulation', False) and
+                command in {'timeout', 'binding_mismatch', 'lock_mismatch'}):
+            self._fail('navigation canceled: '+command)
+            return
         if command == 'pause':
             self._set_state('PAUSED', 'navigation paused at current waypoint')
         elif command == 'skip':
@@ -1775,6 +1888,37 @@ class FieldRouteExecutor(Node):
         self._fail(message, preserve_goal=True)
 
     def _fail(self, message: str, preserve_goal: bool = False) -> None:
+        if getattr(self, '_ideal_simulation', False):
+            self._work_permission = False
+            self._parking_started_at = None
+            self._parking_paused = False
+            self._after_cancel = None
+            self._cancel_started_at = None
+            self._pending_terminal = None
+            self._lock_generation += 1
+            self._clear_lock_transition()
+            self._lock_recovery = False
+            self._goal_generation += 1
+            self._unsafe_active_goal = False
+            self._goal_send_started_at = None
+            self._goal_started_at = None
+            handle = self._goal_handle
+            if handle is not None:
+                try:
+                    handle.cancel_goal_async()
+                except Exception as exc:
+                    self.get_logger().warning('actual Nav2 cancellation failed: '+str(exc))
+            self.get_logger().error(message)
+            self._publish_point_tombstone(message)
+            # Release any program-issued station stop. Failure remains a real
+            # FAILED result; arm heartbeat/fault never creates a new base lock.
+            if self._require_lock and self._lock_client.service_is_ready():
+                try:
+                    self._lock_client.call_async(SetBool.Request(data=False))
+                except Exception as exc:
+                    self.get_logger().warning('program stop release failed: '+str(exc))
+            self._set_state('FAILED', message)
+            return
         self._work_permission = False
         self._parking_started_at = None
         self._parking_paused = False
@@ -1877,7 +2021,10 @@ class FieldRouteExecutor(Node):
             elif self._servers_ready():
                 self._set_state(
                     'PREPARING', 'locking base before mission start')
-                self._lock_then(self._advance_from_locked)
+                if getattr(self, '_ideal_simulation', False):
+                    self._advance_from_locked()
+                else:
+                    self._lock_then(self._advance_from_locked)
             elif (self._wait_started_at is not None and
                   now - self._wait_started_at > self._server_wait_timeout):
                 self._fail('timed out waiting for Nav2 or motion-lock service')
@@ -1911,7 +2058,8 @@ class FieldRouteExecutor(Node):
         self._clear_lock_transition()
         if not rclpy.ok():
             return
-        if self._require_lock and self._lock_client.service_is_ready():
+        if (self._require_lock and not getattr(self, '_ideal_simulation', False) and
+                self._lock_client.service_is_ready()):
             try:
                 lock_future = self._lock_client.call_async(
                     SetBool.Request(data=True))

@@ -19,14 +19,28 @@ def _worker():
         return Time(nanoseconds=clock.ns)
 
     states, statuses = [], []
+    arm = NS(stowed=lambda: True, stow_report=lambda: {'passed': True},
+             terminal_confirmed=True, execution_status={}, _navigation_stowed=True,
+             reset_calls=[])
+    def navigation_stowed():
+        arm._navigation_stowed = arm.stowed()
+        return arm._navigation_stowed
+    def reset_navigation_stow(**_kwargs):
+        arm.reset_calls.append(True)
+        arm._navigation_stowed = False
+    arm.navigation_stowed = navigation_stowed
+    arm.navigation_stow_report = lambda: {
+        'passed': arm._navigation_stowed,
+        'reasons': [] if arm._navigation_stowed else ['strict_stow_latch_not_acquired']}
+    arm.reset_navigation_stow = reset_navigation_stow
     worker = NS(
         _mutex=threading.RLock(), _last_heartbeat=None,
         _healthy=True, _fault=False, _busy=False, _phase='IDLE',
         _work_context=('', '', ''), _startup_checked=True,
         p={'task_frame': 'base_footprint'},
-        arm=NS(stowed=lambda: True, stow_report=lambda: {'passed': True},
-               terminal_confirmed=True, execution_status={}),
+        arm=arm,
         _grasp_diagnostics=[], _contact_diagnostics={}, _scene_ready_diagnostics={},
+        _scan_diagnostics={}, _selected_target={}, _last_error='', _last_health_error='',
         get_clock=lambda: NS(now=now), _pub=NS(publish=states.append),
         _status_pub=NS(publish=lambda message: statuses.append(json.loads(message.data))))
     return worker, clock, states, statuses
@@ -69,6 +83,9 @@ def test_dangerous_change_at_same_clock_is_published_immediately(change):
     assert states[0].arm_stowed and not states[1].arm_stowed
     assert _stamp(states[0]) == _stamp(states[1]) == clock.ns
     assert statuses[-1]['stamp_ns'] == clock.ns
+    if change != 'measured':
+        assert worker.arm.reset_calls
+    assert statuses[-1]['stow_denial_reason']
 
 
 @pytest.mark.parametrize('attribute,value', [
@@ -143,3 +160,34 @@ def test_background_health_cannot_mutate_midway_through_a_heartbeat_snapshot():
     HarvestArmWorker._heartbeat(worker)
     assert [state.arm_stowed for state in states] == [True, False]
     assert [_stamp(state) for state in states] == [clock.ns, clock.ns]
+    assert worker._last_health_error == 'backend stopped'
+
+
+def test_idle_backend_health_does_not_refresh_scene_or_hide_last_failure():
+    worker, _, _, _ = _worker()
+    worker._healthy = False
+    worker._last_health_error = 'previous backend timeout'
+    worker._closing = threading.Event()
+    worker.context = NS(ok=lambda: True)
+    worker.p['health_interval_s'] = .001
+    checked = []
+    def ready():
+        checked.append('backend')
+        worker._closing.set()
+    worker.arm.ready = ready
+    worker._detect_startup_pose = lambda: checked.append('startup')
+    worker._environment_ready = lambda **_kwargs: pytest.fail('idle health cannot refresh whole scene')
+    HarvestArmWorker._health(worker)
+    assert checked == ['backend', 'startup']
+    assert worker._healthy and worker._last_health_error == ''
+
+
+def test_health_failure_status_distinguishes_backend_from_measured_joint_stow():
+    worker, _, states, statuses = _worker()
+    worker._healthy = False
+    worker._last_health_error = 'arm controller is not active'
+    HarvestArmWorker._heartbeat(worker)
+    assert not states[-1].arm_stowed
+    assert statuses[-1]['stow_evidence']['passed']
+    assert statuses[-1]['stow_denial_reason'] == 'backend_unhealthy'
+    assert statuses[-1]['last_health_error'] == 'arm controller is not active'

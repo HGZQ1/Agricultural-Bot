@@ -4,6 +4,10 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="agri_robot">
   <xacro:arg name="use_control" default="false" />
   <xacro:arg name="use_ros2_control" default="$(arg use_control)" />
+  <!-- DART 6.13 servo control skips driving q below its lower limit, even
+       for floating-point undershoot. Keep the commanded open position zero
+       inside the simulated range; this 1 um margin changes fingers only. -->
+  <xacro:arg name="gripper_joint_lower_limit" default="-0.000001" />
   <xacro:arg name="controller_config" default="" />
   <!-- Simulation steering authority for loaded tire contact. The canonical
        description keeps its original limit; this is not a motor rating. -->

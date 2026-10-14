@@ -21,6 +21,7 @@
 #include <nlohmann/json.hpp>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <memory>
 #include <mutex>
@@ -52,6 +53,7 @@ class IdealSteeringSystem : public gz::sim::System,
   gz::sim::Entity world{gz::sim::kNullEntity}, robot{gz::sim::kNullEntity},
                   joint{gz::sim::kNullEntity};
   bool configured{false}, enabled{false}, active{false}, ready{false};
+  bool idealSimulation{false};
   int64_t maxAgeNs{200000000}, lastSimNs{-1}, lastAcceptedStamp{-1};
   uint64_t processedSequence{0}, appliedCount{0}, rejectedCount{0};
   double maxReceiptAgeWall{0.5}, startupError{0.03};
@@ -65,7 +67,19 @@ class IdealSteeringSystem : public gz::sim::System,
   void OnCommand(const gz::msgs::Double &message)
   {
     Packet next; next.angle = message.data(); next.received = Clock::now();
-    if (!message.has_header() || !message.header().has_stamp())
+    if (idealSimulation) {
+      // This explicit simulation mode holds the last finite target. A message
+      // timestamp describes the packet but is not a permission to actuate.
+      next.valid = std::isfinite(next.angle);
+      if (!next.valid) next.reason = "NONFINITE_TARGET";
+      if (message.has_header() && message.header().has_stamp()) {
+        const auto &stamp = message.header().stamp();
+        if (stamp.sec() >= 0 && stamp.nsec() >= 0 && stamp.nsec() < 1000000000 &&
+            stamp.sec() <= (std::numeric_limits<int64_t>::max()-stamp.nsec())/1000000000LL)
+          next.stamp = int64_t(stamp.sec())*1000000000LL + stamp.nsec();
+      }
+    }
+    else if (!message.has_header() || !message.header().has_stamp())
       next.reason = "MISSING_SIM_STAMP";
     else {
       const auto &stamp = message.header().stamp();
@@ -100,6 +114,15 @@ class IdealSteeringSystem : public gz::sim::System,
   void UpdateStatus(const gz::sim::UpdateInfo &info,
                     const gz::sim::EntityComponentManager &ecm)
   {
+    const auto *position = ecm.Component<ideal_c::JointPosition>(joint);
+    const auto *axis = ecm.Component<ideal_c::JointAxis>(joint);
+    const auto *velocityCommand = ecm.Component<ideal_c::JointVelocityCmd>(joint);
+    const IdealJson readiness{{"model_found", robot != gz::sim::kNullEntity && ecm.HasEntity(robot)},
+      {"joint_found", joint != gz::sim::kNullEntity && ecm.HasEntity(joint)},
+      {"joint_position_available", position && position->Data().size() == 1 && std::isfinite(position->Data()[0])},
+      {"joint_axis_available", axis && std::isfinite(axis->Data().Lower()) &&
+        std::isfinite(axis->Data().Upper()) && axis->Data().Lower() < axis->Data().Upper()},
+      {"joint_velocity_command_available", velocityCommand && velocityCommand->Data().size() == 1}};
     auto value = [&](auto tag) -> IdealJson {
       using Component = decltype(tag);
       const auto *component = ecm.Component<Component>(joint);
@@ -108,6 +131,9 @@ class IdealSteeringSystem : public gz::sim::System,
     IdealJson state{{"success", true}, {"idealized", true},
       {"system", "agri::IdealSteeringSystem"}, {"version", "r2_ideal_steering_v1"},
       {"enabled", enabled}, {"ready", ready}, {"active", active},
+      {"ready_components", readiness},
+      {"ideal_simulation", idealSimulation},
+      {"command_policy", idealSimulation ? "last_finite_target_held" : "fresh_stamped_target_lease"},
       {"joint_name", jointName}, {"robot_name", robotName},
       {"command_topic", commandTopic}, {"status_service", statusService},
       {"expiry_reason", reason}, {"sim_ns", Ns(info.simTime)},
@@ -116,12 +142,99 @@ class IdealSteeringSystem : public gz::sim::System,
       {"actual_velocity_rps", value(ideal_c::JointVelocity())},
       {"target_rad", target.valid ? Number(target.angle) : IdealJson(nullptr)},
       {"target_stamp_ns", target.valid ? IdealJson(target.stamp) : IdealJson(nullptr)},
-      {"max_sim_age_ns", maxAgeNs}, {"max_receipt_age_wall_s", maxReceiptAgeWall},
-      {"startup_error_limit_rad", startupError}, {"applied_count", appliedCount},
+      {"max_sim_age_ns", idealSimulation ? IdealJson(nullptr) : IdealJson(maxAgeNs)},
+      {"max_receipt_age_wall_s", idealSimulation ? IdealJson(nullptr) : IdealJson(maxReceiptAgeWall)},
+      {"startup_error_limit_rad", idealSimulation ? IdealJson(nullptr) : IdealJson(startupError)},
+      {"applied_count", appliedCount},
       {"rejected_count", rejectedCount},
       {"feedback_source", "Existing JointPosition/JointVelocity after Physics UpdateSim; sampling time is not a separate sensor timestamp. No feedback component is written"},
-      {"control_handoff", "Fresh targets reset only r2 position and zero only its existing native velocity command. No effort, other joint, drive wheel, or base pose is changed. This is an idealized simulation actuator, not hardware validation"}};
+      {"control_handoff", idealSimulation ?
+        "Last finite in-bounds target resets only r2 position and overrides only its native force/velocity commands. No feedback, other joint, drive wheel, or base pose is changed" :
+        "Fresh targets reset only r2 position and zero only its existing native velocity command. No effort, other joint, drive wheel, or base pose is changed. This is an idealized simulation actuator, not hardware validation"}};
     std::lock_guard<std::mutex> lock(statusMutex); statusText = state.dump();
+  }
+
+  void PreUpdateIdeal(const gz::sim::UpdateInfo &info,
+                      gz::sim::EntityComponentManager &ecm)
+  {
+    const auto now = Ns(info.simTime);
+    const bool movedBackwards = lastSimNs >= 0 && now < lastSimNs;
+    lastSimNs = now;
+    if (robot == gz::sim::kNullEntity || !ecm.HasEntity(robot))
+      robot = ecm.EntityByComponents(ideal_c::Model(), ideal_c::Name(robotName), ideal_c::ParentEntity(world));
+    if (joint == gz::sim::kNullEntity || !ecm.HasEntity(joint))
+      joint = ecm.EntityByComponents(ideal_c::Joint(), ideal_c::Name(jointName), ideal_c::ParentEntity(robot));
+    const auto *position = ecm.Component<ideal_c::JointPosition>(joint);
+    const auto *axis = ecm.Component<ideal_c::JointAxis>(joint);
+    ready = robot != gz::sim::kNullEntity && joint != gz::sim::kNullEntity &&
+      position && position->Data().size() == 1 &&
+      std::isfinite(position->Data()[0]) && axis && std::isfinite(axis->Data().Lower()) &&
+      std::isfinite(axis->Data().Upper()) && axis->Data().Lower() < axis->Data().Upper();
+    if (!ready) {
+      active = false;
+      if (robot == gz::sim::kNullEntity) reason = "ROBOT_MODEL_NOT_FOUND";
+      else if (joint == gz::sim::kNullEntity) reason = "R2_STEER_JOINT_NOT_FOUND";
+      else if (!position || position->Data().size() != 1 || !std::isfinite(position->Data()[0]))
+        reason = "ACTUAL_JOINT_POSITION_UNAVAILABLE";
+      else reason = "IMPORTED_JOINT_AXIS_OR_LIMITS_INVALID";
+      return;  // Retain the target and resume if the real components return.
+    }
+    // Force-based controllers need not create a velocity command themselves.
+    // Add only this r2 command component after identifying the real joint and
+    // validating its Physics-owned readback and imported limits. This remains
+    // command preparation while paused; no feedback or position is invented.
+    auto *velocityCommand = ecm.Component<ideal_c::JointVelocityCmd>(joint);
+    if (!velocityCommand)
+      velocityCommand = ecm.CreateComponent(joint, ideal_c::JointVelocityCmd({0.0}));
+    else if (velocityCommand->Data().empty())
+      velocityCommand->Data() = {0.0};
+    ready = velocityCommand && velocityCommand->Data().size() == 1;
+    if (!ready) {
+      active = false; reason = "R2_NATIVE_VELOCITY_COMMAND_INVALID";
+      return;
+    }
+    if (info.paused || Ns(info.dt) <= 0 || movedBackwards) {
+      active = false;
+      reason = movedBackwards ? "CLOCK_BACKWARD_IDEAL_TARGET_RETAINED" : "PAUSED_IDEAL_TARGET_RETAINED";
+      return;
+    }
+    Packet latest;
+    { std::lock_guard<std::mutex> lock(packetMutex); latest = incoming; }
+    if (latest.sequence != processedSequence) {
+      processedSequence = latest.sequence;
+      if (!latest.valid || !std::isfinite(latest.angle)) {
+        ++rejectedCount;
+        reason = latest.reason.empty() ? "NONFINITE_TARGET" : latest.reason;
+      }
+      else if (latest.angle < axis->Data().Lower() || latest.angle > axis->Data().Upper()) {
+        ++rejectedCount; reason = "TARGET_OUTSIDE_IMPORTED_JOINT_LIMITS";
+      }
+      else {
+        target = latest; lastAcceptedStamp = latest.stamp;
+      }
+    }
+    if (!target.valid) {
+      active = false;
+      if (rejectedCount == 0) reason = "WAITING_FOR_FIRST_FINITE_TARGET";
+      return;
+    }
+    if (!std::isfinite(target.angle) || target.angle < axis->Data().Lower() ||
+        target.angle > axis->Data().Upper()) {
+      active = false; reason = "HELD_TARGET_OUTSIDE_IMPORTED_JOINT_LIMITS";
+      return;
+    }
+    // Override only this explicitly selected simulation joint. Position and
+    // velocity feedback components remain Physics-owned and are never written.
+    if (auto *force = ecm.Component<ideal_c::JointForceCmd>(joint))
+      force->Data() = {0.0};
+    if (auto *reset = ecm.Component<ideal_c::JointVelocityReset>(joint))
+      reset->Data() = {0.0};
+    if (auto *reset = ecm.Component<ideal_c::JointPositionReset>(joint))
+      reset->Data() = {target.angle};
+    else
+      ecm.CreateComponent(joint, ideal_c::JointPositionReset({target.angle}));
+    velocityCommand->Data()[0] = 0.0;
+    active = true; ++appliedCount; reason = "ACTIVE_IDEAL_LAST_FINITE_TARGET";
   }
 
 public:
@@ -140,6 +253,9 @@ public:
     }
     if (sdf->HasElement("enabled")) enabled = sdf->Get<bool>("enabled");
     if (!enabled) { reason = "EXPLICIT_ENABLED_TRUE_REQUIRED"; return; }
+    const char *idealEnvironment = std::getenv("AGRI_IDEAL_SIMULATION");
+    idealSimulation = sdf->HasElement("ideal_simulation") ? sdf->Get<bool>("ideal_simulation") :
+      idealEnvironment && std::string(idealEnvironment) == "1";
     if (sdf->HasElement("robot_name")) robotName = sdf->Get<std::string>("robot_name");
     if (robotName.empty()) { enabled = false; reason = "INVALID_ROBOT_NAME"; return; }
     const auto *name = ecm.Component<ideal_c::Name>(entity);
@@ -150,18 +266,19 @@ public:
     const double age = sdf->HasElement("max_sim_age_s") ? sdf->Get<double>("max_sim_age_s") : .2;
     if (sdf->HasElement("max_receipt_age_wall_s")) maxReceiptAgeWall = sdf->Get<double>("max_receipt_age_wall_s");
     if (sdf->HasElement("startup_error_limit_rad")) startupError = sdf->Get<double>("startup_error_limit_rad");
-    if (!std::isfinite(age) || age < .02 || age > 1 ||
+    if (commandTopic.empty() || (!idealSimulation && (
+        !std::isfinite(age) || age < .02 || age > 1 ||
         !std::isfinite(maxReceiptAgeWall) || maxReceiptAgeWall < .05 || maxReceiptAgeWall > 2 ||
-        !std::isfinite(startupError) || startupError <= 0 || startupError > .03 || commandTopic.empty()) {
+        !std::isfinite(startupError) || startupError <= 0 || startupError > .03))) {
       enabled = false; reason = "INVALID_LEASE_OR_STARTUP_BOUNDS"; return;
     }
-    maxAgeNs = static_cast<int64_t>(age*1e9); world = entity;
+    maxAgeNs = idealSimulation ? 0 : static_cast<int64_t>(age*1e9); world = entity;
     node = std::make_unique<gz::transport::Node>();
     if (!node->Advertise(statusService, &IdealSteeringSystem::Status, this) ||
         !node->Subscribe(commandTopic, &IdealSteeringSystem::OnCommand, this)) {
       enabled = false; reason = "TRANSPORT_CONFIGURATION_FAILED"; return;
     }
-    reason = "WAITING_FOR_JOINT_AND_FRESH_TARGET";
+    reason = idealSimulation ? "WAITING_FOR_FIRST_FINITE_TARGET" : "WAITING_FOR_JOINT_AND_FRESH_TARGET";
     gzmsg << "IdealSteeringSystem enabled explicitly for " << robotName << "::" << jointName
           << "; simulation idealization, command " << commandTopic << ".\n";
   }
@@ -169,6 +286,7 @@ public:
                  gz::sim::EntityComponentManager &ecm) override
   {
     if (!enabled) return;
+    if (idealSimulation) { PreUpdateIdeal(info, ecm); return; }
     const auto now = Ns(info.simTime);
     if (lastSimNs >= 0 && now < lastSimNs) {
       Revoke("CLOCK_BACKWARD_REVOKED"); target = Packet(); lastAcceptedStamp = -1;

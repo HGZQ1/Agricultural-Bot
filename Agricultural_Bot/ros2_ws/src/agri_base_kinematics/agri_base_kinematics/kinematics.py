@@ -194,6 +194,7 @@ class FourWheelSteeringKinematics:
         vy: float,
         wz: float,
         current_steering: Mapping[str, float] | None = None,
+        ignore_limits: bool = False,
     ) -> Dict[str, WheelCommand]:
         """
         Compute wheel commands for a body twist.
@@ -214,11 +215,25 @@ class FourWheelSteeringKinematics:
             local_y = vy + wz * x
             speed = hypot(local_x, local_y) / self.wheel_radius
             lower, upper = self.steering_limits_by_wheel[name]
-            held_angle = max(lower, min(upper, current_steering.get(name, 0.0)))
+            held_angle = (current_steering.get(name, 0.0) if ignore_limits else
+                          max(lower, min(upper, current_steering.get(name, 0.0))))
             if is_zero or speed <= 1e-12:
                 angle, speed = held_angle, 0.0
             else:
                 angle = atan2(local_y, local_x)
+                if ignore_limits:
+                    # Equivalent rolling vectors can use a reversed wheel
+                    # instead of turning the ideal steering joint by pi.
+                    # This preserves the requested body velocity and avoids
+                    # calibrated +/-pi joint commands outside imported axes.
+                    if angle > pi / 2.0:
+                        angle -= pi
+                        speed = -speed
+                    elif angle < -pi / 2.0:
+                        angle += pi
+                        speed = -speed
+                    result[name] = WheelCommand(angle, speed)
+                    continue
                 candidates = (
                     (angle, speed),
                     (angle - pi, -speed),
@@ -245,7 +260,7 @@ class FourWheelSteeringKinematics:
             result[name] = WheelCommand(angle, speed)
 
         peak_speed = max(abs(command.velocity) for command in result.values())
-        if self.max_wheel_speed > 0.0 and peak_speed > self.max_wheel_speed:
+        if (not ignore_limits) and self.max_wheel_speed > 0.0 and peak_speed > self.max_wheel_speed:
             scale = self.max_wheel_speed / peak_speed
             result = {
                 name: WheelCommand(command.steering, command.velocity * scale)

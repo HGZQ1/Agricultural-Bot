@@ -25,7 +25,9 @@ class VelocityGateCore:
         priorities: Iterable[str],
         timeouts: Mapping[str, float],
         limits: PlanarTwist,
+        ideal_simulation: bool = False,
     ) -> None:
+        self.ideal_simulation = bool(ideal_simulation)
         self.priorities = tuple(priorities)
         if not self.priorities or len(set(self.priorities)) != len(self.priorities):
             raise ValueError('priorities must contain unique source names')
@@ -44,11 +46,15 @@ class VelocityGateCore:
         }
         self.locked = False
         self._last_now: float | None = None
+        self._last_updated_source: str | None = None
 
     def _observe_time(self, now: float) -> bool:
         """Track local time and invalidate state after a backwards jump."""
         if not isfinite(now):
             return False
+        if self.ideal_simulation:
+            self._last_now = float(now)
+            return True
         moved_backwards = self._last_now is not None and now < self._last_now
         if moved_backwards:
             self.clear()
@@ -63,17 +69,26 @@ class VelocityGateCore:
         if (len(values) != 3 or not self._observe_time(float(now)) or
                 not all(isfinite(value) for value in values)):
             return False
-        limited = tuple(
+        # Explicit ideal simulation forwards finite body commands unchanged.
+        # Physical deployments retain the configured command bounds.
+        limited = values if self.ideal_simulation else tuple(
             max(-limit, min(limit, value)) if limit > 0.0 else 0.0
             for value, limit in zip(values, self.limits)
         )
+        if self.ideal_simulation and limited == ZERO_TWIST:
+            # A real stop command ends the previous command, including any
+            # buffered command from another source. It must not revive later.
+            self.clear()
         self.sources[source] = SourceState(limited, float(now))
+        self._last_updated_source = source
         return True
 
     def clear_source(self, source: str) -> None:
         if source not in self.sources:
             raise KeyError(source)
         self.sources[source] = SourceState()
+        if self._last_updated_source == source:
+            self._last_updated_source = None
 
     def set_locked(self, locked: bool) -> None:
         """Change lock state and invalidate buffered commands in both directions."""
@@ -83,6 +98,7 @@ class VelocityGateCore:
     def clear(self) -> None:
         for name in self.sources:
             self.sources[name] = SourceState()
+        self._last_updated_source = None
 
     def select(self, now: float) -> Tuple[PlanarTwist, str]:
         """Return selected command and source label for the current time."""
@@ -90,6 +106,13 @@ class VelocityGateCore:
             return ZERO_TWIST, 'clock_reset'
         if self.locked:
             return ZERO_TWIST, 'locked'
+        if self.ideal_simulation:
+            # Arrival order, rather than simulated timestamps or fixed manual
+            # priority, selects the current explicitly requested command.
+            name = self._last_updated_source
+            if name is None:
+                return ZERO_TWIST, 'idle'
+            return self.sources[name].twist, name
         for name in self.priorities:
             state = self.sources[name]
             if state.updated_at is None:

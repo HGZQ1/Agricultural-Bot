@@ -116,14 +116,15 @@ def test_bad_lease_configuration_is_rejected(kwargs):
         HarvestInterlock(**kwargs)
 
 
-def _node(monkeypatch, *, enabled=True):
+def _node(monkeypatch, *, enabled=True, ideal=False):
     """Exercise real node methods without opening a DDS graph."""
     node = object.__new__(VelocityGateNode)
     node._core = VelocityGateCore(('manual', 'navigation'),
                                   {'manual': 0.35, 'navigation': 0.35},
-                                  (0.3, 0.0, 0.5))
-    node._harvest_interlock = HarvestInterlock() if enabled else None
-    if enabled:
+                                  (0.3, 0.0, 0.5), ideal_simulation=ideal)
+    node._ideal_simulation = ideal
+    node._harvest_interlock = HarvestInterlock() if enabled and not ideal else None
+    if enabled and not ideal:
         node._core.set_locked(True)
     node._stopping = False
     node._interlock_reason = None
@@ -266,3 +267,58 @@ def test_disabled_mode_keeps_existing_manual_navigation_behavior(monkeypatch):
     node._on_command('manual', _command(clock))
     node._publish_selected()
     assert node.outputs[-1].twist.linear.x == 0.2
+
+
+def test_ideal_worker_reports_and_timeouts_do_not_lock_or_revoke_motion(monkeypatch):
+    node, clock = _node(monkeypatch, enabled=True, ideal=True)
+    assert not node._core.locked
+    node._on_command('navigation', _command(clock))
+    clock.wall += 100.0
+    clock.ros -= 90.0
+    _worker(node, clock, stowed=False, phase='FAULT')
+    node._publish_selected()
+    assert not node._core.locked
+    assert node.outputs[-1].twist.linear.x == 0.2
+    assert node._set_lock_service(SimpleNamespace(data=False), SimpleNamespace()).success
+
+
+@pytest.mark.parametrize('stamp', [0.0, 1.0, 1000.0])
+def test_ideal_accepts_finite_motion_independent_of_input_timestamp(monkeypatch, stamp):
+    node, clock = _node(monkeypatch, ideal=True)
+    command = _command(clock)
+    command.header.stamp = Time(seconds=stamp).to_msg()
+    node._on_command('navigation', command)
+    node._publish_selected()
+    assert node.outputs[-1].twist.linear.x == 0.2
+
+
+@pytest.mark.parametrize('invalid', ['frame', 'nan'])
+def test_ideal_bad_packet_keeps_previous_valid_motion(monkeypatch, invalid):
+    node, clock = _node(monkeypatch, ideal=True)
+    node._on_command('navigation', _command(clock))
+    command = _command(clock)
+    if invalid == 'frame':
+        command.header.frame_id = 'wrong_frame'
+    else:
+        command.twist.linear.x = float('nan')
+    node._on_command('navigation', command)
+    node._publish_selected()
+    assert node.outputs[-1].twist.linear.x == 0.2
+
+
+def test_ideal_explicit_parking_lock_still_stops_and_unlock_does_not_resume(monkeypatch):
+    node, clock = _node(monkeypatch, ideal=True)
+    node._on_command('navigation', _command(clock))
+    assert node._set_lock_service(SimpleNamespace(data=True), SimpleNamespace()).success
+    assert node.outputs[-1].twist.linear.x == 0.0
+    assert node._set_lock_service(SimpleNamespace(data=False), SimpleNamespace()).success
+    assert node.outputs[-1].twist.linear.x == 0.0
+
+
+def test_ideal_shutdown_sends_zero_without_creating_persistent_lock(monkeypatch):
+    node, clock = _node(monkeypatch, ideal=True)
+    node._on_command('navigation', _command(clock))
+    node.stop()
+    assert not node._core.locked
+    assert all(output.twist.linear.x == 0.0 for output in node.outputs[-3:])
+    assert not node._set_lock_service(SimpleNamespace(data=False), SimpleNamespace()).success

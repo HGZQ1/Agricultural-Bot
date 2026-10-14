@@ -6,6 +6,9 @@
   <!-- Simulation sets this true when both gripper fingers are commanded
        explicitly. Standalone/RViz descriptions retain the mimic relation. -->
   <xacro:arg name="use_ros2_control" default="false" />
+  <!-- Gazebo may provide a tiny numerical margin at the open-finger stop.
+       The canonical mechanical lower limit remains zero. -->
+  <xacro:arg name="gripper_joint_lower_limit" default="0.0" />
   <xacro:arg name="steering_effort_limit" default="10.0" />
   <!-- Optional simulation contact model; canonical CAD collision remains the default. -->
   <xacro:arg name="wheel_collision_geometry" default="mesh" />

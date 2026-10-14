@@ -1,6 +1,7 @@
 """ROS 2 node for four-wheel-steering commands and wheel odometry."""
 
 from math import cos, isfinite, pi, sin
+import os
 from typing import Dict
 
 from geometry_msgs.msg import TransformStamped, Twist, TwistStamped
@@ -29,6 +30,14 @@ class FourWheelSteeringNode(Node):
 
     def __init__(self) -> None:
         super().__init__('four_wheel_steering_node')
+        self.declare_parameter('ideal_simulation', os.environ.get('AGRI_IDEAL_SIMULATION') == '1')
+        self._ideal_simulation = bool(self.get_parameter('ideal_simulation').value)
+        if self._ideal_simulation and self.get_parameter('use_sim_time').value is not True:
+            raise ValueError('ideal_simulation requires use_sim_time=true')
+        if self._ideal_simulation:
+            self.get_logger().warning(
+                'ideal simulation wheel drive enabled: last valid velocity is retained until '
+                'an explicit zero; steering alignment and command/feedback expiry do not stop drive')
         self.declare_parameter('cmd_vel_type', 'twist_stamped')
         self.declare_parameter('cmd_vel_topic', '/cmd_vel')
         self.declare_parameter('joint_states_topic', '/joint_states')
@@ -193,6 +202,16 @@ class FourWheelSteeringNode(Node):
         if not all(isfinite(value) for value in twist):
             self.get_logger().warning('rejected nonfinite velocity command')
             return False
+        if getattr(self, '_ideal_simulation', False):
+            # A finite but extreme input can still overflow inverse kinematics.
+            # Reject that input without replacing the last usable velocity.
+            candidate = self._kinematics.inverse(
+                *twist, current_steering=self._steering,
+                ignore_limits=self._ideal_simulation)
+            if not all(isfinite(value) for command in candidate.values()
+                       for value in (command.steering, command.velocity)):
+                self.get_logger().warning('rejected velocity whose ideal wheel solution is nonfinite')
+                return False
         self._twist = twist
         self._last_command_time = self.get_clock().now()
         self._command_received = True
@@ -208,7 +227,7 @@ class FourWheelSteeringNode(Node):
                 f'rejected velocity command in frame {msg.header.frame_id!r}; '
                 f'expected {expected_frame!r}')
             return
-        if not self._stamp_is_current(
+        if not getattr(self, '_ideal_simulation', False) and not self._stamp_is_current(
                 msg.header.stamp, self._command_max_age, allow_zero=False):
             self.get_logger().warning('rejected stale, zero or future velocity timestamp')
             return
@@ -261,49 +280,68 @@ class FourWheelSteeringNode(Node):
 
     def _update(self) -> None:
         now = self.get_clock().now()
+        ideal = getattr(self, '_ideal_simulation', False)
         if now.nanoseconds < self._last_clock_ns:
-            self.get_logger().warning(
-                'ROS clock moved backwards; clearing command and odometry timing state')
-            self._twist = (0.0, 0.0, 0.0)
-            self._command_received = False
+            if ideal:
+                self.get_logger().warning(
+                    'ROS clock moved backwards; retaining ideal velocity and awaiting new odometry feedback')
+            else:
+                self.get_logger().warning(
+                    'ROS clock moved backwards; clearing command and odometry timing state')
+                self._twist = (0.0, 0.0, 0.0)
+                self._command_received = False
+                self._last_command_time = now
+                self._last_joint_state_time = now
+            # Old measurements are not new feedback after a clock reset. This
+            # invalidates odometry only; ideal wheel output remains independent.
             self._joint_state_received = False
-            self._last_command_time = now
-            self._last_joint_state_time = now
             self._last_odom_time = now
         self._last_clock_ns = now.nanoseconds
         command_age = (now - self._last_command_time).nanoseconds / 1e9
         command_fresh = (self._command_received and
-                         0.0 <= command_age <= self._command_timeout)
+                         (ideal or 0.0 <= command_age <= self._command_timeout))
         if not command_fresh:
             twist = (0.0, 0.0, 0.0)
         else:
             twist = self._twist
-        commands = self._kinematics.inverse(*twist, current_steering=self._steering)
+        commands = self._kinematics.inverse(
+            *twist, current_steering=self._steering,
+            ignore_limits=ideal)
         joint_state_age = (now - self._last_joint_state_time).nanoseconds / 1e9
         joint_state_fresh = (
             self._joint_state_received and 0.0 <= joint_state_age <= self._joint_state_timeout)
-        alignment_scale = 0.0
-        if joint_state_fresh:
-            alignment_scale = steering_alignment_scale(
-                [commands[name].steering - self._steering[name]
-                 for name in self._wheel_names],
-                self._alignment_full_speed_error,
-                self._alignment_stop_error,
-            )
-        steering_reference = self._steering_limiter.step(
-            [commands[name].steering for name in self._wheel_names],
-            [self._steering[name] for name in self._wheel_names],
-            now.nanoseconds, enabled=joint_state_fresh,
-            hold=not command_fresh or not any(twist))
-        # Limit the final drive output: steering alignment can recover from
-        # zero after the body command has already reached its requested speed.
-        # Locked zero commands and failed freshness gates stop immediately.
-        permitted_velocity = [commands[name].velocity * alignment_scale
-                              for name in self._wheel_names]
-        wheel_velocity = self._drive_limiter.step(
-            permitted_velocity, now.nanoseconds,
-            enabled=command_fresh and joint_state_fresh and steering_reference is not None,
-            maximum_magnitudes=[abs(value) for value in permitted_velocity])
+        if ideal:
+            # The inverse solution retains calibrated steering hard bounds and
+            # maximum wheel speed. No measured-alignment or time-gap limiter
+            # can independently suppress this explicit simulation drive mode.
+            steering_reference = [commands[name].steering for name in self._wheel_names]
+            wheel_velocity = [commands[name].velocity for name in self._wheel_names]
+            if not all(isfinite(value) for value in steering_reference + wheel_velocity):
+                self.get_logger().warning('rejected nonfinite ideal wheel solution')
+                return
+        else:
+            alignment_scale = 0.0
+            if joint_state_fresh:
+                alignment_scale = steering_alignment_scale(
+                    [commands[name].steering - self._steering[name]
+                     for name in self._wheel_names],
+                    self._alignment_full_speed_error,
+                    self._alignment_stop_error,
+                )
+            steering_reference = self._steering_limiter.step(
+                [commands[name].steering for name in self._wheel_names],
+                [self._steering[name] for name in self._wheel_names],
+                now.nanoseconds, enabled=joint_state_fresh,
+                hold=not command_fresh or not any(twist))
+            # Limit the final drive output: steering alignment can recover from
+            # zero after the body command has already reached its requested speed.
+            # Locked zero commands and failed freshness gates stop immediately.
+            permitted_velocity = [commands[name].velocity * alignment_scale
+                                  for name in self._wheel_names]
+            wheel_velocity = self._drive_limiter.step(
+                permitted_velocity, now.nanoseconds,
+                enabled=command_fresh and joint_state_fresh and steering_reference is not None,
+                maximum_magnitudes=[abs(value) for value in permitted_velocity])
         wheel_msg = Float64MultiArray(data=apply_joint_signs(
             wheel_velocity, self._wheel_signs))
         if steering_reference is not None:
