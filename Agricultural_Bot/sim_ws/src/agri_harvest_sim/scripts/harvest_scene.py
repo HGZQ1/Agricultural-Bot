@@ -37,6 +37,8 @@ class HarvestScene(Node):
     # basket, stems and other robot/self pairs are outside this demo permission.
     FRUIT_PASS_THROUGH_ARM_LINKS = (
         'arm_link1', 'arm_link2', 'arm_link3', 'arm_link4', 'arm_link5')
+    PLANT_PASS_THROUGH_GRIPPER_LINKS = (
+        'gripper_base_link', 'gripper_left_finger_link', 'gripper_right_finger_link')
 
     def __init__(self):
         super().__init__('harvest_scene')
@@ -64,6 +66,17 @@ class HarvestScene(Node):
             self.get_logger().warning('Simulation demo fruit_arm_pass_through enabled for MoveIt: '
                 'all fruits may overlap the five arm-only links. Finger, basket, stem, chassis '
                 'and self-collision rules remain; Gazebo physical filtering is separate.')
+        self.declare_parameter('gripper_plant_pass_through', False,
+            ParameterDescriptor(read_only=True,
+                description='Simulation demo: allow only plant body / three gripper-link '
+                            'pairs in MoveIt; fruit and other environment contacts remain'))
+        self.gripper_plant_pass_through = self.get_parameter('gripper_plant_pass_through').value
+        if type(self.gripper_plant_pass_through) is not bool:
+            raise ValueError('gripper_plant_pass_through must be an explicit boolean')
+        if self.gripper_plant_pass_through:
+            self.get_logger().warning('Simulation gripper/plant proxy pass-through enabled: '
+                'leaves are visual-only; only plant stem boxes may overlap the gripper. '
+                'Fruit, arm, basket, chassis and ground rules remain.')
         self.metadata = json.loads(Path(self.get_parameter('metadata').value).read_text())
         self.frame = self.get_parameter('planning_frame').value
         for name, upper in (('gazebo_request_timeout_s', 10.0),
@@ -199,6 +212,7 @@ class HarvestScene(Node):
             acm.entry_values[index].enabled[ground] = True
         self.merge_fruit_arm_permissions(acm,
             {'fruit_' + fruit['entity_id'] for fruit in snapshot['fruits']})
+        self.merge_gripper_plant_permissions(acm)
         scene.allowed_collision_matrix = acm
         self.apply_scene(scene)
         # Attached-body processing does not propagate every internal failure to
@@ -327,6 +341,23 @@ class HarvestScene(Node):
         for fruit in sorted(fruit_names):
             index = self.ensure_entry(acm, fruit)
             for link in self.FRUIT_PASS_THROUGH_ARM_LINKS:
+                other = self.ensure_entry(acm, link)
+                acm.entry_values[index].enabled[other] = enabled
+                acm.entry_values[other].enabled[index] = enabled
+
+    def merge_gripper_plant_permissions(self, acm):
+        """Own only plant proxy / three-gripper pairs, preserving fruit contacts.
+
+        The default field has visual-only leaves and a narrow stem collision box.
+        Keep the box in the scene for the arm, chassis and every other body;
+        only the explicitly opted-in gripper/plant pairs are allowed here.
+        """
+        plant_names = {'plant_' + plant['id'] for plant in
+            getattr(self, 'metadata', {}).get('plants', []) if plant.get('id')}
+        enabled = getattr(self, 'gripper_plant_pass_through', False)
+        for plant in sorted(plant_names):
+            index = self.ensure_entry(acm, plant)
+            for link in self.PLANT_PASS_THROUGH_GRIPPER_LINKS:
                 other = self.ensure_entry(acm, link)
                 acm.entry_values[index].enabled[other] = enabled
                 acm.entry_values[other].enabled[index] = enabled

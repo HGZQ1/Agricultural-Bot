@@ -197,6 +197,44 @@ def assert_arm_only_demo(node):
     assert not pair(node.current, 'field_ground', 'arm_link1')
 
 
+def test_plant_gripper_exemption_composes_with_fruit_arm_without_environment_exemptions():
+    node = pass_through_fixture()
+    node.gripper_plant_pass_through = True
+    node.update_scene(node.snapshot)
+    assert_arm_only_demo(node)
+    plant = 'plant_tomato_0'
+    for link in node.PLANT_PASS_THROUGH_GRIPPER_LINKS:
+        assert pair(node.current, plant, link) and pair(node.current, link, plant)
+        for protected in ('fruit_tomato_0_fruit_0', 'fruit_tomato_0_fruit_1',
+                          'tomato_box_link', 'base_link', 'field_ground'):
+            assert not pair(node.current, protected, link)
+    for protected in ('arm_link1', 'base_link', 'tomato_box_link', 'field_ground',
+                      'fruit_tomato_0_fruit_0', 'fruit_tomato_0_fruit_1'):
+        assert not pair(node.current, plant, protected)
+    assert node.contact_command(request('select'), SimFruitCommand.Response()).success
+    node.update_scene(node.snapshot)
+    assert pair(node.current, 'fruit_tomato_0_fruit_0', 'gripper_left_finger_link')
+    assert not pair(node.current, 'fruit_tomato_0_fruit_1', 'gripper_left_finger_link')
+    assert node.contact_command(request('clear'), SimFruitCommand.Response()).success
+    node.update_scene(node.snapshot)
+    assert not pair(node.current, 'fruit_tomato_0_fruit_0', 'gripper_left_finger_link')
+    for link in node.PLANT_PASS_THROUGH_GRIPPER_LINKS:
+        assert pair(node.current, plant, link)
+
+
+def test_disabling_plant_gripper_demo_restores_only_its_owned_pairs():
+    node = pass_through_fixture()
+    node.gripper_plant_pass_through = True
+    node.update_scene(node.snapshot)
+    assert pair(node.current, 'plant_tomato_0', 'gripper_left_finger_link')
+    node.gripper_plant_pass_through = False
+    node.update_scene(node.snapshot)
+    for link in node.PLANT_PASS_THROUGH_GRIPPER_LINKS:
+        assert not pair(node.current, 'plant_tomato_0', link)
+        assert not pair(node.current, link, 'plant_tomato_0')
+    assert_arm_only_demo(node)
+
+
 def test_demo_all_fruits_arm_only_permissions_survive_refresh_and_selected_finger_clear():
     node = pass_through_fixture()
     node.update_scene(node.snapshot)

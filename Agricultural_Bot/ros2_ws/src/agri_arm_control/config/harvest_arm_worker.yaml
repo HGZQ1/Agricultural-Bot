@@ -72,7 +72,8 @@ harvest_arm_worker:
     execution_margin_s: 2.0
     goal_response_timeout_s: 3.0
     cancel_timeout_s: 5.0
-    work_deadline_s: 400.0
+    # 0 disables the station total budget; each motion still has its own result.
+    work_deadline_s: 0.0
     health_interval_s: 1.5
     cartesian_step_m: 0.005
     cartesian_joint_jump_rad: 0.35

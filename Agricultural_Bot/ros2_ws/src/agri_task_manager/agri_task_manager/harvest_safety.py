@@ -15,6 +15,18 @@ def fresh_stamp(stamp: int, now: int, maximum_age_s: float) -> bool:
     return stamp > 0 and -0.05 <= (now - stamp) / 1e9 <= maximum_age_s
 
 
+def station_harvest_evidence(harvested_count, scan_completed, sim_fruit_verified,
+                             *, harvest_until_clear: bool, ideal: bool) -> bool:
+    """Distinguish a fully scanned empty plant from verified harvested fruit."""
+    if not harvest_until_clear:
+        return sim_fruit_verified is True if ideal else True
+    if (type(harvested_count) is not int or harvested_count < 0 or
+            scan_completed is not True or type(sim_fruit_verified) is not bool):
+        return False
+    # Scanning no fruit is a valid completed station, never an actual basket claim.
+    return sim_fruit_verified is (harvested_count > 0)
+
+
 class StoppedMotion:
     """Require fresh measured velocity throughout a continuous ROS window."""
 

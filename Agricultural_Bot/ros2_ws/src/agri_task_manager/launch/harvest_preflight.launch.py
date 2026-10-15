@@ -29,6 +29,7 @@ def generate_launch_description():
         'targets_topic': '/agri_vision/tomato_targets_base',
         'require_segmentation': 'true',
         'worker_select_targets_after_scan': 'false',
+        'harvest_until_clear': 'false',
     }
     arguments = [DeclareLaunchArgument(name, default_value=value)
                  for name, value in values.items()]
@@ -50,6 +51,8 @@ def generate_launch_description():
             'targets_topic': LaunchConfiguration('targets_topic'),
             'worker_select_targets_after_scan': ParameterValue(
                 LaunchConfiguration('worker_select_targets_after_scan'), value_type=bool),
+            'harvest_until_clear': ParameterValue(
+                LaunchConfiguration('harvest_until_clear'), value_type=bool),
             'require_segmentation': ParameterValue(
                 LaunchConfiguration('require_segmentation'), value_type=bool),
             'scan_timeout_s': ParameterValue(

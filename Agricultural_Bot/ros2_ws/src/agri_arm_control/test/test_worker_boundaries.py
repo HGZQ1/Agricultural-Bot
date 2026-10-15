@@ -290,7 +290,7 @@ def chain_fixture(fail_gripper=False, fail_stow=False, fruit_state='IN_BASKET'):
              joints=['j'], plan_joints=lambda *_args: NS(),
              measured_gripper_positions=lambda: [.011,.003],
              gripper_positions=lambda *_args, **_kwargs: None,
-             move_pose=lambda *a, **k: None, cartesian=lambda *a: None,
+             move_pose=lambda *a, **k: None, cartesian=lambda *a, **k: None,
              move_joints=move, stowed=lambda: not fail_stow)
     p = {'gripper_open_m': 0., 'gripper_close_m': .012, 'pre_offset_m': .08,
          'retreat_offset_m': .12, 'surface_centre_offset_m': .025,
@@ -320,6 +320,39 @@ def test_complete_chain_requires_confirmed_basket_and_stow():
     chain, moves = chain_fixture()
     assert chain.execute((-.18, .65, .95), 'left')
     assert moves == [[0.]*6]
+
+
+def test_basket_clearance_pose_opens_and_releases_without_a_lowering_plan():
+    chain, stow = chain_fixture()
+    phases, motion, operations = [], [], []
+    current = ['']
+
+    def phase(name):
+        current[0] = name
+        phases.append(name)
+
+    original_scene = chain.scene
+
+    def scene(operation, **kwargs):
+        operations.append(operation)
+        return original_scene(operation, **kwargs)
+
+    chain.phase, chain.scene = phase, scene
+    chain.arm.move_pose = lambda *args, **kwargs: motion.append((current[0], args[0]))
+    chain.arm.cartesian = lambda *args, **kwargs: motion.append((current[0], args[0]))
+    chain.arm.gripper = lambda position: motion.append((current[0], position))
+
+    assert chain.execute((-.18, .65, .95), 'left', retract=False)
+    assert [name for name, _ in motion] == [
+        'OPENING', 'PREGRASP', 'APPROACHING', 'RETREATING',
+        'ABOVE_BASKET', 'OPENING_OVER_BASKET']
+    assert next(value for name, value in motion if name == 'ABOVE_BASKET') == pytest.approx(
+        [.17, 0., .75])
+    assert phases[phases.index('ABOVE_BASKET'):] == [
+        'ABOVE_BASKET', 'OPENING_OVER_BASKET', 'RELEASING',
+        'VERIFYING_BASKET', 'CLEARING_COLLISION_TARGET']
+    assert operations[-3:] == ['release', 'wait_in_basket', 'clear']
+    assert not stow
 
 
 def test_nine_rejected_centres_report_exact_stage_without_arm_movement():

@@ -20,7 +20,7 @@ from rclpy.time import Time
 from std_msgs.msg import String
 from tf2_ros import Buffer, TransformListener
 
-from .harvest_safety import fresh_stamp, stamp_ns
+from .harvest_safety import fresh_stamp, stamp_ns, station_harvest_evidence
 
 
 def transform_position(position, transform):
@@ -91,6 +91,7 @@ class HarvestCoordinator(Node):
         self.declare_parameter('targets_topic', '/agri_vision/tomato_targets_base')
         self.declare_parameter('work_action', '/harvest_work')
         self.declare_parameter('worker_select_targets_after_scan', False)
+        self.declare_parameter('harvest_until_clear', False)
         self.declare_parameter('selection_frame', 'base_footprint')
         self.declare_parameter('target_max_age_s', 0.5)
         self.declare_parameter('minimum_confidence', 0.5)
@@ -101,10 +102,13 @@ class HarvestCoordinator(Node):
         self.declare_parameter('longitudinal_window_m', 0.30)
         self.declare_parameter('maximum_target_distance_m', 1.25)
         for name in ('target_max_age_s', 'scan_timeout_s', 'goal_response_timeout_s',
-                     'action_timeout_s', 'longitudinal_window_m', 'maximum_target_distance_m'):
+                     'longitudinal_window_m', 'maximum_target_distance_m'):
             value = float(self.get_parameter(name).value)
             if not math.isfinite(value) or value <= 0.0:
                 raise ValueError(f'{name} must be finite and positive')
+        action_timeout = float(self.get_parameter('action_timeout_s').value)
+        if not math.isfinite(action_timeout) or action_timeout < 0.0:
+            raise ValueError('action_timeout_s must be finite and nonnegative; 0 disables it')
         confidence = float(self.get_parameter('minimum_confidence').value)
         if not math.isfinite(confidence) or not 0.0 < confidence <= 1.0:
             raise ValueError('minimum_confidence must be in (0,1]')
@@ -121,6 +125,9 @@ class HarvestCoordinator(Node):
         self._request_started = None
         self._result_future = None
         self._cancel_requested = False
+        self._harvest_until_clear = False
+        self._harvested_count = 0
+        self._scan_height_m = 0.0
         self._handled_contexts = set()
         self._target_history = {}
         self._reported_ns = 0
@@ -267,6 +274,9 @@ class HarvestCoordinator(Node):
             'ideal_simulation': getattr(self, '_ideal_simulation', False),
             'phase': self._phase, 'blocking_reason': self._blocking_reason,
             'context': self._work_context, 'selected_target_id': self._selected_target_id,
+            'harvest_until_clear': getattr(self, '_harvest_until_clear', False),
+            'harvested_count': getattr(self, '_harvested_count', 0),
+            'scan_height_m': getattr(self, '_scan_height_m', 0.0),
             'plant_identity_verified': False, 'actual_grasp_verified': False,
             'stamp_ns': self.get_clock().now().nanoseconds}, sort_keys=True)))
 
@@ -302,6 +312,7 @@ class HarvestCoordinator(Node):
             if current != self._work_context and self._handle is not None:
                 self._cancel_action()
             if (self._request_started is not None and
+                    float(self.get_parameter('action_timeout_s').value) > 0.0 and
                     time.monotonic() - self._request_started >
                     float(self.get_parameter('action_timeout_s').value)):
                 self._cancel_action()
@@ -326,6 +337,8 @@ class HarvestCoordinator(Node):
             return
         if permitted != self._work_context:
             self._request_started = None
+            self._harvested_count = 0
+            self._scan_height_m = 0.0
         self._work_context = permitted
         self._phase = 'SCANNING'
         started_ns = int(self._station.get('station_started_ns', 0))
@@ -333,7 +346,9 @@ class HarvestCoordinator(Node):
         # simulated time: paused /clock must not create an infinite wait.
         if self._request_started is None:
             self._request_started = time.monotonic()
-        worker_scan = bool(self.get_parameter('worker_select_targets_after_scan').value)
+        until_clear = bool(self.get_parameter('harvest_until_clear').value)
+        worker_scan = (bool(self.get_parameter('worker_select_targets_after_scan').value) or
+                       until_clear)
         target = None if worker_scan else self._select_target()
         if ((worker_scan or target is not None) and
                 self._client.server_is_ready() and started_ns > 0):
@@ -345,6 +360,8 @@ class HarvestCoordinator(Node):
             goal.plant_id = self._station['plant_id']
             goal.work_side = self._station['work_side']
             goal.scan_before_selection = worker_scan
+            self._harvest_until_clear = until_clear
+            goal.harvest_until_clear = self._harvest_until_clear
             if target is not None:
                 goal.target = target
                 self._selected_target_id = target.target_id
@@ -355,7 +372,8 @@ class HarvestCoordinator(Node):
             self._phase = 'WAITING_FOR_EXECUTOR_ACK'
             self._blocking_reason = ''
             self._report('STARTED', target_id=self._selected_target_id,
-                         scan_before_selection=worker_scan)
+                         scan_before_selection=worker_scan,
+                         harvest_until_clear=self._harvest_until_clear)
             self._request_started = time.monotonic()
             self._pending_goal = goal
         elif time.monotonic() - self._request_started > float(
@@ -393,6 +411,8 @@ class HarvestCoordinator(Node):
 
     def _feedback(self, message):
         self._phase = message.feedback.phase
+        self._harvested_count = message.feedback.harvested_count
+        self._scan_height_m = message.feedback.scan_height_m
 
     def _cancel_action(self):
         if self._handle is not None and not self._cancel_requested:
@@ -409,12 +429,21 @@ class HarvestCoordinator(Node):
                 self._target_history.setdefault(result.target_id, set()).add(
                     self._work_context[:2])
             ideal = getattr(self, '_ideal_simulation', False)
+            until_clear = getattr(self, '_harvest_until_clear', False)
+            count = getattr(result, 'harvested_count', 0)
+            scanned = getattr(result, 'scan_completed', False)
+            self._harvested_count = count
+            evidence = station_harvest_evidence(
+                count, scanned, result.sim_fruit_verified,
+                harvest_until_clear=until_clear, ideal=ideal)
             succeeded = (wrapped.status == GoalStatus.STATUS_SUCCEEDED and
-                         result.success and (result.sim_fruit_verified if ideal else result.arm_stowed) and
+                         result.success and evidence and (ideal or result.arm_stowed) and
                          self._station_context(require_permission=False) == self._work_context)
             self._report('SUCCESS' if succeeded else 'FAILED',
                          success=bool(succeeded), arm_stowed=bool(result.arm_stowed),
                          target_id=result.target_id,
+                         harvest_until_clear=until_clear, harvested_count=count,
+                         scan_completed=scanned,
                          sim_fruit_verified=bool(result.sim_fruit_verified if ideal else
                                                  succeeded and result.sim_fruit_verified),
                          terminal_confirmed=True, message=result.message)

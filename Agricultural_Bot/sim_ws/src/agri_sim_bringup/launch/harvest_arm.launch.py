@@ -47,6 +47,11 @@ def generate_launch_description():
         DeclareLaunchArgument('ideal_gripper',
                               default_value='true' if os.environ.get('AGRI_IDEAL_SIMULATION') == '1' else 'false',
                               description='Simulation demo: directly follow commanded finger positions'),
+        DeclareLaunchArgument('gripper_plant_pass_through',
+                              default_value='true' if os.environ.get('AGRI_IDEAL_SIMULATION') == '1' else 'false',
+                              description='Allow gripper through visual foliage and its plant collision proxy'),
+        DeclareLaunchArgument('harvest_until_clear', default_value='true',
+                              description='Harvest this plant until the lowest observation level is clear'),
         DeclareLaunchArgument('map_yaml', default_value=''),
         DeclareLaunchArgument('map_topic', default_value='/map'),
         DeclareLaunchArgument('keepout_yaml', default_value=''),
@@ -54,8 +59,8 @@ def generate_launch_description():
             Path(get_package_share_directory('agri_arm_control')) /
             'config' / 'harvest_arm_worker.yaml')),
         DeclareLaunchArgument('targets_topic', default_value='/agri_vision/tomato_targets_base'),
-        DeclareLaunchArgument('action_timeout_s', default_value='420.0'),
-        DeclareLaunchArgument('work_timeout_s', default_value='440.0'),
+        DeclareLaunchArgument('action_timeout_s', default_value='0.0'),
+        DeclareLaunchArgument('work_timeout_s', default_value='0.0'),
         DeclareLaunchArgument('parking_timeout_s', default_value='15.0',
                               description='Bounded wall-clock budget for heavy simulation parking'),
     ]
@@ -73,6 +78,7 @@ def generate_launch_description():
         'gz_partition': LaunchConfiguration('gz_partition'),
         'world_name': LaunchConfiguration('world_name'),
         'fruit_arm_pass_through': LaunchConfiguration('fruit_arm_pass_through'),
+        'gripper_plant_pass_through': LaunchConfiguration('gripper_plant_pass_through'),
     })
     native_fruit_filter = Node(
         package='agri_harvest_sim', executable='fruit_arm_pass_through.py',
@@ -85,6 +91,11 @@ def generate_launch_description():
         arguments=['--gz-partition', LaunchConfiguration('gz_partition'),
                    '--world-name', LaunchConfiguration('world_name'),
                    '--ideal-simulation', '--load-system'], output='screen')
+    native_gripper_plant_filter = Node(
+        package='agri_harvest_sim', executable='gripper_plant_pass_through.py',
+        condition=IfCondition(LaunchConfiguration('gripper_plant_pass_through')),
+        arguments=['--enable', '--gz-partition', LaunchConfiguration('gz_partition'),
+                   '--world-name', LaunchConfiguration('world_name')], output='screen')
     guarded_route = _include('agri_task_manager', 'harvest_preflight.launch.py', {
         'use_sim_time': clock, 'autostart': LaunchConfiguration('autostart'),
         'mission_file': LaunchConfiguration('mission_file'),
@@ -94,6 +105,7 @@ def generate_launch_description():
         'map_topic': LaunchConfiguration('map_topic'),
         'keepout_yaml': LaunchConfiguration('keepout_yaml'),
         'enable_mock_worker': 'false', 'worker_select_targets_after_scan': 'true',
+        'harvest_until_clear': LaunchConfiguration('harvest_until_clear'),
         'require_segmentation': 'true', 'targets_topic': LaunchConfiguration('targets_topic'),
         'action_timeout_s': LaunchConfiguration('action_timeout_s'),
         'work_timeout_s': LaunchConfiguration('work_timeout_s'),
@@ -101,4 +113,5 @@ def generate_launch_description():
     })
     return LaunchDescription(arguments + [OpaqueFunction(function=_validate_assets),
                                          moveit, native_fruit_filter, ideal_gripper,
+                                         native_gripper_plant_filter,
                                          scene, worker, guarded_route])

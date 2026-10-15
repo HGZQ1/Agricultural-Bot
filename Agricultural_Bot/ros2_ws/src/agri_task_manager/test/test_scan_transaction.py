@@ -8,7 +8,7 @@ from agri_task_manager.harvest_coordinator import HarvestCoordinator
 from builtin_interfaces.msg import Time
 
 
-def _coordinator():
+def _coordinator(until_clear=False):
     coordinator = object.__new__(HarvestCoordinator)
     context = ('run', 'waypoint', 'work')
     coordinator._station_context = lambda require_permission=True: context
@@ -28,6 +28,7 @@ def _coordinator():
         now=lambda: SimpleNamespace(to_msg=lambda: Time(sec=2), nanoseconds=2_000_000_000))
     coordinator.get_clock = lambda: coordinator._clock
     params = {'worker_select_targets_after_scan': True, 'selection_frame': 'base_footprint',
+              'harvest_until_clear': until_clear,
               'goal_response_timeout_s': 3.0, 'scan_timeout_s': 20.0}
     coordinator.get_parameter = lambda name: SimpleNamespace(value=params[name])
     reports, sent = [], []
@@ -75,6 +76,17 @@ def test_revoked_station_before_nonce_ack_never_starts_scan():
     assert reports[-1][0] == 'FAILED'
     assert reports[-1][1]['action_accepted'] is False
     assert reports[-1][1]['terminal_confirmed'] is True
+
+
+def test_whole_plant_scan_request_binds_mode_before_worker_action_starts():
+    coordinator, reports, sent = _coordinator(until_clear=True)
+    coordinator._tick()
+    assert not sent
+    assert reports[0][1]['harvest_until_clear'] is True
+    assert coordinator._pending_goal.harvest_until_clear is True
+    coordinator._route.update(work_phase='WORKING', work_terminal_confirmed=False)
+    coordinator._tick()
+    assert sent[0].harvest_until_clear is True
 
 
 def test_worker_selected_target_is_bound_to_station_and_simulation_report():

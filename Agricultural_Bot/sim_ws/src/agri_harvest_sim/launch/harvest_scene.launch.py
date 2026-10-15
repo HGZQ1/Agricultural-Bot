@@ -18,6 +18,7 @@ def generate_launch_description():
         DeclareLaunchArgument('command_lock_timeout_s', default_value='0.5'),
         DeclareLaunchArgument('allow_cli_fallback', default_value='false'),
         DeclareLaunchArgument('fruit_arm_pass_through', default_value='false'),
+        DeclareLaunchArgument('gripper_plant_pass_through', default_value='false'),
         Node(package='agri_harvest_sim', executable='harvest_scene.py', output='screen', parameters=[{
             'metadata': LaunchConfiguration('metadata'),
             'world_name': LaunchConfiguration('world_name'),
@@ -28,5 +29,6 @@ def generate_launch_description():
             'command_lock_timeout_s': LaunchConfiguration('command_lock_timeout_s'),
             'allow_cli_fallback': LaunchConfiguration('allow_cli_fallback'),
             'fruit_arm_pass_through': LaunchConfiguration('fruit_arm_pass_through'),
+            'gripper_plant_pass_through': LaunchConfiguration('gripper_plant_pass_through'),
         }]),
     ])

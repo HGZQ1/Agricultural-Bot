@@ -10,6 +10,9 @@ string plant_id
 string work_side
 TomatoTarget target
 bool scan_before_selection
+# Continue this same parked work transaction until the configured lowest
+# observation pose has no remaining mature target; false preserves single-fruit work.
+bool harvest_until_clear
 ---
 # Success alone cannot unlock: fresh matching worker stow feedback is required.
 bool success
@@ -18,6 +21,13 @@ string message
 string target_id
 # Only verified simulated attachment/release/basket state; not a real fruit claim.
 bool sim_fruit_verified
+# Number of fruit whose attachment, release and basket states were verified.
+uint32 harvested_count
+# True only after completing the requested downward observation sweep.
+# A completed empty-plant sweep succeeds with count=0 and sim_fruit_verified=false.
+bool scan_completed
 ---
 string phase
 bool arm_stowed
+uint32 harvested_count
+float64 scan_height_m

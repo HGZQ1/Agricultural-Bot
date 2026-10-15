@@ -244,7 +244,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--fruit-count-min", type=int, default=2)
     parser.add_argument("--fruit-count-max", type=int, default=6)
     parser.add_argument(
-        "--fruit-height-min", type=float, default=1.0,
+        "--fruit-height-min", type=float, default=1.3,
         help="Minimum fruit-center world Z in meters above the ground plane.",
     )
     parser.add_argument(

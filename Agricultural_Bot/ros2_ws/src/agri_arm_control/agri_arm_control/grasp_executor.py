@@ -26,7 +26,7 @@ class GraspExecutor:
         self.phase(name)
         self.arm._check()
 
-    def execute(self, surface, side):
+    def execute(self, surface, side, *, retract=True):
         self._phase('OPENING')
         self.arm.gripper(self.p['gripper_open_m'])
         self._phase('SELECTING_COLLISION_TARGET')
@@ -82,28 +82,26 @@ class GraspExecutor:
             raise MotionError(f'fruit attachment unconfirmed: {attached.state}')
         self._phase('RETREATING')
         self.arm.cartesian(*retreat)
-        drop, above = basket_poses(self.p['basket_drop_xyz_m'], self.p['basket_clearance_m'])
+        _, above = basket_poses(self.p['basket_drop_xyz_m'], self.p['basket_clearance_m'])
         # TCP +Z points down; task-frame +Z is vertical, unlike CAD base_link.
-        drop_pose = self.to_planning(drop, self.p['basket_quaternion_xyzw'])
         above_pose = self.to_planning(above, self.p['basket_quaternion_xyzw'])
         self._phase('ABOVE_BASKET')
         self.arm.move_pose(*above_pose)
-        self._phase('LOWERING')
-        self.arm.cartesian(*drop_pose)
+        # Release at the reached clearance pose. Gravity carries the detached
+        # fruit into the basket; no extra lowering/lifting plan is required.
         self._phase('OPENING_OVER_BASKET')
         self.arm.gripper(self.p['gripper_open_m'])
         self._phase('RELEASING')
         released = self.scene('release')
         if released.state not in {'RELEASED', 'IN_BASKET'}:
             raise MotionError(f'fruit release unconfirmed: {released.state}')
-        self._phase('LIFTING')
-        self.arm.cartesian(*above_pose)
         self._phase('VERIFYING_BASKET')
         self.scene('wait_in_basket')
         self._phase('CLEARING_COLLISION_TARGET')
         self.scene('clear')
-        self._phase('RETRACTING')
-        self.arm.move_joints(self.p['stow_joints'])
-        if not self.arm.stowed():
-            raise MotionError('measured six-joint stow acknowledgement unavailable')
+        if retract:
+            self._phase('RETRACTING')
+            self.arm.move_joints(self.p['stow_joints'])
+            if not self.arm.stowed():
+                raise MotionError('measured six-joint stow acknowledgement unavailable')
         return True

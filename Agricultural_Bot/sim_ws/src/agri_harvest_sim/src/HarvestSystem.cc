@@ -24,6 +24,7 @@
 #include <memory>
 #include <mutex>
 #include "GripEvidence.hh"
+#include "BasketEvidence.hh"
 
 using Json = nlohmann::json;
 namespace agri {
@@ -31,10 +32,11 @@ class HarvestSystem : public gz::sim::System,
   public gz::sim::ISystemConfigure, public gz::sim::ISystemPreUpdate {
   struct Fruit {
     std::string name, plant, state{"ON_PLANT"}, work, target;
-    double radius{}, stableSince{-1}, releasedAt{-1}, gripStableSince{-1}; bool ripe{};
+    double radius{}, releasedAt{-1}, gripStableSince{-1}; bool ripe{};
     gz::sim::Entity link{gz::sim::kNullEntity}, joint{gz::sim::kNullEntity};
     gz::math::Vector3d previousPosition; double previousTime{-1}, speed{1e9};
     gz::math::Vector3d attachedLocal;
+    BasketEvidence basket;
   };
   struct Pending { Json input, output; bool done{false}, cancelled{false};
     std::mutex mutex; std::condition_variable cv; };
@@ -182,6 +184,28 @@ class HarvestSystem : public gz::sim::System,
     return {{"success", success}, {"state", fruit.state},
       {"entity_id", fruit.name}, {"message", message}};
   }
+  Json BasketJson(const Fruit &fruit) const {
+    Json result = {{"entity_id", fruit.name}, {"state", fruit.state},
+      {"sim_time", simTime}, {"basket_position_cad_m", fruit.basket.position},
+      {"radius_m", fruit.radius},
+      {"basket_criterion", "ideal_lower_half_and_10cm_below_contact"},
+      {"basket_lateral_bounds_cad_x_m", {-kBasketInnerHalfWidthX, kBasketInnerHalfWidthX}},
+      {"basket_lateral_clearance_m", kBasketInnerHalfWidthX -
+        std::abs(fruit.basket.position[0]) - fruit.radius},
+      {"basket_vertical_bounds_cad_y_m", {kBasketRegionMinimumY, kBasketRegionMaximumY}},
+      {"basket_longitudinal_bounds_cad_z_m", {kBasketRegionMinimumZ, kBasketRegionMaximumZ}},
+      {"basket_floor_clearance_m", fruit.basket.position[1] - fruit.radius -
+        kBasketFloorMinimumY},
+      {"basket_relative_speed_m_s", fruit.basket.relativeSpeed},
+      {"basket_inside", fruit.basket.inside},
+      {"basket_region_contact", fruit.basket.inside},
+      {"basket_fully_inside", BasketContainsSphere(fruit.basket.position, fruit.radius)},
+      {"basket_stable_s", fruit.basket.stableSeconds},
+      {"world_speed_m_s", fruit.speed}, {"released_elapsed_sim_s", nullptr}};
+    if (fruit.releasedAt >= 0)
+      result["released_elapsed_sim_s"] = std::max(0.0, simTime - fruit.releasedAt);
+    return result;
+  }
   Json Snapshot(gz::sim::EntityComponentManager &ecm) {
     Json result = {{"success", true}, {"sim_time", simTime}, {"fruits", Json::array()},
       {"grip_diagnostics", Json::array()}};
@@ -200,7 +224,8 @@ class HarvestSystem : public gz::sim::System,
       auto item = PoseJson(gz::sim::worldPose(fruit.link, ecm));
       item.update({{"entity_id", fruit.name}, {"plant_id", fruit.plant},
         {"radius", fruit.radius}, {"ripe", fruit.ripe}, {"state", fruit.state},
-        {"work_id", fruit.work}, {"target_id", fruit.target}, {"speed", fruit.speed}});
+        {"work_id", fruit.work}, {"target_id", fruit.target}, {"speed", fruit.speed},
+        {"basket_diagnostics", BasketJson(fruit)}});
       result["fruits"].push_back(item);
       if (hand != gz::sim::kNullEntity &&
           (gz::sim::worldPose(hand, ecm).CoordPositionAdd(tcpOffset) -
@@ -221,8 +246,12 @@ class HarvestSystem : public gz::sim::System,
     Fruit *bound = nullptr;
     for (auto &fruit : fruits)
       if (fruit.work == work && fruit.target == target && fruit.plant == plant) bound = &fruit;
-    if (operation == "status") return bound ? FruitResult(*bound, true, "physical state")
-                                              : Failure("no fruit bound to this observation/work");
+    if (operation == "status") {
+      if (!bound) return Failure("no fruit bound to this observation/work");
+      auto diagnostic = BasketJson(*bound);
+      diagnostic["message"] = "ideal basket-region contact state";
+      return FruitResult(*bound, true, diagnostic.dump());
+    }
     auto robot = ModelNamed(ecm, robotName);
     auto hand = LinkNamed(ecm, robot, "gripper_base_link");
     if (robot == gz::sim::kNullEntity || hand == gz::sim::kNullEntity)
@@ -237,12 +266,16 @@ class HarvestSystem : public gz::sim::System,
       // CAD basket coordinates: X lateral, Y up, Z forward. Do not use map/world alignment.
       auto basketPoint = BasketCadPose(ecm, robot).Inverse().CoordPositionAdd(
         gz::sim::worldPose(bound->link, ecm).Pos());
-      if (std::abs(basketPoint.X()) + bound->radius > 0.27 ||
-          basketPoint.Z() - bound->radius < -0.008 || basketPoint.Z() + bound->radius > 0.351 ||
+      if (std::abs(basketPoint.X()) + bound->radius > kBasketInnerHalfWidthX ||
+          basketPoint.Z() - bound->radius < kBasketRegionMinimumZ ||
+          basketPoint.Z() + bound->radius > kBasketRegionMaximumZ ||
           basketPoint.Y() < 0.46 || basketPoint.Y() > 0.80)
         return FruitResult(*bound, false, "fruit is outside the basket release volume");
       ecm.RequestRemoveEntity(bound->joint); bound->joint = gz::sim::kNullEntity;
       bound->state = "RELEASED"; bound->releasedAt = simTime;
+      bound->basket = BasketEvidence();
+      bound->basket.Observe({basketPoint.X(), basketPoint.Y(), basketPoint.Z()},
+                            bound->radius, simTime, true);
       return FruitResult(*bound, true, "detached; basket outcome still pending");
     }
     if (operation != "attach" && operation != "check_grip") return Failure("unknown operation");
@@ -360,18 +393,18 @@ class HarvestSystem : public gz::sim::System,
             (gz::sim::worldPose(hand, ecm).CoordPositionAdd(fruit.attachedLocal)-current).Length() > 0.02)
           fruit.state = "LOST";
       }
-      if (fruit.state != "RELEASED" && fruit.state != "IN_BASKET") continue;
+      if (fruit.releasedAt < 0) continue;
       auto robot = ModelNamed(ecm, robotName);
-      if (robot == gz::sim::kNullEntity) { fruit.stableSince = -1; continue; }
+      if (robot == gz::sim::kNullEntity) {
+        fruit.basket = BasketEvidence();
+        if (fruit.state == "IN_BASKET") fruit.state = "RELEASED";
+        continue;
+      }
       auto p = BasketCadPose(ecm, robot).Inverse().CoordPositionAdd(current);
-      bool inside = std::abs(p.X()) + fruit.radius < 0.27 &&
-        p.Y() - fruit.radius >= 0.2005 && p.Y() + fruit.radius < 0.445 &&
-        p.Z() - fruit.radius > -0.008 && p.Z() + fruit.radius < 0.351;
-      if (inside && fruit.speed < 0.03) {
-        if (fruit.stableSince < 0) fruit.stableSince = simTime;
-        if (simTime - fruit.stableSince >= 0.5) fruit.state = "IN_BASKET";
-      } else { fruit.stableSince = -1; fruit.state = "RELEASED"; }
-      if (current.Z() < 0.12 && !inside) fruit.state = "LOST";
+      fruit.basket.Observe({p.X(), p.Y(), p.Z()}, fruit.radius, simTime, info.paused);
+      if (fruit.state != "RELEASED" && fruit.state != "IN_BASKET") continue;
+      fruit.state = fruit.basket.Confirmed() ? "IN_BASKET" : "RELEASED";
+      if (current.Z() < 0.12 && !fruit.basket.inside) fruit.state = "LOST";
     }
     std::deque<std::shared_ptr<Pending>> work;
     { std::lock_guard<std::mutex> guard(queueMutex); work.swap(queue); }

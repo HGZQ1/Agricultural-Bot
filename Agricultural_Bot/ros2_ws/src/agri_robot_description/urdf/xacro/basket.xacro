@@ -22,6 +22,17 @@
             <mesh filename="package://${mesh_package}/meshes/visual/tomato_box_link.STL"/>
           </geometry>
         </collision>
+        <xacro:if value="$(arg use_gazebo)">
+          <!-- CAD +Y is up. Small dynamic fruit can penetrate the 5 mm STL
+               floor; this solid support has the same top surface and lies
+               entirely within the original basket's bottom footprint. -->
+          <collision name="basket_solid_floor_collision">
+            <origin xyz="0 0.19809 0.1713506044" rpy="0 0 0"/>
+            <geometry>
+              <box size="0.488 0.015 0.312"/>
+            </geometry>
+          </collision>
+        </xacro:if>
       </link>
     <joint name="tomato_box_joint" type="fixed">
         <origin xyz="0 0 0" rpy="0 0 0"/>

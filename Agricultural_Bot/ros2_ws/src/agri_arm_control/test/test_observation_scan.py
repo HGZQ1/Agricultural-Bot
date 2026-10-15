@@ -66,6 +66,8 @@ def scan_fixture(observations):
              _check=lambda: None, ik=lambda *_args: solution,
              plan_joints=lambda _positions: object(),
              move_pose=lambda *args, **kwargs: calls.append(('entry', args[0][2])),
+             measured_arm_positions=lambda: [.123],
+             move_joints=lambda positions: calls.append(('saved-entry', positions)),
              cartesian=lambda *args: calls.append(('descending', args[0][2])))
     relative = NS(transform=NS(translation=NS(x=0., y=0., z=0.),
                                rotation=NS(x=0., y=0., z=0., w=1.)))
@@ -163,3 +165,69 @@ def test_observation_from_previous_height_is_not_reused(monkeypatch):
     monkeypatch.setattr(module.time, 'sleep', lambda seconds: wall.__setitem__(0, wall[0]+seconds))
     assert HarvestArmWorker._wait_scan_target(worker, NS(work_side='left'), .2) is None
     assert validated == []
+
+
+def test_whole_plant_scan_only_completes_after_observing_bottom():
+    worker, calls, _ = scan_fixture([None, None, None])
+    request = NS(work_side='left', harvest_until_clear=True)
+    assert HarvestArmWorker._select_after_scan(worker, request, allow_empty=True) is None
+    assert worker._scan_height_m == pytest.approx(1.4)
+    assert worker._scan_diagnostics['bottom_observed']
+    assert worker._scan_diagnostics['scan_completed']
+    assert [entry['height_m'] for entry in worker._scan_diagnostics['levels']] == pytest.approx(
+        [1.6, 1.5, 1.4])
+
+
+def test_return_from_basket_resumes_at_saved_height_instead_of_top():
+    worker, calls, _ = scan_fixture([None, None])
+    worker._scan_diagnostics = {'levels': [], 'bottom_observed': False}
+    request = NS(work_side='left', harvest_until_clear=True)
+    assert HarvestArmWorker._select_after_scan(
+        worker, request, start_height=1.5, allow_empty=True) is None
+    assert ('phase', 'RETURNING_TO_SCAN') in calls
+    assert [entry['height_m'] for entry in worker._scan_diagnostics['levels']] == pytest.approx(
+        [1.5, 1.4])
+    assert worker._scan_diagnostics['scan_completed']
+
+
+def test_unreachable_bottom_cannot_be_reported_as_empty_plant():
+    worker, _, _ = scan_fixture([])
+    worker.arm.ik = lambda *_args: None
+    with pytest.raises(MotionError, match='no reachable'):
+        HarvestArmWorker._select_after_scan(
+            worker, NS(work_side='left', harvest_until_clear=True), allow_empty=True)
+    assert not worker._scan_diagnostics['bottom_observed']
+    assert not worker._scan_diagnostics['scan_completed']
+
+
+@pytest.mark.parametrize('valid,renew,completed', [(True, True, True),
+                                                  (True, False, False),
+                                                  (False, True, False)])
+def test_empty_scan_needs_fresh_valid_images_not_camera_silence(
+        monkeypatch, valid, renew, completed):
+    import threading
+    import agri_arm_control.harvest_worker as module
+
+    wall = [0.]
+    array = NS(observation_valid=valid, depth_stamp=NS(sec=2, nanosec=0),
+               header=NS(stamp=NS(sec=2, nanosec=0)), targets=[])
+    worker = NS(p={'target_max_age_s': .06}, arm=NS(_check=lambda: None),
+                _mutex=threading.RLock(), _targets=array, _targets_wall=0.,
+                get_clock=lambda: NS(now=lambda: NS(nanoseconds=2_000_000_000+int(wall[0]*1e9))))
+
+    def sleep(seconds):
+        wall[0] += seconds
+        if renew:
+            stamp = NS(sec=2, nanosec=int(wall[0]*1e9))
+            array.depth_stamp = stamp
+            array.header.stamp = stamp
+            worker._targets_wall = wall[0]
+
+    monkeypatch.setattr(module.time, 'monotonic', lambda: wall[0])
+    monkeypatch.setattr(module.time, 'sleep', sleep)
+    request = NS(work_side='left', harvest_until_clear=True)
+    if completed:
+        assert HarvestArmWorker._wait_scan_target(worker, request, .2) is None
+    else:
+        with pytest.raises(MotionError, match='plant clear is unconfirmed'):
+            HarvestArmWorker._wait_scan_target(worker, request, .2)
