@@ -39,12 +39,16 @@ add_library(agri_native_joint_limit_roundoff_recovery SHARED src/NativeJointLimi
 target_compile_features(agri_native_joint_limit_roundoff_recovery PRIVATE cxx_std_17)
 target_link_libraries(agri_native_joint_limit_roundoff_recovery PRIVATE gz-sim8::gz-sim8
   gz-transport13::gz-transport13 gz-msgs10::gz-msgs10 gz-plugin2::register nlohmann_json::nlohmann_json)
+add_library(agri_ideal_gripper_system SHARED src/IdealGripperSystem.cc)
+target_compile_features(agri_ideal_gripper_system PRIVATE cxx_std_17)
+target_link_libraries(agri_ideal_gripper_system PRIVATE gz-sim8::gz-sim8
+  gz-transport13::gz-transport13 gz-msgs10::gz-msgs10 gz-plugin2::register nlohmann_json::nlohmann_json)
 install(TARGETS agri_harvest_system agri_motion_diagnostics agri_ideal_steering_system
   agri_ideal_four_wheel_steering_system
   agri_fruit_arm_pass_through agri_arm_joint_diagnostics_v1
-  agri_native_joint_limit_roundoff_recovery LIBRARY DESTINATION lib)
+  agri_native_joint_limit_roundoff_recovery agri_ideal_gripper_system LIBRARY DESTINATION lib)
 install(PROGRAMS scripts/harvest_scene.py scripts/make_harvestable_world.py scripts/ideal_r2_steering.py
-  scripts/fruit_arm_pass_through.py
+  scripts/fruit_arm_pass_through.py scripts/ideal_gripper.py
   DESTINATION lib/${PROJECT_NAME})
 install(FILES scripts/scene_geometry.py scripts/gazebo_transport.py scripts/ideal_steering_command.py
   scripts/ideal_status_process.py

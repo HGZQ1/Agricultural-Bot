@@ -1,5 +1,6 @@
 """Connect guarded arm work to an existing Gazebo and navigation session."""
 
+import os
 from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
@@ -43,6 +44,9 @@ def generate_launch_description():
         DeclareLaunchArgument('autostart', default_value='false'),
         DeclareLaunchArgument('fruit_arm_pass_through', default_value='false',
                               description='Simulation demo: allow fruit through arm links only'),
+        DeclareLaunchArgument('ideal_gripper',
+                              default_value='true' if os.environ.get('AGRI_IDEAL_SIMULATION') == '1' else 'false',
+                              description='Simulation demo: directly follow commanded finger positions'),
         DeclareLaunchArgument('map_yaml', default_value=''),
         DeclareLaunchArgument('map_topic', default_value='/map'),
         DeclareLaunchArgument('keepout_yaml', default_value=''),
@@ -75,6 +79,12 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('fruit_arm_pass_through')),
         arguments=['--enable', '--gz-partition', LaunchConfiguration('gz_partition'),
                    '--world-name', LaunchConfiguration('world_name')], output='screen')
+    ideal_gripper = Node(
+        package='agri_harvest_sim', executable='ideal_gripper.py',
+        condition=IfCondition(LaunchConfiguration('ideal_gripper')),
+        arguments=['--gz-partition', LaunchConfiguration('gz_partition'),
+                   '--world-name', LaunchConfiguration('world_name'),
+                   '--ideal-simulation', '--load-system'], output='screen')
     guarded_route = _include('agri_task_manager', 'harvest_preflight.launch.py', {
         'use_sim_time': clock, 'autostart': LaunchConfiguration('autostart'),
         'mission_file': LaunchConfiguration('mission_file'),
@@ -90,4 +100,5 @@ def generate_launch_description():
         'parking_timeout_s': LaunchConfiguration('parking_timeout_s'),
     })
     return LaunchDescription(arguments + [OpaqueFunction(function=_validate_assets),
-                                         moveit, native_fruit_filter, scene, worker, guarded_route])
+                                         moveit, native_fruit_filter, ideal_gripper,
+                                         scene, worker, guarded_route])
