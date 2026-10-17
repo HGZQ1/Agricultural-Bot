@@ -23,7 +23,6 @@ artifacts/
 # Training outputs and large local data
 data/datasets/raw/*
 data/datasets/synthetic/*
-data/weights/*
 !data/datasets/raw/.gitkeep
 !data/datasets/synthetic/.gitkeep
 !data/weights/.gitkeep
